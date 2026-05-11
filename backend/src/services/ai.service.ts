@@ -7,7 +7,7 @@ const client = new Anthropic({
 
 export async function generateContent(input: string, styleProfile?: string) {
   const response = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-opus-4-7',
     max_tokens: 1500,
     system: VOXA_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: buildUserPrompt(input, styleProfile) }]
