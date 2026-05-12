@@ -99,18 +99,18 @@ const s = StyleSheet.create({
   header: { marginBottom: 32 },
   logo: { fontSize: 32, color: '#f0ede8' },
   logoAccent: { color: '#c8b99a' },
-  greeting: { fontSize: 13, color: '#333', marginTop: 6 },
+  greeting: { fontSize: 13, color: '#888', marginTop: 6 },
   inputContainer: { marginBottom: 24 },
   input: {
     backgroundColor: '#111', borderWidth: 0.5, borderColor: '#1e1e1e',
     borderRadius: 16, padding: 16, color: '#f0ede8', fontSize: 15, minHeight: 120
   },
   toneSection: { marginBottom: 28 },
-  sectionLabel: { fontSize: 10, color: '#2a2a2a', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 },
+  sectionLabel: { fontSize: 10, color: '#666', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 },
   toneRow: { flexDirection: 'row', gap: 8 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e' },
   tonePillActive: { borderColor: '#c8b99a', backgroundColor: '#c8b99a12' },
-  tonePillText: { fontSize: 12, color: '#333' },
+  tonePillText: { fontSize: 12, color: '#aaa' },
   tonePillTextActive: { color: '#c8b99a' },
   errorBox: { backgroundColor: '#1a0a0a', borderRadius: 10, padding: 12, marginBottom: 16 },
   errorText: { fontSize: 12, color: '#e05a4e' },
@@ -120,5 +120,5 @@ const s = StyleSheet.create({
   recentSection: { marginBottom: 24 },
   recentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   recentChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e', backgroundColor: '#111' },
-  recentChipText: { fontSize: 12, color: '#333' },
+  recentChipText: { fontSize: 12, color: '#aaa' },
 })

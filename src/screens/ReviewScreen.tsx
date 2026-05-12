@@ -1,21 +1,26 @@
-import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Clipboard } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Clipboard, TextInput } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
 
 const PLATFORMS = [
-  { key: 'twitter', name: 'X / Twitter', color: '#c8b99a' },
+  { key: 'twitter', name: 'X', color: '#c8b99a' },
   { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
   { key: 'threads', name: 'Threads', color: '#aaa' },
   { key: 'instagram', name: 'Instagram', color: '#e1306c' },
 ]
 
 export default function ReviewScreen({ navigation }: any) {
-  const { result, reset } = useVoxaStore()
+  const { result, reset, updatePlatformContent } = useVoxaStore()
   const [current, setCurrent] = useState(0)
   const [approved, setApproved] = useState<string[]>([])
   const [copied, setCopied] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editText, setEditText] = useState('')
 
-  if (!result) { navigation.navigate('Capture'); return null }
+  useEffect(() => {
+    if (!result) navigation.navigate('Capture')
+  }, [result])
+  if (!result) return null
 
   const platform = PLATFORMS[current]
   const pdata = result.platforms[platform.key as keyof typeof result.platforms]
@@ -33,6 +38,16 @@ export default function ReviewScreen({ navigation }: any) {
   const handleSkip = () => {
     if (!isLast) setCurrent(current + 1)
     else navigation.navigate('Confirm')
+  }
+
+  const handleEdit = () => {
+    setEditText(content)
+    setEditing(true)
+  }
+
+  const handleSaveEdit = () => {
+    updatePlatformContent(platform.key, editText)
+    setEditing(false)
   }
 
   const handleCopy = () => {
@@ -70,15 +85,27 @@ export default function ReviewScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
         <ScrollView style={s.contentScroll} showsVerticalScrollIndicator={false}>
-          <Text style={s.content}>{content}</Text>
-          {hashtags.length > 0 && <Text style={s.hashtags}>{hashtags.join(' ')}</Text>}
+          {editing ? (
+            <TextInput
+              style={s.contentEdit}
+              value={editText}
+              onChangeText={setEditText}
+              multiline
+              autoFocus
+            />
+          ) : (
+            <>
+              <Text style={s.content}>{content}</Text>
+              {hashtags.length > 0 && <Text style={s.hashtags}>{hashtags.join(' ')}</Text>}
+            </>
+          )}
         </ScrollView>
         <View style={s.cardActions}>
           <TouchableOpacity style={s.skipBtn} onPress={handleSkip}>
             <Text style={s.skipBtnText}>saltar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={s.editBtn} onPress={() => navigation.navigate('Capture')}>
-            <Text style={s.editBtnText}>editar</Text>
+          <TouchableOpacity style={s.editBtn} onPress={editing ? handleSaveEdit : handleEdit}>
+            <Text style={s.editBtnText}>{editing ? 'guardar' : 'editar'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[s.approveBtn, isApproved && s.approveBtnDone]} onPress={handleApprove}>
             <Text style={s.approveBtnText}>{isApproved ? 'aprobado' : isLast ? 'aprobar y confirmar' : 'aprobar'}</Text>
@@ -110,40 +137,41 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0a0a0a' },
   topBar: { flexDirection: 'row', alignItems: 'center', padding: 20, paddingBottom: 12 },
   backBtn: { fontSize: 14, color: '#444', marginRight: 12 },
-  ideaLabel: { flex: 1, fontSize: 13, color: '#333', fontStyle: 'italic' },
-  counter: { fontSize: 11, color: '#222' },
+  ideaLabel: { flex: 1, fontSize: 13, color: '#888', fontStyle: 'italic' },
+  counter: { fontSize: 11, color: '#888' },
   tabRow: { flexDirection: 'row', paddingHorizontal: 20, marginBottom: 16, gap: 4 },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 8, gap: 4 },
   tabDot: { width: 6, height: 6, borderRadius: 3 },
   tabDotInactive: { opacity: 0.25 },
-  tabLabel: { fontSize: 9, color: '#222' },
+  tabLabel: { fontSize: 9, color: '#888' },
   tabLabelActive: { color: '#c8b99a' },
   checkMark: { fontSize: 8, color: '#c8b99a' },
   card: { flex: 1, marginHorizontal: 20, backgroundColor: '#111', borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e', padding: 20, marginBottom: 16 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   platformBadge: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  platformName: { fontSize: 11, color: '#333', letterSpacing: 1, textTransform: 'uppercase' },
+  platformName: { fontSize: 13, color: '#fff', letterSpacing: 0, textTransform: 'none', fontWeight: '500' },
   copyBtn: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8, borderWidth: 0.5, borderColor: '#1e1e1e' },
   copyBtnText: { fontSize: 11, color: '#333' },
   copyBtnCopied: { color: '#4caf7d' },
   contentScroll: { flex: 1 },
-  content: { fontSize: 14, color: '#888', lineHeight: 22, fontWeight: '300' },
+  content: { fontSize: 14, color: '#e0ddd8', lineHeight: 22, fontWeight: '300' },
   hashtags: { marginTop: 12, fontSize: 12, color: '#c8b99a33', lineHeight: 20 },
   cardActions: { flexDirection: 'row', gap: 8, marginTop: 16 },
   skipBtn: { flex: 1, height: 40, borderRadius: 12, borderWidth: 0.5, borderColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' },
-  skipBtnText: { fontSize: 12, color: '#333' },
+  skipBtnText: { fontSize: 12, color: '#aaa' },
   editBtn: { flex: 1, height: 40, borderRadius: 12, borderWidth: 0.5, borderColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' },
-  editBtnText: { fontSize: 12, color: '#333' },
+  editBtnText: { fontSize: 12, color: '#aaa' },
   approveBtn: { flex: 1.4, height: 40, borderRadius: 12, backgroundColor: '#c8b99a', alignItems: 'center', justifyContent: 'center' },
   approveBtnDone: { backgroundColor: '#4caf7d22', borderWidth: 0.5, borderColor: '#4caf7d44' },
   approveBtnText: { fontSize: 12, color: '#0a0a0a', fontWeight: '500' },
   bottomBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingBottom: 24 },
-  approvedCount: { fontSize: 11, color: '#c8b99a', flex: 1 },
+  approvedCount: { fontSize: 11, color: '#c8b99a', flex: 1, fontWeight: '500' },
   dots: { flexDirection: 'row', gap: 5 },
   dot2: { width: 5, height: 5, borderRadius: 3, backgroundColor: '#1a1a1a' },
   dot2Active: { backgroundColor: '#c8b99a' },
   summaryLink: { fontSize: 11, color: '#333', marginLeft: 12 },
+  contentEdit: { fontSize: 14, color: '#aaa', lineHeight: 22, minHeight: 120, textAlignVertical: 'top' },
   approveAllBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#c8b99a18', borderWidth: 0.5, borderColor: '#c8b99a44' },
   approveAllText: { fontSize: 11, color: '#c8b99a' },
 })
