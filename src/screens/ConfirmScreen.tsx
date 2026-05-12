@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Share, Alert } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
 import { useLanguage } from '../hooks/useLanguage'
 
 const PLATFORMS = [
   { key: 'twitter', name: 'X', color: '#c8b99a' },
   { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
-  { key: 'threads', name: 'Threads', color: '#aaa' },
+  { key: 'threads', name: 'Threads', color: '#c8b99a' },
   { key: 'instagram', name: 'Instagram', color: '#e1306c' },
 ]
 
@@ -14,6 +14,7 @@ export default function ConfirmScreen({ navigation }: any) {
   const { result, reset } = useVoxaStore()
   const { t } = useLanguage()
   const [enabled, setEnabled] = useState({ twitter: true, linkedin: true, threads: true, instagram: true })
+  const [publishing, setPublishing] = useState(false)
   const [published, setPublished] = useState(false)
 
   if (!result) { navigation.navigate('Capture'); return null }
@@ -21,16 +22,37 @@ export default function ConfirmScreen({ navigation }: any) {
   const activeCount = Object.values(enabled).filter(Boolean).length
   const toggle = (key: string) => setEnabled((prev: any) => ({ ...prev, [key]: !prev[key] }))
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    setPublishing(true)
+    const activePlatforms = PLATFORMS.filter(p => enabled[p.key as keyof typeof enabled])
+    
+    for (const platform of activePlatforms) {
+      const pdata = result.platforms[platform.key as keyof typeof result.platforms]
+      const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags?.join(' ') : ''
+      const fullContent = hashtags ? `${pdata.content}
+
+${hashtags}` : pdata.content
+      
+      try {
+        await Share.share({
+          message: fullContent,
+          title: `Voxa → ${platform.name}`,
+        })
+      } catch (e) {
+        // usuario canceló, continuar con la siguiente
+      }
+    }
+
+    setPublishing(false)
     setPublished(true)
-    setTimeout(() => { reset(); navigation.navigate('Capture') }, 2500)
+    setTimeout(() => { reset(); navigation.navigate('Capture') }, 2000)
   }
 
   if (published) {
     return (
       <SafeAreaView style={s.safe}>
         <View style={s.successScreen}>
-          <View style={s.successIcon}><Text style={s.successCheck}>ok</Text></View>
+          <View style={s.successIcon}><Text style={s.successCheck}>✓</Text></View>
           <Text style={s.successTitle}>{t.published}</Text>
           <Text style={s.successSub}>{activeCount} {t.platforms}</Text>
         </View>
@@ -76,17 +98,30 @@ export default function ConfirmScreen({ navigation }: any) {
             {result.recommendation.bestPlatform} — {result.recommendation.bestDay} {result.recommendation.bestTime}
           </Text>
         </View>
+        <View style={s.infoBox}>
+          <Text style={s.infoText}>
+            {t.lang === 'es' 
+              ? `Se abrirá el share sheet para cada plataforma activa (${activeCount})`
+              : `Share sheet will open for each active platform (${activeCount})`
+            }
+          </Text>
+        </View>
       </ScrollView>
       <View style={s.footer}>
-        <TouchableOpacity style={s.scheduleBtn} onPress={() => alert(t.comingSoon)}>
+        <TouchableOpacity style={s.scheduleBtn} onPress={() => Alert.alert(t.comingSoon)}>
           <Text style={s.scheduleBtnText}>{t.schedule}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[s.publishBtn, activeCount === 0 && s.publishBtnDisabled]}
+          style={[s.publishBtn, (activeCount === 0 || publishing) && s.publishBtnDisabled]}
           onPress={handlePublish}
-          disabled={activeCount === 0}
+          disabled={activeCount === 0 || publishing}
         >
-          <Text style={s.publishBtnText}>{t.publishNow}</Text>
+          <Text style={s.publishBtnText}>
+            {publishing 
+              ? (t.lang === 'es' ? 'compartiendo...' : 'sharing...') 
+              : t.publishNow
+            }
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -111,6 +146,8 @@ const s = StyleSheet.create({
   platformPreview: { fontSize: 11, color: '#888', marginTop: 2 },
   recBox: { backgroundColor: '#111', borderRadius: 12, borderWidth: 0.5, borderColor: '#1e1e1e', padding: 14, marginTop: 24 },
   recText: { fontSize: 13, color: '#c8b99a', lineHeight: 20 },
+  infoBox: { backgroundColor: '#0f0f0f', borderRadius: 10, padding: 12, marginTop: 12 },
+  infoText: { fontSize: 11, color: '#444', textAlign: 'center', lineHeight: 16 },
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, flexDirection: 'row', gap: 10, backgroundColor: '#0a0a0a', borderTopWidth: 0.5, borderTopColor: '#111' },
   scheduleBtn: { flex: 1, height: 52, borderRadius: 14, borderWidth: 0.5, borderColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' },
   scheduleBtnText: { fontSize: 14, color: '#aaa' },
@@ -119,7 +156,7 @@ const s = StyleSheet.create({
   publishBtnText: { fontSize: 16, color: '#0a0a0a', fontWeight: '500' },
   successScreen: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   successIcon: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#c8b99a18', borderWidth: 0.5, borderColor: '#c8b99a33', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  successCheck: { fontSize: 16, color: '#c8b99a' },
+  successCheck: { fontSize: 24, color: '#c8b99a' },
   successTitle: { fontSize: 28, color: '#f0ede8' },
   successSub: { fontSize: 13, color: '#333' },
 })

@@ -185,6 +185,10 @@ export default function CaptureScreen({ navigation }: any) {
           </View>
         )}
 
+        <View style={s.flowDots}>
+          {[0,1,2,3].map(i => <View key={i} style={s.flowDot} />)}
+        </View>
+
         <View style={s.platformsRow}>
           {PLATFORM_ICONS.map((p, i) => (
             <View key={i} style={s.platformBadge}>
@@ -196,6 +200,12 @@ export default function CaptureScreen({ navigation }: any) {
               <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
             </View>
           ))}
+          <View style={s.platformBadge}>
+            <View style={[s.platformDot, { backgroundColor: '#1a1a1a', borderColor: '#2a2a2a', borderStyle: 'dashed' }]}>
+              <Text style={{ fontSize: 18, color: '#555', fontWeight: '300' }}>+</Text>
+            </View>
+            <Text style={[s.platformName, { color: '#555' }]}>más</Text>
+          </View>
         </View>
 
       </ScrollView>
@@ -236,7 +246,9 @@ const s = StyleSheet.create({
   recentLabel: { fontSize: 11, color: "#888", letterSpacing: 2, textTransform: "uppercase" },
   recentItem: { flexDirection: "row", alignItems: "center", paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: "#111" },
   recentItemText: { fontSize: 13, color: "#666", flex: 1 },
-  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 16, marginTop: 8 },
+  flowDots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: 4 },
+  flowDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "#333" },
+  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 8, marginTop: 0 },
   platformBadge: { alignItems: "center", gap: 6 },
   platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: "uppercase", opacity: 0.7 },
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
