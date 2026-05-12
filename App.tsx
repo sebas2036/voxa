@@ -6,6 +6,7 @@ import CaptureScreen from './src/screens/CaptureScreen'
 import ReviewScreen from './src/screens/ReviewScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
 import SettingsScreen from './src/screens/SettingsScreen'
+import AuthScreen from './src/screens/AuthScreen'
 
 const Stack = createStackNavigator()
 
@@ -13,6 +14,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Capture" component={CaptureScreen} />
         <Stack.Screen name="Review" component={ReviewScreen} />
         <Stack.Screen name="Confirm" component={ConfirmScreen} />
