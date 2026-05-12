@@ -92,8 +92,14 @@ export default function ReviewScreen({ navigation }: any) {
             <View key={p.key} style={[s.dot2, approved.includes(p.key) && s.dot2Active]} />
           ))}
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Confirm')}>
-          <Text style={s.summaryLink}>ver resumen</Text>
+        <TouchableOpacity
+          style={s.approveAllBtn}
+          onPress={() => {
+            setApproved(PLATFORMS.map(p => p.key))
+            navigation.navigate('Confirm')
+          }}
+        >
+          <Text style={s.approveAllText}>aprobar todas</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -138,4 +144,6 @@ const s = StyleSheet.create({
   dot2: { width: 5, height: 5, borderRadius: 3, backgroundColor: '#1a1a1a' },
   dot2Active: { backgroundColor: '#c8b99a' },
   summaryLink: { fontSize: 11, color: '#333', marginLeft: 12 },
+  approveAllBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#c8b99a18', borderWidth: 0.5, borderColor: '#c8b99a44' },
+  approveAllText: { fontSize: 11, color: '#c8b99a' },
 })
