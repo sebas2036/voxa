@@ -4,6 +4,7 @@ import {
   StyleSheet, SafeAreaView, ScrollView, ActivityIndicator
 } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
+import { useVoiceInput } from '../hooks/useVoiceInput'
 
 const TONES = [
   { key: 'auto', label: 'auto' },
@@ -19,6 +20,9 @@ const RECENT = ['liderazgo remoto', 'IA y creatividad', 'productividad']
 
 export default function CaptureScreen({ navigation }: any) {
   const { input, tone, loading, error, setInput, setTone, generate } = useVoxaStore()
+  const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
+  const handleMicPress = () => { if (isRecording) stopRecording(); else startRecording() }
+  require('react').useEffect(() => { if (transcript) setInput(transcript) }, [transcript])
 
   const handleGenerate = async () => {
     if (!input.trim()) return
@@ -36,7 +40,7 @@ export default function CaptureScreen({ navigation }: any) {
         <View style={s.inputContainer}>
           <TextInput
             style={s.input}
-            placeholder="escribi tu idea..."
+            placeholder={"🇪🇸 escribi tu idea...  🇺🇸 type your idea..."}
             placeholderTextColor="#2e2e2e"
             value={input}
             onChangeText={setInput}
@@ -45,7 +49,9 @@ export default function CaptureScreen({ navigation }: any) {
             textAlignVertical="top"
           />
         </View>
-        <View style={s.toneSection}>
+        <View style={s.micSection}><TouchableOpacity style={[s.micBtn, isRecording && s.micBtnActive]} onPress={handleMicPress}><Text style={s.micIcon}>{isRecording ? '⏹' : '🎤'}</Text></TouchableOpacity><Text style={s.micLabel}>{isRecording ? 'escuchando...' : 'habla tu idea'}</Text></View>
+
+                <View style={s.toneSection}>
           <Text style={s.sectionLabel}>tono</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={s.toneRow}>
@@ -119,6 +125,11 @@ const s = StyleSheet.create({
   generateBtnText: { fontSize: 17, color: '#0a0a0a', fontWeight: '500' },
   recentSection: { marginBottom: 24 },
   recentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  micSection: { alignItems: 'center', marginBottom: 24 },
+  micBtn: { width: 88, height: 88, borderRadius: 44, backgroundColor: '#c8b99a', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  micBtnActive: { backgroundColor: '#e05a4e' },
+  micIcon: { fontSize: 36 },
+  micLabel: { fontSize: 11, color: '#555', letterSpacing: 1 },
   recentChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e', backgroundColor: '#111' },
   recentChipText: { fontSize: 12, color: '#aaa' },
 })
