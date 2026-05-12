@@ -1,5 +1,9 @@
 import { create } from 'zustand'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { VoxaResult, generateContent } from '../services/voxa.service'
+
+const HISTORY_KEY = 'voxa_recent_ideas'
+const MAX_RECENT = 10
 
 interface VoxaStore {
   input: string
@@ -7,10 +11,12 @@ interface VoxaStore {
   result: VoxaResult | null
   loading: boolean
   error: string | null
+  recentIdeas: string[]
   setInput: (input: string) => void
   setTone: (tone: string) => void
   generate: () => Promise<void>
   updatePlatformContent: (platform: string, content: string) => void
+  loadRecentIdeas: () => Promise<void>
   reset: () => void
 }
 
@@ -20,12 +26,20 @@ export const useVoxaStore = create<VoxaStore>((set, get) => ({
   result: null,
   loading: false,
   error: null,
+  recentIdeas: [],
 
   setInput: (input) => set({ input }),
   setTone: (tone) => set({ tone }),
 
+  loadRecentIdeas: async () => {
+    try {
+      const stored = await AsyncStorage.getItem(HISTORY_KEY)
+      if (stored) set({ recentIdeas: JSON.parse(stored) })
+    } catch {}
+  },
+
   generate: async () => {
-    const { input, tone } = get()
+    const { input, tone, recentIdeas } = get()
     if (!input.trim()) return
     set({ loading: true, error: null, result: null })
     try {
@@ -33,7 +47,10 @@ export const useVoxaStore = create<VoxaStore>((set, get) => ({
         input.trim(),
         tone !== 'auto' ? tone : undefined
       )
-      set({ result, loading: false })
+      // Guardar en historial
+      const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
+      await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
+      set({ result, loading: false, recentIdeas: updated })
     } catch (err: any) {
       set({ error: err.message, loading: false })
     }
