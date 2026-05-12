@@ -11,7 +11,6 @@ interface VoxaStore {
   setTone: (tone: string) => void
   generate: () => Promise<void>
   updatePlatformContent: (platform: string, content: string) => void
-  updatePlatformContent: (platform: string, content: string) => void
   reset: () => void
 }
 
@@ -28,9 +27,7 @@ export const useVoxaStore = create<VoxaStore>((set, get) => ({
   generate: async () => {
     const { input, tone } = get()
     if (!input.trim()) return
-
     set({ loading: true, error: null, result: null })
-
     try {
       const result = await generateContent(
         input.trim(),
@@ -41,16 +38,6 @@ export const useVoxaStore = create<VoxaStore>((set, get) => ({
       set({ error: err.message, loading: false })
     }
   },
-
-  updatePlatformContent: (platform, newContent) => set(state => ({
-    result: state.result ? {
-      ...state.result,
-      platforms: {
-        ...state.result.platforms,
-        [platform]: { ...state.result.platforms[platform as keyof typeof state.result.platforms], content: newContent }
-      }
-    } : null
-  })),
 
   updatePlatformContent: (platform, newContent) => set(state => ({
     result: state.result ? {

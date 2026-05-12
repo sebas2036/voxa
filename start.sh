@@ -1,15 +1,15 @@
 #!/bin/bash
-echo "🎙  Iniciando Voxa..."
+ROOT="$HOME/proyectos/voxa"
+echo "🎙  Voxa — iniciando..."
 
-ROOT=$(pwd)
-
+# Matar procesos anteriores
 pkill -f "ts-node src/server" 2>/dev/null
 pkill -f "expo start" 2>/dev/null
 sleep 1
 
-echo "▶ Backend..."
+# Backend en background
 cd "$ROOT/backend" && npx ts-node src/server.ts &
 sleep 3
 
-echo "▶ Expo..."
+# Expo con iOS
 cd "$ROOT" && npx expo start --ios
