@@ -6,7 +6,7 @@ import { useLanguage } from '../hooks/useLanguage'
 const PLATFORMS = [
   { key: 'twitter', name: 'X', color: '#c8b99a' },
   { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
-  { key: 'threads', name: 'Threads', color: '#aaa' },
+  { key: 'threads', name: 'Threads', color: '#ccc' },
   { key: 'instagram', name: 'Instagram', color: '#e1306c' },
 ]
 
@@ -19,7 +19,8 @@ export default function ReviewScreen({ navigation }: any) {
   const [editing, setEditing] = useState(false)
   const [editText, setEditText] = useState('')
 
-  if (!result) { navigation.navigate('Capture'); return null }
+  React.useEffect(() => { if (!result) navigation.navigate('Capture') }, [result])
+  if (!result) return null
 
   const platform = PLATFORMS[current]
   const pdata = result.platforms[platform.key as keyof typeof result.platforms]
@@ -111,14 +112,14 @@ export default function ReviewScreen({ navigation }: any) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0a0a0a' },
   topBar: { flexDirection: 'row', alignItems: 'center', padding: 20, paddingBottom: 12 },
-  backBtn: { fontSize: 14, color: '#444', marginRight: 12 },
-  ideaLabel: { flex: 1, fontSize: 13, color: '#888', fontStyle: 'italic' },
-  counter: { fontSize: 11, color: '#888' },
+  backBtn: { fontSize: 14, color: '#888', marginRight: 12 },
+  ideaLabel: { flex: 1, fontSize: 13, color: '#ccc', fontStyle: 'italic' },
+  counter: { fontSize: 11, color: '#ccc' },
   tabRow: { flexDirection: 'row', paddingHorizontal: 20, marginBottom: 16, gap: 4 },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 8, gap: 4 },
   tabDot: { width: 6, height: 6, borderRadius: 3 },
   tabDotInactive: { opacity: 0.25 },
-  tabLabel: { fontSize: 9, color: '#888' },
+  tabLabel: { fontSize: 9, color: '#ccc' },
   tabLabelActive: { color: '#c8b99a' },
   checkMark: { fontSize: 8, color: '#c8b99a' },
   card: { flex: 1, marginHorizontal: 20, backgroundColor: '#111', borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e', padding: 20, marginBottom: 16 },
@@ -127,16 +128,16 @@ const s = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: 4 },
   platformName: { fontSize: 13, color: '#fff', fontWeight: '500' },
   copyBtn: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8, borderWidth: 0.5, borderColor: '#1e1e1e' },
-  copyBtnText: { fontSize: 11, color: '#333' },
+  copyBtnText: { fontSize: 11, color: '#888' },
   copyBtnCopied: { color: '#4caf7d' },
   contentScroll: { flex: 1 },
   content: { fontSize: 14, color: '#e0ddd8', lineHeight: 22, fontWeight: '300' },
   hashtags: { marginTop: 12, fontSize: 12, color: '#c8b99a33', lineHeight: 20 },
   cardActions: { flexDirection: 'row', gap: 8, marginTop: 16 },
   skipBtn: { flex: 1, height: 40, borderRadius: 12, borderWidth: 0.5, borderColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' },
-  skipBtnText: { fontSize: 12, color: '#aaa' },
+  skipBtnText: { fontSize: 12, color: '#ccc' },
   editBtn: { flex: 1, height: 40, borderRadius: 12, borderWidth: 0.5, borderColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' },
-  editBtnText: { fontSize: 12, color: '#aaa' },
+  editBtnText: { fontSize: 12, color: '#ccc' },
   approveBtn: { flex: 1.4, height: 40, borderRadius: 12, backgroundColor: '#c8b99a', alignItems: 'center', justifyContent: 'center' },
   approveBtnDone: { backgroundColor: '#4caf7d22', borderWidth: 0.5, borderColor: '#4caf7d44' },
   approveBtnText: { fontSize: 12, color: '#0a0a0a', fontWeight: '500' },
@@ -145,7 +146,7 @@ const s = StyleSheet.create({
   dots: { flexDirection: 'row', gap: 5 },
   dot2: { width: 5, height: 5, borderRadius: 3, backgroundColor: '#1a1a1a' },
   dot2Active: { backgroundColor: '#c8b99a' },
-  contentEdit: { fontSize: 14, color: '#aaa', lineHeight: 22, minHeight: 120, textAlignVertical: 'top' },
+  contentEdit: { fontSize: 14, color: '#ccc', lineHeight: 22, minHeight: 120, textAlignVertical: 'top' },
   approveAllBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#c8b99a18', borderWidth: 0.5, borderColor: '#c8b99a44' },
   approveAllText: { fontSize: 11, color: '#c8b99a' },
 })

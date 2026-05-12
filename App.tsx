@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import CaptureScreen from './src/screens/CaptureScreen'
 import ReviewScreen from './src/screens/ReviewScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
+import SettingsScreen from './src/screens/SettingsScreen'
 
 const Stack = createStackNavigator()
 
@@ -15,6 +16,7 @@ export default function App() {
         <Stack.Screen name="Capture" component={CaptureScreen} />
         <Stack.Screen name="Review" component={ReviewScreen} />
         <Stack.Screen name="Confirm" component={ConfirmScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

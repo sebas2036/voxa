@@ -17,7 +17,8 @@ export default function ConfirmScreen({ navigation }: any) {
   const [publishing, setPublishing] = useState(false)
   const [published, setPublished] = useState(false)
 
-  if (!result) { navigation.navigate('Capture'); return null }
+  React.useEffect(() => { if (!result) navigation.navigate('Capture') }, [result])
+  if (!result) return null
 
   const activeCount = Object.values(enabled).filter(Boolean).length
   const toggle = (key: string) => setEnabled((prev: any) => ({ ...prev, [key]: !prev[key] }))
@@ -131,26 +132,26 @@ ${hashtags}` : pdata.content
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#0a0a0a' },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20 },
-  backBtn: { fontSize: 14, color: '#444' },
+  backBtn: { fontSize: 14, color: '#888' },
   title: { fontSize: 16, color: '#f0ede8' },
   scroll: { padding: 20, paddingBottom: 120 },
   ideaRecap: { backgroundColor: '#111', borderRadius: 14, borderWidth: 0.5, borderColor: '#1e1e1e', padding: 14, marginBottom: 24 },
-  ideaRecapText: { fontSize: 13, color: '#aaa', fontStyle: 'italic' },
-  sectionLabel: { fontSize: 10, color: '#555', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 },
+  ideaRecapText: { fontSize: 13, color: '#ccc', fontStyle: 'italic' },
+  sectionLabel: { fontSize: 10, color: '#888', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 },
   platformRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111', borderRadius: 14, borderWidth: 0.5, borderColor: '#1e1e1e', padding: 14, marginBottom: 10, gap: 12 },
   platformRowOn: { borderColor: '#c8b99a22' },
   platformDot: { width: 10, height: 10, borderRadius: 5 },
   platformInfo: { flex: 1 },
   platformName: { fontSize: 13, color: '#fff', fontWeight: '500' },
   platformNameOn: { color: '#888' },
-  platformPreview: { fontSize: 11, color: '#888', marginTop: 2 },
+  platformPreview: { fontSize: 11, color: '#ccc', marginTop: 2 },
   recBox: { backgroundColor: '#111', borderRadius: 12, borderWidth: 0.5, borderColor: '#1e1e1e', padding: 14, marginTop: 24 },
   recText: { fontSize: 13, color: '#c8b99a', lineHeight: 20 },
   infoBox: { backgroundColor: '#0f0f0f', borderRadius: 10, padding: 12, marginTop: 12 },
-  infoText: { fontSize: 11, color: '#444', textAlign: 'center', lineHeight: 16 },
+  infoText: { fontSize: 11, color: '#888', textAlign: 'center', lineHeight: 16 },
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, flexDirection: 'row', gap: 10, backgroundColor: '#0a0a0a', borderTopWidth: 0.5, borderTopColor: '#111' },
   scheduleBtn: { flex: 1, height: 52, borderRadius: 14, borderWidth: 0.5, borderColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' },
-  scheduleBtnText: { fontSize: 14, color: '#aaa' },
+  scheduleBtnText: { fontSize: 14, color: '#ccc' },
   publishBtn: { flex: 1.6, height: 52, borderRadius: 14, backgroundColor: '#c8b99a', alignItems: 'center', justifyContent: 'center' },
   publishBtnDisabled: { opacity: 0.3 },
   publishBtnText: { fontSize: 16, color: '#0a0a0a', fontWeight: '500' },

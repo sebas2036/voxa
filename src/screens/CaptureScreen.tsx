@@ -104,7 +104,14 @@ export default function CaptureScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
 
         <View style={s.header}>
-          <Text style={s.logo}>vox<Text style={s.logoAccent}>a</Text></Text>
+          <View style={s.headerTop}>
+            <Text style={s.logo}>vox<Text style={s.logoAccent}>a</Text></Text>
+            <TouchableOpacity style={s.menuBtn} onPress={() => navigation.navigate('Settings')}>
+              <View style={s.menuLine} />
+              <View style={s.menuLine} />
+              <View style={s.menuLine} />
+            </TouchableOpacity>
+          </View>
           <Text style={s.tagline}>{t.lang === 'es' ? 'tu idea, en todas tus redes' : 'your idea, across all your networks'}</Text>
         </View>
 
@@ -200,13 +207,7 @@ export default function CaptureScreen({ navigation }: any) {
               <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
             </View>
           ))}
-          <View style={s.platformBadge}>
-            <View style={[s.platformDot, { backgroundColor: '#1a1a1a', borderColor: '#2a2a2a', borderStyle: 'dashed' }]}>
-              <Text style={{ fontSize: 18, color: '#555', fontWeight: '300' }}>+</Text>
-            </View>
-            <Text style={[s.platformName, { color: '#555' }]}>más</Text>
-          </View>
-        </View>
+             </View>
 
       </ScrollView>
     </SafeAreaView>
@@ -217,6 +218,9 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#0a0a0a" },
   scroll: { padding: 24, paddingTop: 48 },
   header: { marginBottom: 20 },
+  headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  menuBtn: { padding: 8, gap: 5, alignItems: "flex-end" },
+  menuLine: { width: 22, height: 1.5, backgroundColor: "#555", borderRadius: 2 },
   logo: { fontSize: 32, color: "#f0ede8" },
   logoAccent: { color: "#c8b99a", fontStyle: "italic" },
   tagline: { fontSize: 12, color: "#444", marginTop: 4, letterSpacing: 0.3 },
@@ -230,11 +234,11 @@ const s = StyleSheet.create({
   inputContainer: { marginBottom: 24 },
   input: { backgroundColor: "#111", borderWidth: 0.5, borderColor: "#1e1e1e", borderRadius: 16, padding: 16, color: "#f0ede8", fontSize: 15, fontWeight: "300", minHeight: 90, lineHeight: 24 },
   toneSection: { marginBottom: 28 },
-  sectionLabel: { fontSize: 10, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
+  sectionLabel: { fontSize: 10, color: "#666", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
   toneRow: { flexDirection: "row", gap: 8 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5, borderColor: "#1e1e1e" },
   tonePillActive: { borderColor: "#c8b99a", backgroundColor: "#c8b99a12" },
-  tonePillText: { fontSize: 12, color: "#aaa" },
+  tonePillText: { fontSize: 12, color: "#ccc" },
   tonePillTextActive: { color: "#c8b99a" },
   errorBox: { backgroundColor: "#1a0a0a", borderRadius: 10, padding: 12, marginBottom: 16 },
   errorText: { fontSize: 12, color: "#e05a4e" },
@@ -243,9 +247,9 @@ const s = StyleSheet.create({
   generateBtnText: { fontSize: 17, color: "#0a0a0a", fontWeight: "500" },
   recentSection: { marginBottom: 24 },
   recentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: "#1a1a1a" },
-  recentLabel: { fontSize: 11, color: "#888", letterSpacing: 2, textTransform: "uppercase" },
+  recentLabel: { fontSize: 11, color: "#aaa", letterSpacing: 2, textTransform: "uppercase" },
   recentItem: { flexDirection: "row", alignItems: "center", paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: "#111" },
-  recentItemText: { fontSize: 13, color: "#666", flex: 1 },
+  recentItemText: { fontSize: 13, color: "#999", flex: 1 },
   flowDots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: 4 },
   flowDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "#333" },
   platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 8, marginTop: 0 },
