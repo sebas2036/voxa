@@ -6,23 +6,16 @@ import {
 } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
+import { useLanguage } from '../hooks/useLanguage'
 import { Ionicons } from '@expo/vector-icons'
 
-const TONES = [
-  { key: 'auto', label: 'auto' },
-  { key: 'inspiracional', label: 'inspiracional' },
-  { key: 'urgente', label: 'urgente' },
-  { key: 'cercano', label: 'cercano' },
-  { key: 'profesional', label: 'profesional' },
-  { key: 'reflexivo', label: 'reflexivo' },
-  { key: 'provocador', label: 'provocador' },
-]
-
+const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 const RECENT = ['liderazgo remoto', 'IA y creatividad', 'productividad']
 
 export default function CaptureScreen({ navigation }: any) {
   const { input, tone, loading, error, setInput, setTone, generate } = useVoxaStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
+  const { t } = useLanguage()
   const [showInput, setShowInput] = React.useState(false)
 
   const ring1 = useRef(new Animated.Value(0)).current
@@ -85,7 +78,7 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.header}>
           <Text style={s.logo}>vox<Text style={s.logoAccent}>a</Text></Text>
-          <Text style={s.greeting}>que queres publicar hoy?</Text>
+          <Text style={s.greeting}>{t.greeting}</Text>
         </View>
 
         <View style={s.micArea}>
@@ -102,10 +95,10 @@ export default function CaptureScreen({ navigation }: any) {
             </TouchableOpacity>
           </View>
           <Text style={s.micLabel}>
-            {isRecording ? 'ESCUCHANDO...' : 'HABLÁ TU IDEA'}
+            {isRecording ? (t.lang === 'es' ? 'ESCUCHANDO...' : 'LISTENING...') : t.micLabel}
           </Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
-            <Text style={s.orWrite}>o escribí</Text>
+            <Text style={s.orWrite}>{t.orWrite}</Text>
           </TouchableOpacity>
         </View>
 
@@ -113,7 +106,7 @@ export default function CaptureScreen({ navigation }: any) {
           <View style={s.inputContainer}>
             <TextInput
               style={s.input}
-              placeholder={"🇪🇸 escribi tu idea...  🇺🇸 type your idea..."}
+              placeholder={t.placeholder}
               placeholderTextColor="#2e2e2e"
               value={input}
               onChangeText={setInput}
@@ -126,17 +119,17 @@ export default function CaptureScreen({ navigation }: any) {
         )}
 
         <View style={s.toneSection}>
-          <Text style={s.sectionLabel}>tono</Text>
+          <Text style={s.sectionLabel}>{t.toneLabel}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={s.toneRow}>
-              {TONES.map(t => (
+              {TONES.map(key => (
                 <TouchableOpacity
-                  key={t.key}
-                  style={[s.tonePill, tone === t.key && s.tonePillActive]}
-                  onPress={() => setTone(t.key)}
+                  key={key}
+                  style={[s.tonePill, tone === key && s.tonePillActive]}
+                  onPress={() => setTone(key)}
                 >
-                  <Text style={[s.tonePillText, tone === t.key && s.tonePillTextActive]}>
-                    {t.label}
+                  <Text style={[s.tonePillText, tone === key && s.tonePillTextActive]}>
+                    {t.tones[key as keyof typeof t.tones]}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -157,12 +150,12 @@ export default function CaptureScreen({ navigation }: any) {
         >
           {loading
             ? <ActivityIndicator color="#0a0a0a" />
-            : <Text style={s.generateBtnText}>generar</Text>
+            : <Text style={s.generateBtnText}>{t.generate}</Text>
           }
         </TouchableOpacity>
 
         <View style={s.recentSection}>
-          <Text style={s.sectionLabel}>ideas recientes</Text>
+          <Text style={s.sectionLabel}>{t.recentLabel}</Text>
           <View style={s.recentRow}>
             {RECENT.map(r => (
               <TouchableOpacity
@@ -188,70 +181,29 @@ const s = StyleSheet.create({
   logo: { fontSize: 32, color: '#f0ede8' },
   logoAccent: { color: '#c8b99a', fontStyle: 'italic' },
   greeting: { fontSize: 13, color: '#555', marginTop: 6 },
-
   micArea: { alignItems: 'center', paddingVertical: 32, marginBottom: 8 },
-  micWrapper: {
-    width: 160, height: 160,
-    alignItems: 'center', justifyContent: 'center',
-    marginBottom: 20
-  },
-  ring: {
-    position: 'absolute',
-    width: 90, height: 90,
-    borderRadius: 45,
-    backgroundColor: '#c8b99a',
-  },
-  micBtn: {
-    width: 90, height: 90, borderRadius: 45,
-    backgroundColor: '#c8b99a',
-    alignItems: 'center', justifyContent: 'center',
-    zIndex: 10,
-  },
+  micWrapper: { width: 160, height: 160, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
+  ring: { position: 'absolute', width: 90, height: 90, borderRadius: 45, backgroundColor: '#c8b99a' },
+  micBtn: { width: 90, height: 90, borderRadius: 45, backgroundColor: '#c8b99a', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
   micBtnActive: { backgroundColor: '#e05a4e' },
-  micIcon: { fontSize: 36 },
-  micLabel: {
-    fontSize: 11, color: '#666',
-    letterSpacing: 3, textTransform: 'uppercase',
-    marginBottom: 10
-  },
-  orWrite: {
-    fontSize: 13, color: '#333',
-    letterSpacing: 0.5
-  },
-
+  micLabel: { fontSize: 11, color: '#666', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 },
+  orWrite: { fontSize: 13, color: '#333', letterSpacing: 0.5 },
   inputContainer: { marginBottom: 24 },
-  input: {
-    backgroundColor: '#111', borderWidth: 0.5, borderColor: '#1e1e1e',
-    borderRadius: 16, padding: 16, color: '#f0ede8', fontSize: 15,
-    fontWeight: '300', minHeight: 90, lineHeight: 24
-  },
-
+  input: { backgroundColor: '#111', borderWidth: 0.5, borderColor: '#1e1e1e', borderRadius: 16, padding: 16, color: '#f0ede8', fontSize: 15, fontWeight: '300', minHeight: 90, lineHeight: 24 },
   toneSection: { marginBottom: 28 },
   sectionLabel: { fontSize: 10, color: '#444', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 },
   toneRow: { flexDirection: 'row', gap: 8 },
-  tonePill: {
-    paddingHorizontal: 14, paddingVertical: 7,
-    borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e'
-  },
+  tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e' },
   tonePillActive: { borderColor: '#c8b99a', backgroundColor: '#c8b99a12' },
   tonePillText: { fontSize: 12, color: '#aaa' },
   tonePillTextActive: { color: '#c8b99a' },
-
   errorBox: { backgroundColor: '#1a0a0a', borderRadius: 10, padding: 12, marginBottom: 16 },
   errorText: { fontSize: 12, color: '#e05a4e' },
-
-  generateBtn: {
-    backgroundColor: '#c8b99a', borderRadius: 14,
-    height: 52, alignItems: 'center', justifyContent: 'center', marginBottom: 32
-  },
+  generateBtn: { backgroundColor: '#c8b99a', borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center', marginBottom: 32 },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 17, color: '#0a0a0a', fontWeight: '500' },
-
   recentSection: { marginBottom: 24 },
   recentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  recentChip: {
-    paddingHorizontal: 14, paddingVertical: 8,
-    borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e', backgroundColor: '#111'
-  },
+  recentChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 0.5, borderColor: '#1e1e1e', backgroundColor: '#111' },
   recentChipText: { fontSize: 12, color: '#aaa' },
 })

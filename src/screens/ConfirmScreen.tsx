@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
+import { useLanguage } from '../hooks/useLanguage'
 
 const PLATFORMS = [
   { key: 'twitter', name: 'X', color: '#c8b99a' },
@@ -11,6 +12,7 @@ const PLATFORMS = [
 
 export default function ConfirmScreen({ navigation }: any) {
   const { result, reset } = useVoxaStore()
+  const { t } = useLanguage()
   const [enabled, setEnabled] = useState({ twitter: true, linkedin: true, threads: true, instagram: true })
   const [published, setPublished] = useState(false)
 
@@ -29,8 +31,8 @@ export default function ConfirmScreen({ navigation }: any) {
       <SafeAreaView style={s.safe}>
         <View style={s.successScreen}>
           <View style={s.successIcon}><Text style={s.successCheck}>ok</Text></View>
-          <Text style={s.successTitle}>publicado</Text>
-          <Text style={s.successSub}>{activeCount} plataformas</Text>
+          <Text style={s.successTitle}>{t.published}</Text>
+          <Text style={s.successSub}>{activeCount} {t.platforms}</Text>
         </View>
       </SafeAreaView>
     )
@@ -40,16 +42,16 @@ export default function ConfirmScreen({ navigation }: any) {
     <SafeAreaView style={s.safe}>
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={s.backBtn}>atras</Text>
+          <Text style={s.backBtn}>{t.back}</Text>
         </TouchableOpacity>
-        <Text style={s.title}>listo para publicar</Text>
+        <Text style={s.title}>{t.readyToPublish}</Text>
         <View style={{ width: 48 }} />
       </View>
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.ideaRecap}>
           <Text style={s.ideaRecapText}>{result.analysis.topic}</Text>
         </View>
-        <Text style={s.sectionLabel}>plataformas</Text>
+        <Text style={s.sectionLabel}>{t.platforms}</Text>
         {PLATFORMS.map(p => {
           const pdata = result.platforms[p.key as keyof typeof result.platforms]
           const isOn = enabled[p.key as keyof typeof enabled]
@@ -71,20 +73,20 @@ export default function ConfirmScreen({ navigation }: any) {
         })}
         <View style={s.recBox}>
           <Text style={s.recText}>
-            mejor en {result.recommendation.bestPlatform} — {result.recommendation.bestDay} {result.recommendation.bestTime}
+            {result.recommendation.bestPlatform} — {result.recommendation.bestDay} {result.recommendation.bestTime}
           </Text>
         </View>
       </ScrollView>
       <View style={s.footer}>
-        <TouchableOpacity style={s.scheduleBtn} onPress={() => alert('proximamente')}>
-          <Text style={s.scheduleBtnText}>programar</Text>
+        <TouchableOpacity style={s.scheduleBtn} onPress={() => alert(t.comingSoon)}>
+          <Text style={s.scheduleBtnText}>{t.schedule}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[s.publishBtn, activeCount === 0 && s.publishBtnDisabled]}
           onPress={handlePublish}
           disabled={activeCount === 0}
         >
-          <Text style={s.publishBtnText}>publicar ahora</Text>
+          <Text style={s.publishBtnText}>{t.publishNow}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

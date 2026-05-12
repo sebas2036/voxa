@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Clipboard, TextInput } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
+import { useLanguage } from '../hooks/useLanguage'
 
 const PLATFORMS = [
   { key: 'twitter', name: 'X', color: '#c8b99a' },
@@ -11,16 +12,14 @@ const PLATFORMS = [
 
 export default function ReviewScreen({ navigation }: any) {
   const { result, reset, updatePlatformContent } = useVoxaStore()
+  const { t } = useLanguage()
   const [current, setCurrent] = useState(0)
   const [approved, setApproved] = useState<string[]>([])
   const [copied, setCopied] = useState(false)
   const [editing, setEditing] = useState(false)
   const [editText, setEditText] = useState('')
 
-  useEffect(() => {
-    if (!result) navigation.navigate('Capture')
-  }, [result])
-  if (!result) return null
+  if (!result) { navigation.navigate('Capture'); return null }
 
   const platform = PLATFORMS[current]
   const pdata = result.platforms[platform.key as keyof typeof result.platforms]
@@ -40,27 +39,15 @@ export default function ReviewScreen({ navigation }: any) {
     else navigation.navigate('Confirm')
   }
 
-  const handleEdit = () => {
-    setEditText(content)
-    setEditing(true)
-  }
-
-  const handleSaveEdit = () => {
-    updatePlatformContent(platform.key, editText)
-    setEditing(false)
-  }
-
-  const handleCopy = () => {
-    Clipboard.setString(content)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const handleEdit = () => { setEditText(content); setEditing(true) }
+  const handleSaveEdit = () => { updatePlatformContent(platform.key, editText); setEditing(false) }
+  const handleCopy = () => { Clipboard.setString(content); setCopied(true); setTimeout(() => setCopied(false), 2000) }
 
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => { reset(); navigation.navigate('Capture') }}>
-          <Text style={s.backBtn}>atras</Text>
+          <Text style={s.backBtn}>{t.back}</Text>
         </TouchableOpacity>
         <Text style={s.ideaLabel} numberOfLines={1}>{result.analysis.topic}</Text>
         <Text style={s.counter}>{current + 1} / {PLATFORMS.length}</Text>
@@ -69,7 +56,7 @@ export default function ReviewScreen({ navigation }: any) {
         {PLATFORMS.map((p, i) => (
           <TouchableOpacity key={p.key} style={s.tab} onPress={() => setCurrent(i)}>
             <View style={[s.tabDot, { backgroundColor: p.color }, i !== current && s.tabDotInactive]} />
-            <Text style={[s.tabLabel, i === current && s.tabLabelActive]}>{p.name.split(' ')[0]}</Text>
+            <Text style={[s.tabLabel, i === current && s.tabLabelActive]}>{p.name}</Text>
             {approved.includes(p.key) && <Text style={s.checkMark}>v</Text>}
           </TouchableOpacity>
         ))}
@@ -81,18 +68,12 @@ export default function ReviewScreen({ navigation }: any) {
             <Text style={s.platformName}>{platform.name}</Text>
           </View>
           <TouchableOpacity style={s.copyBtn} onPress={handleCopy}>
-            <Text style={[s.copyBtnText, copied && s.copyBtnCopied]}>{copied ? 'copiado' : 'copiar'}</Text>
+            <Text style={[s.copyBtnText, copied && s.copyBtnCopied]}>{copied ? t.copied : t.copy}</Text>
           </TouchableOpacity>
         </View>
         <ScrollView style={s.contentScroll} showsVerticalScrollIndicator={false}>
           {editing ? (
-            <TextInput
-              style={s.contentEdit}
-              value={editText}
-              onChangeText={setEditText}
-              multiline
-              autoFocus
-            />
+            <TextInput style={s.contentEdit} value={editText} onChangeText={setEditText} multiline autoFocus />
           ) : (
             <>
               <Text style={s.content}>{content}</Text>
@@ -102,31 +83,25 @@ export default function ReviewScreen({ navigation }: any) {
         </ScrollView>
         <View style={s.cardActions}>
           <TouchableOpacity style={s.skipBtn} onPress={handleSkip}>
-            <Text style={s.skipBtnText}>saltar</Text>
+            <Text style={s.skipBtnText}>{t.skip}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={s.editBtn} onPress={editing ? handleSaveEdit : handleEdit}>
-            <Text style={s.editBtnText}>{editing ? 'guardar' : 'editar'}</Text>
+            <Text style={s.editBtnText}>{editing ? t.save : t.edit}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[s.approveBtn, isApproved && s.approveBtnDone]} onPress={handleApprove}>
-            <Text style={s.approveBtnText}>{isApproved ? 'aprobado' : isLast ? 'aprobar y confirmar' : 'aprobar'}</Text>
+            <Text style={s.approveBtnText}>{isApproved ? t.approved : isLast ? t.approveAndConfirm : t.approve}</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={s.bottomBar}>
-        <Text style={s.approvedCount}>{approved.length} aprobados</Text>
+        <Text style={s.approvedCount}>{approved.length} {t.approved}</Text>
         <View style={s.dots}>
           {PLATFORMS.map(p => (
             <View key={p.key} style={[s.dot2, approved.includes(p.key) && s.dot2Active]} />
           ))}
         </View>
-        <TouchableOpacity
-          style={s.approveAllBtn}
-          onPress={() => {
-            setApproved(PLATFORMS.map(p => p.key))
-            navigation.navigate('Confirm')
-          }}
-        >
-          <Text style={s.approveAllText}>aprobar todas</Text>
+        <TouchableOpacity style={s.approveAllBtn} onPress={() => { setApproved(PLATFORMS.map(p => p.key)); navigation.navigate('Confirm') }}>
+          <Text style={s.approveAllText}>{t.approveAll}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -150,7 +125,7 @@ const s = StyleSheet.create({
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   platformBadge: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  platformName: { fontSize: 13, color: '#fff', letterSpacing: 0, textTransform: 'none', fontWeight: '500' },
+  platformName: { fontSize: 13, color: '#fff', fontWeight: '500' },
   copyBtn: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8, borderWidth: 0.5, borderColor: '#1e1e1e' },
   copyBtnText: { fontSize: 11, color: '#333' },
   copyBtnCopied: { color: '#4caf7d' },
@@ -170,7 +145,6 @@ const s = StyleSheet.create({
   dots: { flexDirection: 'row', gap: 5 },
   dot2: { width: 5, height: 5, borderRadius: 3, backgroundColor: '#1a1a1a' },
   dot2Active: { backgroundColor: '#c8b99a' },
-  summaryLink: { fontSize: 11, color: '#333', marginLeft: 12 },
   contentEdit: { fontSize: 14, color: '#aaa', lineHeight: 22, minHeight: 120, textAlignVertical: 'top' },
   approveAllBtn: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#c8b99a18', borderWidth: 0.5, borderColor: '#c8b99a44' },
   approveAllText: { fontSize: 11, color: '#c8b99a' },
