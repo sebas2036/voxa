@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, TextInput, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, TextInput, Alert, ActivityIndicator } from 'react-native'
 import { useVoxStore } from '../store/vox.store'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
 
@@ -105,14 +105,14 @@ export default function ReviewScreen({ navigation }: any) {
         <View style={{ width: 48 }} />
       </View>
       <ScrollView contentContainerStyle={s.scroll}>
-        {PLATFORMS.map(platform => {
+        {PLATFORMS.filter(platform => enabled[platform.key as keyof typeof enabled]).map(platform => {
           const pdata = result.platforms[platform.key as keyof typeof result.platforms]
-          const isOn = enabled[platform.key as keyof typeof enabled]
+          const isOn = true
           const isExp = expanded === platform.key
           const isEdit = editing === platform.key
           const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags || [] : []
           return (
-            <View key={platform.key} style={[s.card, { backgroundColor: isOn ? platform.color + '15' : theme.bgSecondary, borderColor: isOn ? platform.color : theme.border, borderWidth: isOn ? 1.5 : 0.5 }]}>
+            <View key={platform.key} style={[s.card, { backgroundColor: platform.color + '15', borderColor: platform.color, borderWidth: 1.5 }]}>
               <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(isExp ? null : platform.key)}>
                 <View style={[s.dot, { backgroundColor: isOn ? platform.color : theme.bgTertiary }]} />
                 <Text style={[s.platformName, { color: isOn ? theme.text : theme.textDisabled, fontWeight: isOn ? '600' : '400' }]}>{platform.name}</Text>
@@ -165,14 +165,16 @@ export default function ReviewScreen({ navigation }: any) {
           const isOn = (enabled as any)[platform.key] ?? true
           const cnt = extraContents[platform.key] || ''
           const isLoading = loadingExtra === platform.key
+          const isExp = expanded === platform.key
+          const isEdit = editing === platform.key
           return (
-            <View key={platform.key} style={[s.card, { backgroundColor: theme.bgSecondary, borderColor: isOn ? platform.color + '88' : theme.border, borderWidth: isOn ? 1.5 : 0.5 }]}>
-              <View style={s.cardHeader}>
+            <View key={platform.key} style={[s.card, { backgroundColor: isOn ? platform.color + '15' : theme.bgSecondary, borderColor: isOn ? platform.color : theme.border, borderWidth: isOn ? 1.5 : 0.5 }]}>
+              <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(isExp ? null : platform.key)}>
                 <View style={[s.dot, { backgroundColor: isOn ? platform.color : theme.bgTertiary }]} />
-                <Text style={[s.platformName, { color: isOn ? theme.text : theme.textMuted }]}>{platform.name}</Text>
+                <Text style={[s.platformName, { color: isOn ? theme.text : theme.textMuted, fontWeight: isOn ? '600' : '400' }]}>{platform.name}</Text>
                 {isLoading
-                  ? <Text style={[s.preview, { color: theme.accent }]}>{t.lang === 'es' ? 'generando...' : 'generating...'}</Text>
-                  : <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 35)}...</Text>
+                  ? <View style={{flexDirection:'row', alignItems:'center', gap:6, flex:1}}><ActivityIndicator size='small' color='#2e7d52' /><Text style={{color:'#2e7d52', fontSize:12}}>{t.lang === 'es' ? 'generando...' : 'generating...'}</Text></View>
+                  : !isExp && <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 35)}...</Text>
                 }
                 <Switch
                   value={isOn}
@@ -181,11 +183,36 @@ export default function ReviewScreen({ navigation }: any) {
                   thumbColor={isOn ? platform.color : theme.textDisabled}
                   style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
                 />
-              </View>
-              {cnt.length > 0 && !isLoading && (
+              </TouchableOpacity>
+              {isExp && cnt.length > 0 && !isLoading && (
                 <View style={s.cardBody}>
                   <View style={[s.divider, { backgroundColor: theme.border }]} />
-                  <Text style={[s.content, { color: theme.text }]}>{cnt}</Text>
+                  {isEdit ? (
+                    <>
+                      <TextInput
+                        style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
+                        value={editTexts[platform.key]}
+                        onChangeText={text => setEditTexts(prev => ({ ...prev, [platform.key]: text }))}
+                        multiline autoFocus
+                      />
+                      <TouchableOpacity
+                        style={[s.actionBtn, { borderColor: theme.accent + '44', backgroundColor: theme.accentLight }]}
+                        onPress={() => { setExtraContents(prev => ({ ...prev, [platform.key]: editTexts[platform.key] })); setEditing(null) }}
+                      >
+                        <Text style={[s.actionBtnText, { color: theme.accent }]}>{t.save}</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={[s.content, { color: theme.text }]}>{cnt}</Text>
+                      <TouchableOpacity
+                        style={[s.actionBtn, { borderColor: theme.border }]}
+                        onPress={() => { setEditTexts(prev => ({ ...prev, [platform.key]: cnt })); setEditing(platform.key) }}
+                      >
+                        <Text style={[s.actionBtnText, { color: theme.textMuted }]}>{t.edit}</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
                 </View>
               )}
             </View>
@@ -208,14 +235,20 @@ export default function ReviewScreen({ navigation }: any) {
                 <Text style={[s.modalClose, { color: theme.textMuted }]}>x</Text>
               </TouchableOpacity>
             </View>
-            {ALL_EXTRA.map(p => {
+            {[...PLATFORMS.filter(p => !enabled[p.key as keyof typeof enabled]), ...ALL_EXTRA].map(p => {
               const isAdded = extraPlatforms.some(ep => ep.key === p.key)
               return (
                 <TouchableOpacity
                   key={p.key}
                   style={[s.modalRow, { borderBottomColor: theme.border }]}
                   onPress={() => {
-                    if (!isAdded) setExtraPlatforms(prev => [...prev, p])
+                    const isPredefined = PLATFORMS.some(pl => pl.key === p.key)
+                    if (isPredefined) {
+                      setEnabled(prev => ({ ...prev, [p.key]: true }))
+                    } else if (!isAdded) {
+                      setExtraPlatforms(prev => [...prev, p])
+                      generateExtraContent(p)
+                    }
                     setShowAddModal(false)
                   }}
                 >
@@ -278,10 +311,14 @@ const s = StyleSheet.create({
   successPlatformBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
   successPlatformDot: { width: 6, height: 6, borderRadius: 3 },
   successPlatformName: { fontSize: 12, fontWeight: '500' },
+  inactiveSection: { borderRadius: 12, borderWidth: 0.5, padding: 12, marginBottom: 10 },
+  inactiveSectionLabel: { fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
+  inactiveRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, gap: 10 },
+  inactiveActivate: { fontSize: 11, fontWeight: '500' },
   addPlatformBtn: { borderRadius: 16, borderWidth: 0.5, borderStyle: 'dashed', padding: 16, marginTop: 10, alignItems: 'center' },
   addPlatformText: { fontSize: 13, letterSpacing: 0.5 },
-  modalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end', padding: 16, paddingBottom: 100, backgroundColor: 'rgba(0,0,0,0.4)' },
-  modal: { borderRadius: 16, borderWidth: 0.5, padding: 16, marginTop: 10 },
+  modalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
+  modal: { borderTopLeftRadius: 20, borderTopRightRadius: 20, borderWidth: 0.5, padding: 20, paddingBottom: 40 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   modalTitle: { fontSize: 14, fontWeight: '500' },
   modalClose: { fontSize: 16, padding: 4 },

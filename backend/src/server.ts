@@ -28,6 +28,27 @@ server.post('/generate', async (request, reply) => {
   return result
 })
 
+server.post('/generate-extra', async (request, reply) => {
+  const { platform, topic, baseContent, lang } = request.body as any
+  try {
+    const prompt = lang === 'es'
+      ? `Tenés este contenido sobre "${topic}": "${baseContent}". Adaptalo para ${platform} con el tono típico de esa plataforma. Solo devolvé el texto adaptado.`
+      : `You have this content about "${topic}": "${baseContent}". Adapt it for ${platform}. Return only the adapted text.`
+    const { default: Anthropic } = await import('@anthropic-ai/sdk')
+    const client = new Anthropic()
+    const message = await client.messages.create({
+      model: 'claude-opus-4-7',
+      max_tokens: 500,
+      messages: [{ role: 'user', content: prompt }]
+    })
+    const text = message.content[0].type === 'text' ? message.content[0].text : baseContent
+    reply.send({ content: text.trim() })
+  } catch (e: any) {
+    console.error('generate-extra error:', e.message)
+    reply.send({ content: baseContent })
+  }
+})
+
 const start = async () => {
   try {
     await server.listen({ port: 3000, host: '0.0.0.0' })
