@@ -13,7 +13,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.sebasjasinsky.voxa"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +27,10 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,6 +38,12 @@
     "plugins": [
       "expo-speech-recognition",
       "expo-localization"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "87c33e3f-9a67-4673-9feb-b274f18c648a"
+      }
+    },
+    "owner": "sebasjasinsky"
   }
 }
