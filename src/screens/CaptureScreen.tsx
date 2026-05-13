@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, SafeAreaView, ScrollView,
-  ActivityIndicator, Animated, Easing
+  ActivityIndicator, Animated, Easing, Alert, PanResponder
 } from 'react-native'
 import { useVoxStore } from '../store/vox.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
@@ -32,7 +32,7 @@ const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
 
 export default function CaptureScreen({ navigation }: any) {
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, loadRecentIdeas } = useVoxStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useVoxStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
@@ -222,16 +222,35 @@ export default function CaptureScreen({ navigation }: any) {
             </TouchableOpacity>
             <Animated.View style={{ height: recentHeight, overflow: "hidden" }}>
               {recentIdeas.slice(0, 5).map((idea, i) => (
-                <TouchableOpacity
-                  key={i}
-                  style={[s.recentItem, { borderBottomColor: theme.bgSecondary }]}
-                  onPress={() => { setInput(idea); setShowInput(true); setRecentOpen(false) }}
-                >
-                  <Ionicons name="time-outline" size={13} color={theme.textDisabled} style={{ marginRight: 8 }} />
-                  <Text style={[s.recentItemText, { color: theme.textSecondary }]} numberOfLines={1}>{idea}</Text>
-                </TouchableOpacity>
+                <View key={i} style={[s.recentItem, { borderBottomColor: theme.bgSecondary }]}>
+                  <TouchableOpacity
+                    style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
+                    onPress={() => { setInput(idea); setShowInput(true); setRecentOpen(false) }}
+                  >
+                    <Ionicons name="time-outline" size={13} color={theme.textDisabled} style={{ marginRight: 8 }} />
+                    <Text style={[s.recentItemText, { color: theme.textSecondary }]} numberOfLines={1}>{idea}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => removeRecentIdea(idea)} style={{ padding: 4 }}>
+                    <Ionicons name="close-outline" size={16} color={theme.textDisabled} />
+                  </TouchableOpacity>
+                </View>
               ))}
             </Animated.View>
+            {recentOpen && (
+              <TouchableOpacity
+                style={{ paddingVertical: 10, alignItems: 'center' }}
+                onPress={() => Alert.alert(
+                  t.lang === 'es' ? 'Borrar historial' : 'Clear history',
+                  t.lang === 'es' ? '¿Eliminar todas las ideas recientes?' : 'Delete all recent ideas?',
+                  [
+                    { text: t.lang === 'es' ? 'Cancelar' : 'Cancel', style: 'cancel' },
+                    { text: t.lang === 'es' ? 'Borrar' : 'Delete', style: 'destructive', onPress: clearRecentIdeas }
+                  ]
+                )}
+              >
+                <Text style={{ color: theme.textMuted, fontSize: 11 }}>{t.lang === 'es' ? 'borrar todo' : 'clear all'}</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 

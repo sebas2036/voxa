@@ -17,6 +17,8 @@ interface VoxaStore {
   generate: () => Promise<void>
   updatePlatformContent: (platform: string, content: string) => void
   loadRecentIdeas: () => Promise<void>
+  removeRecentIdea: (idea: string) => Promise<void>
+  clearRecentIdeas: () => Promise<void>
   reset: () => void
 }
 
@@ -31,6 +33,15 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
   setInput: (input) => set({ input }),
   setTone: (tone) => set({ tone }),
 
+  removeRecentIdea: async (idea: string) => {
+    const current = get().recentIdeas.filter(i => i !== idea)
+    set({ recentIdeas: current })
+    await AsyncStorage.setItem('voxa_recent_ideas', JSON.stringify(current))
+  },
+  clearRecentIdeas: async () => {
+    set({ recentIdeas: [] })
+    await AsyncStorage.removeItem('voxa_recent_ideas')
+  },
   loadRecentIdeas: async () => {
     try {
       const stored = await AsyncStorage.getItem(HISTORY_KEY)
