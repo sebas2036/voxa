@@ -14,7 +14,7 @@ import { Ionicons, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@e
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
 const ALL_PLATFORM_ICONS: Record<string, { icon: string, lib: string, color: string, name: string }> = {
-  twitter: { icon: 'x-twitter', lib: 'fa6', color: '#1a1a1a', name: 'X' },
+  twitter: { icon: 'x-twitter', lib: 'fa6', color: '#888888', name: 'X' },
   linkedin: { icon: 'linkedin', lib: 'fa5', color: '#4a9eff', name: 'LinkedIn' },
   threads: { icon: 'T', lib: 'text', color: '#444444', name: 'Threads' },
   instagram: { icon: 'instagram', lib: 'fa5', color: '#e1306c', name: 'Instagram' },
