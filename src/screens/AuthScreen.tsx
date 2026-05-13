@@ -5,9 +5,11 @@ import {
 } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { useLanguage } from '../hooks/useLanguage'
+import { useTheme } from '../theme'
 
 export default function AuthScreen({ navigation }: any) {
   const { t } = useLanguage()
+  const theme = useTheme()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,71 +43,48 @@ export default function AuthScreen({ navigation }: any) {
   }
 
   return (
-    <SafeAreaView style={s.safe}>
+    <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.container}>
         <View style={s.header}>
-          <Text style={s.logo}>vox<Text style={s.logoAccent}>a</Text></Text>
-          <Text style={s.tagline}>{t.lang === 'es' ? 'tu idea, en todas tus redes' : 'your idea, across all your networks'}</Text>
+          <Text style={[s.logo, { color: theme.text }]}>vox<Text style={[s.logoAccent, { color: theme.accent }]}>a</Text></Text>
+          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu idea, en todas tus redes' : 'your idea, across all your networks'}</Text>
         </View>
-
         <View style={s.form}>
-          <Text style={s.formTitle}>
-            {mode === 'login'
-              ? (t.lang === 'es' ? 'iniciar sesión' : 'sign in')
-              : (t.lang === 'es' ? 'crear cuenta' : 'create account')
-            }
+          <Text style={[s.formTitle, { color: theme.text }]}>
+            {mode === 'login' ? (t.lang === 'es' ? 'iniciar sesión' : 'sign in') : (t.lang === 'es' ? 'crear cuenta' : 'create account')}
           </Text>
-
           <TextInput
-            style={s.input}
-            placeholder={t.lang === 'es' ? 'email' : 'email'}
-            placeholderTextColor="#333"
+            style={[s.input, { backgroundColor: theme.bgSecondary, borderColor: theme.border, color: theme.text }]}
+            placeholder="email"
+            placeholderTextColor={theme.textDisabled}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
           />
           <TextInput
-            style={s.input}
+            style={[s.input, { backgroundColor: theme.bgSecondary, borderColor: theme.border, color: theme.text }]}
             placeholder={t.lang === 'es' ? 'contraseña' : 'password'}
-            placeholderTextColor="#333"
+            placeholderTextColor={theme.textDisabled}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
-
-          {error && <Text style={s.errorText}>{error}</Text>}
-          {success && <Text style={s.successText}>{success}</Text>}
-
-          <TouchableOpacity
-            style={[s.btn, loading && s.btnDisabled]}
-            onPress={handleAuth}
-            disabled={loading}
-          >
+          {error && <Text style={[s.errorText, { color: theme.error }]}>{error}</Text>}
+          {success && <Text style={[s.successText, { color: theme.success }]}>{success}</Text>}
+          <TouchableOpacity style={[s.btn, { backgroundColor: theme.accent }, loading && s.btnDisabled]} onPress={handleAuth} disabled={loading}>
             {loading
-              ? <ActivityIndicator color="#0a0a0a" />
-              : <Text style={s.btnText}>
-                  {mode === 'login'
-                    ? (t.lang === 'es' ? 'entrar' : 'sign in')
-                    : (t.lang === 'es' ? 'crear cuenta' : 'create account')
-                  }
-                </Text>
+              ? <ActivityIndicator color={theme.bg} />
+              : <Text style={[s.btnText, { color: theme.bg }]}>{mode === 'login' ? (t.lang === 'es' ? 'entrar' : 'sign in') : (t.lang === 'es' ? 'crear cuenta' : 'create account')}</Text>
             }
           </TouchableOpacity>
-
           <TouchableOpacity onPress={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(null) }}>
-            <Text style={s.switchText}>
-              {mode === 'login'
-                ? (t.lang === 'es' ? '¿No tenés cuenta? Registrate' : "Don't have an account? Sign up")
-                : (t.lang === 'es' ? '¿Ya tenés cuenta? Iniciá sesión' : 'Already have an account? Sign in')
-              }
+            <Text style={[s.switchText, { color: theme.textMuted }]}>
+              {mode === 'login' ? (t.lang === 'es' ? '¿No tenés cuenta? Registrate' : "Don't have an account? Sign up") : (t.lang === 'es' ? '¿Ya tenés cuenta? Iniciá sesión' : 'Already have an account? Sign in')}
             </Text>
           </TouchableOpacity>
-
           <TouchableOpacity onPress={() => navigation.replace('Capture')} style={s.skipBtn}>
-            <Text style={s.skipText}>
-              {t.lang === 'es' ? 'continuar sin cuenta' : 'continue without account'}
-            </Text>
+            <Text style={[s.skipText, { color: theme.textDisabled }]}>{t.lang === 'es' ? 'continuar sin cuenta' : 'continue without account'}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -114,21 +93,21 @@ export default function AuthScreen({ navigation }: any) {
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#0a0a0a' },
+  safe: { flex: 1 },
   container: { flex: 1, justifyContent: 'center', padding: 24 },
   header: { alignItems: 'center', marginBottom: 48 },
-  logo: { fontSize: 42, color: '#f0ede8' },
-  logoAccent: { color: '#c8b99a', fontStyle: 'italic' },
-  tagline: { fontSize: 13, color: '#555', marginTop: 6 },
+  logo: { fontSize: 42 },
+  logoAccent: { fontStyle: 'italic' },
+  tagline: { fontSize: 13, marginTop: 6 },
   form: { gap: 12 },
-  formTitle: { fontSize: 22, color: '#f0ede8', marginBottom: 8 },
-  input: { backgroundColor: '#111', borderWidth: 0.5, borderColor: '#1e1e1e', borderRadius: 14, padding: 16, color: '#f0ede8', fontSize: 15 },
-  errorText: { fontSize: 12, color: '#e05a4e', textAlign: 'center' },
-  successText: { fontSize: 12, color: '#4caf7d', textAlign: 'center' },
-  btn: { backgroundColor: '#c8b99a', borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  formTitle: { fontSize: 22, marginBottom: 8 },
+  input: { borderWidth: 0.5, borderRadius: 14, padding: 16, fontSize: 15 },
+  errorText: { fontSize: 12, textAlign: 'center' },
+  successText: { fontSize: 12, textAlign: 'center' },
+  btn: { borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
   btnDisabled: { opacity: 0.5 },
-  btnText: { fontSize: 16, color: '#0a0a0a', fontWeight: '500' },
-  switchText: { fontSize: 13, color: '#555', textAlign: 'center', marginTop: 8 },
+  btnText: { fontSize: 16, fontWeight: '500' },
+  switchText: { fontSize: 13, textAlign: 'center', marginTop: 8 },
   skipBtn: { marginTop: 16, alignItems: 'center' },
-  skipText: { fontSize: 12, color: '#333' },
+  skipText: { fontSize: 12 },
 })
