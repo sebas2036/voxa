@@ -20,6 +20,8 @@ const PLATFORM_ICONS = [
 ]
 
 const HINTS_ES = ['hablá', 'revisá', 'publicá']
+const LOADING_ES = ['analizando...', 'generando...', 'casi listo...']
+const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
 
 export default function CaptureScreen({ navigation }: any) {
@@ -28,6 +30,7 @@ export default function CaptureScreen({ navigation }: any) {
   const { t } = useLanguage()
   const theme = useTheme()
   const [showInput, setShowInput] = useState(false)
+  const [loadingStep, setLoadingStep] = useState(0)
   const [recentOpen, setRecentOpen] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
 
@@ -87,7 +90,12 @@ export default function CaptureScreen({ navigation }: any) {
 
   const handleGenerate = async () => {
     if (!input.trim()) return
+    setLoadingStep(0)
+    const interval = setInterval(() => {
+      setLoadingStep(s => s < 2 ? s + 1 : 2)
+    }, 1000)
     await generate()
+    clearInterval(interval)
     navigation.navigate('Review')
   }
 
@@ -174,11 +182,20 @@ export default function CaptureScreen({ navigation }: any) {
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
 
         <TouchableOpacity
-          style={[s.generateBtn, { backgroundColor: theme.accent }, (!input.trim() || loading) && s.generateBtnDisabled]}
+          style={[s.generateBtn, { backgroundColor: loading ? theme.bgSecondary : theme.accent }, (!input.trim() || loading) && s.generateBtnDisabled]}
           onPress={handleGenerate}
           disabled={!input.trim() || loading}
         >
-          {loading ? <ActivityIndicator color={theme.bg} /> : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>}
+          {loading ? (
+            <View style={s.loadingRow}>
+              <ActivityIndicator color={theme.accent} size="small" />
+              <Text style={[s.loadingText, { color: theme.accent }]}>
+                {t.lang === 'es' ? LOADING_ES[loadingStep] : LOADING_EN[loadingStep]}
+              </Text>
+            </View>
+          ) : (
+            <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
+          )}
         </TouchableOpacity>
 
         {recentIdeas.length > 0 && (
@@ -251,6 +268,8 @@ const s = StyleSheet.create({
   errorText: { fontSize: 12 },
   generateBtn: { borderRadius: 14, height: 52, alignItems: "center", justifyContent: "center", marginBottom: 24 },
   generateBtnDisabled: { opacity: 0.4 },
+  loadingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  loadingText: { fontSize: 15, fontWeight: '400', letterSpacing: 0.3 },
   generateBtnText: { fontSize: 17, fontWeight: "500" },
   recentSection: { marginBottom: 24 },
   recentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, borderBottomWidth: 0.5 },
