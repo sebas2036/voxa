@@ -182,14 +182,14 @@ export default function CaptureScreen({ navigation }: any) {
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
 
         <TouchableOpacity
-          style={[s.generateBtn, { backgroundColor: loading ? theme.bgSecondary : theme.accent }, (!input.trim() || loading) && s.generateBtnDisabled]}
+          style={[s.generateBtn, { backgroundColor: loading ? "#2e7d52" : theme.accent }, (!input.trim() || loading) && s.generateBtnDisabled]}
           onPress={handleGenerate}
           disabled={!input.trim() || loading}
         >
           {loading ? (
             <View style={s.loadingRow}>
-              <ActivityIndicator color={theme.accent} size="small" />
-              <Text style={[s.loadingText, { color: theme.accent }]}>
+              <ActivityIndicator color="#ffffff" size="small" />
+              <Text style={[s.loadingText, { color: "#ffffff" }]}>
                 {t.lang === 'es' ? LOADING_ES[loadingStep] : LOADING_EN[loadingStep]}
               </Text>
             </View>
