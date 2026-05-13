@@ -32,10 +32,35 @@ export default function ReviewScreen({ navigation }: any) {
   const [extraContents, setExtraContents] = useState<Record<string, string>>({})
   const [loadingExtra, setLoadingExtra] = useState<string | null>(null)
 
-  React.useEffect(() => { if (!result) navigation.navigate('Capture') }, [result])
+  React.useEffect(() => {
+    if (!result) navigation.navigate('Capture')
+  }, [result])
+
+  React.useEffect(() => {
+    AsyncStorage.getItem('vox_enabled_platforms').then(val => {
+      if (val) setEnabled(prev => ({ ...prev, ...JSON.parse(val) }))
+    })
+    AsyncStorage.getItem('vox_extra_platforms').then(val => {
+      if (val) {
+        const extras = JSON.parse(val)
+        setExtraPlatforms(extras)
+        extras.forEach((p: any) => generateExtraContent(p))
+      }
+    })
+  }, [])
+
+  React.useEffect(() => {
+    AsyncStorage.setItem('vox_enabled_platforms', JSON.stringify(enabled))
+  }, [enabled])
+
+  React.useEffect(() => {
+    if (extraPlatforms.length > 0)
+      AsyncStorage.setItem('vox_extra_platforms', JSON.stringify(extraPlatforms))
+  }, [extraPlatforms])
+
   if (!result) return null
 
-  const activeCount = Object.values(enabled).filter(Boolean).length +
+  const activeCount = PLATFORMS.filter(p => enabled[p.key]).length +
     extraPlatforms.filter(p => enabled[p.key] !== false).length
 
   const generateExtraContent = async (platform: any) => {
@@ -248,15 +273,19 @@ export default function ReviewScreen({ navigation }: any) {
             </View>
             {[
               ...PLATFORMS.filter(p => !enabled[p.key]),
-              ...ALL_EXTRA.filter(p => !extraPlatforms.some(ep => ep.key === p.key))
+              ...ALL_EXTRA.filter(p => !extraPlatforms.some(ep => ep.key === p.key) || enabled[p.key] === false)
             ].map(p => (
               <TouchableOpacity
                 key={p.key}
                 style={[s.modalRow, { borderBottomColor: theme.border }]}
                 onPress={() => {
                   const isPredefined = PLATFORMS.some(pl => pl.key === p.key)
+                  const isExtraDisabled = extraPlatforms.some(ep => ep.key === p.key) && enabled[p.key] === false
                   if (isPredefined) {
                     setEnabled(prev => ({ ...prev, [p.key]: true }))
+                  } else if (isExtraDisabled) {
+                    setEnabled(prev => ({ ...prev, [p.key]: true }))
+                    generateExtraContent(p)
                   } else {
                     setExtraPlatforms(prev => [...prev, p])
                     generateExtraContent(p)
