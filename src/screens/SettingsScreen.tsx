@@ -58,7 +58,7 @@ export default function SettingsScreen({ navigation }: any) {
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[s.backBtn, { color: theme.textMuted }]}>{t.back}</Text>
+          <Text style={[s.backBtn, { color: theme.textSecondary }]}>{t.back}</Text>
         </TouchableOpacity>
         <Text style={[s.title, { color: theme.text }]}>{t.lang === 'es' ? 'configuración' : 'settings'}</Text>
         <View style={{ width: 48 }} />
@@ -106,7 +106,7 @@ export default function SettingsScreen({ navigation }: any) {
 
         <View style={s.section}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'apariencia' : 'appearance'}</Text>
-          <Text style={[s.sectionHint, { color: theme.textDisabled }]}>
+          <Text style={[s.sectionHint, { color: theme.textMuted }]}>
             {t.lang === 'es' ? 'Automático sigue el modo del sistema. Podés forzar oscuro si preferís ese estilo.' : 'Auto follows your system setting. Force dark mode if you prefer that style.'}
           </Text>
           <View style={[s.selector, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
@@ -126,7 +126,7 @@ export default function SettingsScreen({ navigation }: any) {
 
         <View style={s.section}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'idioma' : 'language'}</Text>
-          <Text style={[s.sectionHint, { color: theme.textDisabled }]}>
+          <Text style={[s.sectionHint, { color: theme.textMuted }]}>
             {t.lang === 'es' ? 'Automático usa el idioma de tu dispositivo.' : 'Auto uses your device language.'}
           </Text>
           <View style={[s.selector, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>

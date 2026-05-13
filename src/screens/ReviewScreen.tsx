@@ -5,9 +5,9 @@ import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 
 const PLATFORMS = [
-  { key: 'twitter', name: 'X', color: '#c8b99a' },
+  { key: 'twitter', name: 'X', color: '#1a1a1a' },
   { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
-  { key: 'threads', name: 'Threads', color: '#c8b99a' },
+  { key: 'threads', name: 'Threads', color: '#444444' },
   { key: 'instagram', name: 'Instagram', color: '#e1306c' },
 ]
 
@@ -59,7 +59,7 @@ export default function ReviewScreen({ navigation }: any) {
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => { reset(); navigation.navigate('Capture') }}>
-          <Text style={[s.backBtn, { color: theme.textMuted }]}>{t.back}</Text>
+          <Text style={[s.backBtn, { color: theme.textSecondary }]}>{t.back}</Text>
         </TouchableOpacity>
         <Text style={[s.title, { color: theme.text }]} numberOfLines={1}>{result.analysis.topic}</Text>
         <View style={{ width: 48 }} />
@@ -72,11 +72,11 @@ export default function ReviewScreen({ navigation }: any) {
           const isEdit = editing === platform.key
           const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags || [] : []
           return (
-            <View key={platform.key} style={[s.card, { backgroundColor: theme.bgSecondary, borderColor: isOn ? platform.color + '44' : theme.border }]}>
+            <View key={platform.key} style={[s.card, { backgroundColor: isOn ? platform.color + '15' : theme.bgSecondary, borderColor: isOn ? platform.color : theme.border, borderWidth: isOn ? 1.5 : 0.5 }]}>
               <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(isExp ? null : platform.key)}>
                 <View style={[s.dot, { backgroundColor: isOn ? platform.color : theme.bgTertiary }]} />
-                <Text style={[s.platformName, { color: isOn ? theme.text : theme.textMuted }]}>{platform.name}</Text>
-                {!isExp && <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{pdata.content.slice(0, 35)}...</Text>}
+                <Text style={[s.platformName, { color: isOn ? theme.text : theme.textDisabled, fontWeight: isOn ? '600' : '400' }]}>{platform.name}</Text>
+                {!isExp && <Text style={[s.preview, { color: isOn ? theme.textSecondary : theme.textMuted }]} numberOfLines={1}>{pdata.content.slice(0, 35)}...</Text>}
                 <Switch
                   value={isOn}
                   onValueChange={() => setEnabled(prev => ({ ...prev, [platform.key]: !prev[platform.key as keyof typeof prev] }))}
@@ -135,7 +135,7 @@ export default function ReviewScreen({ navigation }: any) {
           onPress={handlePublish}
           disabled={activeCount === 0 || publishing}
         >
-          <Text style={[s.publishBtnText, { color: theme.bg }]}>{publishing ? (t.lang === 'es' ? 'compartiendo...' : 'sharing...') : t.publishNow}</Text>
+          <Text style={[s.publishBtnText, { color: '#0a0a0a' }]}>{publishing ? (t.lang === 'es' ? 'compartiendo...' : 'sharing...') : t.publishNow}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -150,7 +150,7 @@ const s = StyleSheet.create({
   scroll: { padding: 16, paddingBottom: 100 },
   card: { borderRadius: 16, borderWidth: 0.5, marginBottom: 10, overflow: 'hidden' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
+  dot: { width: 10, height: 10, borderRadius: 5 },
   platformName: { fontSize: 14, fontWeight: '500', width: 80 },
   preview: { flex: 1, fontSize: 12 },
   cardBody: { paddingHorizontal: 14, paddingBottom: 14 },

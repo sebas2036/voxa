@@ -130,9 +130,9 @@ export default function CaptureScreen({ navigation }: any) {
               <Ionicons name="mic" size={38} color={theme.bg} />
             </TouchableOpacity>
           </View>
-          <Animated.Text style={[s.hintText, { color: theme.textSecondary, opacity: hintOpacity }]}>{(t.lang === 'en' ? HINTS_EN : HINTS_ES)[hintIndex]}</Animated.Text>
+          <Animated.Text style={[s.hintText, { color: theme.text, opacity: hintOpacity }]}>{(t.lang === 'en' ? HINTS_EN : HINTS_ES)[hintIndex]}</Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
-            <Text style={[s.orWrite, { color: theme.textDisabled }]}>{t.orWrite}</Text>
+            <Text style={[s.orWrite, { color: theme.textSecondary }]}>{t.orWrite}</Text>
           </TouchableOpacity>
         </View>
 
@@ -178,7 +178,7 @@ export default function CaptureScreen({ navigation }: any) {
           onPress={handleGenerate}
           disabled={!input.trim() || loading}
         >
-          {loading ? <ActivityIndicator color={theme.bg} /> : <Text style={[s.generateBtnText, { color: theme.bg }]}>{t.generate}</Text>}
+          {loading ? <ActivityIndicator color={theme.bg} /> : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>}
         </TouchableOpacity>
 
         {recentIdeas.length > 0 && (
@@ -239,7 +239,7 @@ const s = StyleSheet.create({
   ring: { position: "absolute", width: 90, height: 90, borderRadius: 45 },
   micBtn: { width: 90, height: 90, borderRadius: 45, alignItems: "center", justifyContent: "center", zIndex: 10 },
   hintText: { fontSize: 13, letterSpacing: 3, textTransform: "uppercase", marginBottom: 10 },
-  orWrite: { fontSize: 13, letterSpacing: 0.5 },
+  orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
   inputContainer: { marginBottom: 24 },
   input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: "300", minHeight: 90, lineHeight: 24 },
   toneSection: { marginBottom: 28 },
@@ -259,7 +259,7 @@ const s = StyleSheet.create({
   recentItemText: { fontSize: 13, flex: 1 },
   flowDots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: 4 },
   flowDot: { width: 4, height: 4, borderRadius: 2 },
-  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 8 },
+  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 16, paddingBottom: 24 },
   platformBadge: { alignItems: "center", gap: 6 },
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
   platformLetter: { fontSize: 17, fontWeight: "900", letterSpacing: -0.5 },

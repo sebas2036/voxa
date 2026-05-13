@@ -61,7 +61,7 @@ ${hashtags}` : pdata.content
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <View style={s.topBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[s.backBtn, { color: theme.textMuted }]}>{t.back}</Text>
+          <Text style={[s.backBtn, { color: theme.textSecondary }]}>{t.back}</Text>
         </TouchableOpacity>
         <Text style={[s.title, { color: theme.text }]}>{t.readyToPublish}</Text>
         <View style={{ width: 48 }} />
@@ -70,7 +70,7 @@ ${hashtags}` : pdata.content
         <View style={[s.ideaRecap, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
           <Text style={[s.ideaRecapText, { color: theme.textSecondary }]}>{result.analysis.topic}</Text>
         </View>
-        <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.platforms}</Text>
+        <Text style={[s.sectionLabel, { color: theme.textSecondary }]}>{t.platforms}</Text>
         {PLATFORMS.map(p => {
           const pdata = result.platforms[p.key as keyof typeof result.platforms]
           const isOn = enabled[p.key as keyof typeof enabled]

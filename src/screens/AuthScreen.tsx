@@ -56,7 +56,7 @@ export default function AuthScreen({ navigation }: any) {
           <TextInput
             style={[s.input, { backgroundColor: theme.bgSecondary, borderColor: theme.border, color: theme.text }]}
             placeholder="email"
-            placeholderTextColor={theme.textDisabled}
+            placeholderTextColor={theme.textMuted}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -65,7 +65,7 @@ export default function AuthScreen({ navigation }: any) {
           <TextInput
             style={[s.input, { backgroundColor: theme.bgSecondary, borderColor: theme.border, color: theme.text }]}
             placeholder={t.lang === 'es' ? 'contraseña' : 'password'}
-            placeholderTextColor={theme.textDisabled}
+            placeholderTextColor={theme.textMuted}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -84,7 +84,7 @@ export default function AuthScreen({ navigation }: any) {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.replace('Capture')} style={s.skipBtn}>
-            <Text style={[s.skipText, { color: theme.textDisabled }]}>{t.lang === 'es' ? 'continuar sin cuenta' : 'continue without account'}</Text>
+            <Text style={[s.skipText, { color: theme.textMuted }]}>{t.lang === 'es' ? 'continuar sin cuenta' : 'continue without account'}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
