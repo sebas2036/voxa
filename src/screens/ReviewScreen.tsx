@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Share, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, TextInput, Alert } from 'react-native'
 import { useVoxaStore } from '../store/voxa.store'
+import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 
-const PLATFORMS = [
-  { key: 'twitter', name: 'X', color: '#1a1a1a' },
-  { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
-  { key: 'threads', name: 'Threads', color: '#444444' },
-  { key: 'instagram', name: 'Instagram', color: '#e1306c' },
-]
+const PLATFORMS = PLATFORM_CONFIGS
 
 export default function ReviewScreen({ navigation }: any) {
   const { result, reset, updatePlatformContent } = useVoxaStore()
@@ -30,12 +26,13 @@ export default function ReviewScreen({ navigation }: any) {
   const handlePublish = async () => {
     setPublishing(true)
     const activePlatforms = PLATFORMS.filter(p => enabled[p.key as keyof typeof enabled])
-    for (const platform of activePlatforms) {
+    const contents: Record<string, string> = {}
+    activePlatforms.forEach(platform => {
       const pdata = result.platforms[platform.key as keyof typeof result.platforms]
       const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags?.join(' ') : ''
-      const fullContent = hashtags ? `${pdata.content}\n\n${hashtags}` : pdata.content
-      try { await Share.share({ message: fullContent }) } catch (e) {}
-    }
+      contents[platform.key] = hashtags ? `${pdata.content}\n\n${hashtags}` : pdata.content
+    })
+    await publishToAll(activePlatforms, contents)
     setPublishing(false)
     setPublished(true)
     setTimeout(() => { reset(); navigation.navigate('Capture') }, 2000)
