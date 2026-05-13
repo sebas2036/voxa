@@ -38,15 +38,27 @@ export default function ReviewScreen({ navigation }: any) {
     setTimeout(() => { reset(); navigation.navigate('Capture') }, 2000)
   }
 
+  const activePlatformsList = PLATFORMS.filter(p => enabled[p.key as keyof typeof enabled])
+
   if (published) {
     return (
       <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
         <View style={s.successScreen}>
-          <View style={[s.successIcon, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}>
-            <Text style={[s.successCheck, { color: theme.accent }]}>ok</Text>
+          <View style={[s.checkCircle, { borderColor: theme.accent, backgroundColor: theme.accentLight }]}>
+            <Text style={[s.checkText, { color: theme.accent }]}>✓</Text>
           </View>
           <Text style={[s.successTitle, { color: theme.text }]}>{t.published}</Text>
-          <Text style={[s.successSub, { color: theme.textMuted }]}>{activeCount} {t.platforms}</Text>
+          <Text style={[s.successSub, { color: theme.textMuted }]}>
+            {t.lang === 'es' ? 'enviado a' : 'sent to'}
+          </Text>
+          <View style={s.successPlatforms}>
+            {activePlatformsList.map(p => (
+              <View key={p.key} style={[s.successPlatformBadge, { borderColor: p.color + '88', backgroundColor: p.color + '15' }]}>
+                <View style={[s.successPlatformDot, { backgroundColor: p.color }]} />
+                <Text style={[s.successPlatformName, { color: p.color }]}>{p.name}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </SafeAreaView>
     )
@@ -167,7 +179,13 @@ const s = StyleSheet.create({
   successIcon: { width: 72, height: 72, borderRadius: 36, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   successCheck: { fontSize: 16 },
   successTitle: { fontSize: 28 },
-  successSub: { fontSize: 13 },
+  successSub: { fontSize: 13, marginBottom: 20 },
+  checkCircle: { width: 80, height: 80, borderRadius: 40, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+  checkText: { fontSize: 32, fontWeight: '300' },
+  successPlatforms: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', paddingHorizontal: 24 },
+  successPlatformBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
+  successPlatformDot: { width: 6, height: 6, borderRadius: 3 },
+  successPlatformName: { fontSize: 12, fontWeight: '500' },
   addPlatformBtn: { borderRadius: 16, borderWidth: 0.5, borderStyle: 'dashed', padding: 16, marginTop: 10, alignItems: 'center' },
   addPlatformText: { fontSize: 13, letterSpacing: 0.5 },
 })
