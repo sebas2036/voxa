@@ -33,6 +33,7 @@ const start = async () => {
     await server.listen({ port: 3000, host: '0.0.0.0' })
     console.log('🎙  Voxa API corriendo en http://localhost:3000')
     console.log('   POST /generate — genera contenido')
+  console.log('   POST /generate-extra — adapta contenido para plataforma extra')
     console.log('   GET  /health   — estado del servidor')
   } catch (err) {
     console.error(err)

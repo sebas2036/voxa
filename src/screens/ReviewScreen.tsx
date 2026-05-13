@@ -2,6 +2,15 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, TextInput, Alert } from 'react-native'
 import { useVoxStore } from '../store/vox.store'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
+
+const ALL_EXTRA = [
+  { key: 'whatsapp', name: 'WhatsApp', color: '#25D366' },
+  { key: 'telegram', name: 'Telegram', color: '#2AABEE' },
+  { key: 'tiktok', name: 'TikTok', color: '#333333' },
+  { key: 'facebook', name: 'Facebook', color: '#1877F2' },
+  { key: 'pinterest', name: 'Pinterest', color: '#E60023' },
+  { key: 'email', name: 'Email', color: '#888888' },
+]
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 
@@ -17,11 +26,33 @@ export default function ReviewScreen({ navigation }: any) {
   const [editTexts, setEditTexts] = useState<Record<string, string>>({})
   const [publishing, setPublishing] = useState(false)
   const [published, setPublished] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [extraPlatforms, setExtraPlatforms] = useState<any[]>([])
+  const [extraContents, setExtraContents] = useState<Record<string, string>>({})
+  const [loadingExtra, setLoadingExtra] = useState<string | null>(null)
 
   React.useEffect(() => { if (!result) navigation.navigate('Capture') }, [result])
   if (!result) return null
 
   const activeCount = Object.values(enabled).filter(Boolean).length
+
+  const generateExtraContent = async (platform: any) => {
+    setLoadingExtra(platform.key)
+    try {
+      const baseContent = result.platforms['twitter']?.content || result.platforms['linkedin']?.content || ''
+      const response = await fetch('http://192.168.0.23:3000/generate-extra', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform: platform.name, topic: result.analysis.topic, baseContent, lang: t.lang })
+      })
+      const data = await response.json()
+      setExtraContents(prev => ({ ...prev, [platform.key]: data.content || baseContent }))
+    } catch (e) {
+      const base = result.platforms['twitter']?.content || result.platforms['linkedin']?.content || ''
+      setExtraContents(prev => ({ ...prev, [platform.key]: base }))
+    }
+    setLoadingExtra(null)
+  }
 
   const handlePublish = async () => {
     setPublishing(true)
@@ -130,12 +161,73 @@ export default function ReviewScreen({ navigation }: any) {
             </View>
           )
         })}
+        {extraPlatforms.map(platform => {
+          const isOn = (enabled as any)[platform.key] ?? true
+          const cnt = extraContents[platform.key] || ''
+          const isLoading = loadingExtra === platform.key
+          return (
+            <View key={platform.key} style={[s.card, { backgroundColor: theme.bgSecondary, borderColor: isOn ? platform.color + '88' : theme.border, borderWidth: isOn ? 1.5 : 0.5 }]}>
+              <View style={s.cardHeader}>
+                <View style={[s.dot, { backgroundColor: isOn ? platform.color : theme.bgTertiary }]} />
+                <Text style={[s.platformName, { color: isOn ? theme.text : theme.textMuted }]}>{platform.name}</Text>
+                {isLoading
+                  ? <Text style={[s.preview, { color: theme.accent }]}>{t.lang === 'es' ? 'generando...' : 'generating...'}</Text>
+                  : <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 35)}...</Text>
+                }
+                <Switch
+                  value={isOn}
+                  onValueChange={() => setEnabled((prev: any) => ({ ...prev, [platform.key]: !prev[platform.key] }))}
+                  trackColor={{ false: theme.bgTertiary, true: platform.color + '44' }}
+                  thumbColor={isOn ? platform.color : theme.textDisabled}
+                  style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
+                />
+              </View>
+              {cnt.length > 0 && !isLoading && (
+                <View style={s.cardBody}>
+                  <View style={[s.divider, { backgroundColor: theme.border }]} />
+                  <Text style={[s.content, { color: theme.text }]}>{cnt}</Text>
+                </View>
+              )}
+            </View>
+          )
+        })}
+
         <View style={[s.recBox, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
           <Text style={[s.recText, { color: theme.accent }]}>{result.recommendation.bestPlatform} — {result.recommendation.bestDay} {result.recommendation.bestTime}</Text>
         </View>
-        <TouchableOpacity style={[s.addPlatformBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => {}}>
+        <TouchableOpacity style={[s.addPlatformBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => setShowAddModal(true)}>
           <Text style={[s.addPlatformText, { color: theme.textMuted }]}>+ {t.lang === 'es' ? 'agregar plataforma' : 'add platform'}</Text>
         </TouchableOpacity>
+
+        {showAddModal && (
+          <View style={[s.modalOverlay]}>
+          <View style={[s.modal, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
+            <View style={s.modalHeader}>
+              <Text style={[s.modalTitle, { color: theme.text }]}>{t.lang === 'es' ? 'elegir plataforma' : 'choose platform'}</Text>
+              <TouchableOpacity onPress={() => setShowAddModal(false)}>
+                <Text style={[s.modalClose, { color: theme.textMuted }]}>x</Text>
+              </TouchableOpacity>
+            </View>
+            {ALL_EXTRA.map(p => {
+              const isAdded = extraPlatforms.some(ep => ep.key === p.key)
+              return (
+                <TouchableOpacity
+                  key={p.key}
+                  style={[s.modalRow, { borderBottomColor: theme.border }]}
+                  onPress={() => {
+                    if (!isAdded) setExtraPlatforms(prev => [...prev, p])
+                    setShowAddModal(false)
+                  }}
+                >
+                  <View style={[s.modalDot, { backgroundColor: p.color }]} />
+                  <Text style={[s.modalPlatformName, { color: theme.text }]}>{p.name}</Text>
+                  {isAdded && <Text style={[s.modalAdded, { color: theme.accent }]}>ok</Text>}
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+          </View>
+        )}
       </ScrollView>
       <View style={[s.footer, { backgroundColor: theme.bg, borderTopColor: theme.bgSecondary }]}>
         <Text style={[s.activeCount, { color: theme.textMuted }]}>{activeCount} {t.lang === 'es' ? 'activas' : 'active'}</Text>
@@ -188,4 +280,13 @@ const s = StyleSheet.create({
   successPlatformName: { fontSize: 12, fontWeight: '500' },
   addPlatformBtn: { borderRadius: 16, borderWidth: 0.5, borderStyle: 'dashed', padding: 16, marginTop: 10, alignItems: 'center' },
   addPlatformText: { fontSize: 13, letterSpacing: 0.5 },
+  modalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end', padding: 16, paddingBottom: 100, backgroundColor: 'rgba(0,0,0,0.4)' },
+  modal: { borderRadius: 16, borderWidth: 0.5, padding: 16, marginTop: 10 },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  modalTitle: { fontSize: 14, fontWeight: '500' },
+  modalClose: { fontSize: 16, padding: 4 },
+  modalRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, gap: 12 },
+  modalDot: { width: 10, height: 10, borderRadius: 5 },
+  modalPlatformName: { flex: 1, fontSize: 14 },
+  modalAdded: { fontSize: 11, fontWeight: '500' },
 })
