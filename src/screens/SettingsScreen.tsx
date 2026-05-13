@@ -147,7 +147,7 @@ export default function SettingsScreen({ navigation }: any) {
         <View style={s.section}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'acerca de' : 'about'}</Text>
           <View style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
-            <Text style={[s.rowText, { color: theme.text }]}>voxa</Text>
+            <Text style={[s.rowText, { color: theme.text }]}>vox</Text>
             <Text style={[s.rowValue, { color: theme.textMuted }]}>v0.1.0</Text>
           </View>
         </View>

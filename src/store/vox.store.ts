@@ -20,7 +20,7 @@ interface VoxaStore {
   reset: () => void
 }
 
-export const useVoxaStore = create<VoxaStore>((set, get) => ({
+export const useVoxStore = create<VoxaStore>((set, get) => ({
   input: '',
   tone: 'auto',
   result: null,

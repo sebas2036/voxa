@@ -46,8 +46,8 @@ export default function AuthScreen({ navigation }: any) {
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.container}>
         <View style={s.header}>
-          <Text style={[s.logo, { color: theme.text }]}>vox<Text style={[s.logoAccent, { color: theme.accent }]}>a</Text></Text>
-          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu idea, en todas tus redes' : 'your idea, across all your networks'}</Text>
+          <Text style={[s.logo, { color: theme.text }]}>vo<Text style={[s.logoAccent, { color: theme.accent }]}>x</Text></Text>
+          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu voz, en todas tus redes' : 'your voice, across all your networks'}</Text>
         </View>
         <View style={s.form}>
           <Text style={[s.formTitle, { color: theme.text }]}>

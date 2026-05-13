@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, TextInput, Alert } from 'react-native'
-import { useVoxaStore } from '../store/voxa.store'
+import { useVoxStore } from '../store/vox.store'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
@@ -8,7 +8,7 @@ import { useTheme } from '../theme'
 const PLATFORMS = PLATFORM_CONFIGS
 
 export default function ReviewScreen({ navigation }: any) {
-  const { result, reset, updatePlatformContent } = useVoxaStore()
+  const { result, reset, updatePlatformContent } = useVoxStore()
   const { t } = useLanguage()
   const theme = useTheme()
   const [enabled, setEnabled] = useState({ twitter: true, linkedin: true, threads: true, instagram: true })

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Share, Alert } from 'react-native'
-import { useVoxaStore } from '../store/voxa.store'
+import { useVoxStore } from '../store/vox.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 
@@ -12,7 +12,7 @@ const PLATFORMS = [
 ]
 
 export default function ConfirmScreen({ navigation }: any) {
-  const { result, reset } = useVoxaStore()
+  const { result, reset } = useVoxStore()
   const { t } = useLanguage()
   const theme = useTheme()
   const [enabled, setEnabled] = useState({ twitter: true, linkedin: true, threads: true, instagram: true })
@@ -35,7 +35,7 @@ export default function ConfirmScreen({ navigation }: any) {
 
 ${hashtags}` : pdata.content
       try {
-        await Share.share({ message: fullContent, title: `Voxa → ${platform.name}` })
+        await Share.share({ message: fullContent, title: `Vox → ${platform.name}` })
       } catch (e) {}
     }
     setPublishing(false)

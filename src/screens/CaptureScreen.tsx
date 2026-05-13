@@ -4,7 +4,7 @@ import {
   StyleSheet, SafeAreaView, ScrollView,
   ActivityIndicator, Animated, Easing
 } from 'react-native'
-import { useVoxaStore } from '../store/voxa.store'
+import { useVoxStore } from '../store/vox.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
@@ -25,7 +25,7 @@ const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
 
 export default function CaptureScreen({ navigation }: any) {
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, loadRecentIdeas } = useVoxaStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, loadRecentIdeas } = useVoxStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
@@ -115,14 +115,14 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.header}>
           <View style={s.headerTop}>
-            <Text style={[s.logo, { color: theme.text }]}>vox<Text style={[s.logoAccent, { color: theme.accent }]}>a</Text></Text>
+            <Text style={[s.logo, { color: theme.text }]}>vo<Text style={[s.logoAccent, { color: theme.accent }]}>x</Text></Text>
             <TouchableOpacity style={s.menuBtn} onPress={() => navigation.navigate('Settings')}>
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
             </TouchableOpacity>
           </View>
-          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu idea, en todas tus redes' : 'your idea, across all your networks'}</Text>
+          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu voz, en todas tus redes' : 'your voice, across all your networks'}</Text>
         </View>
 
         <View style={s.micArea}>

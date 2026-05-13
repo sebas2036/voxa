@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "voxa",
-    "slug": "voxa",
+    "name": "Vox",
+    "slug": "vox",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,7 +19,7 @@
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.sebasjasinsky.voxa"
+      "bundleIdentifier": "com.sebasjasinsky.vox"
     },
     "android": {
       "adaptiveIcon": {
