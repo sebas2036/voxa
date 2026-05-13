@@ -19,7 +19,8 @@ const PLATFORM_ICONS = [
   { icon: 'instagram', lib: 'fa5', color: '#e1306c', name: 'Instagram' },
 ]
 
-const HINTS = ['hablá', 'revisá', 'publicá']
+const HINTS_ES = ['hablá', 'revisá', 'publicá']
+const HINTS_EN = ['speak', 'review', 'publish']
 
 export default function CaptureScreen({ navigation }: any) {
   const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, loadRecentIdeas } = useVoxaStore()
@@ -43,7 +44,7 @@ export default function CaptureScreen({ navigation }: any) {
       Animated.sequence([
         Animated.timing(hintOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
       ]).start(() => {
-        setHintIndex(i => (i + 1) % HINTS.length)
+        setHintIndex(i => (i + 1) % (t.lang === 'en' ? HINTS_EN : HINTS_ES).length)
         Animated.timing(hintOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start()
       })
     }, 1800)
@@ -129,7 +130,7 @@ export default function CaptureScreen({ navigation }: any) {
               <Ionicons name="mic" size={38} color={theme.bg} />
             </TouchableOpacity>
           </View>
-          <Animated.Text style={[s.hintText, { color: theme.textMuted, opacity: hintOpacity }]}>{HINTS[hintIndex]}</Animated.Text>
+          <Animated.Text style={[s.hintText, { color: theme.textSecondary, opacity: hintOpacity }]}>{(t.lang === 'en' ? HINTS_EN : HINTS_ES)[hintIndex]}</Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
             <Text style={[s.orWrite, { color: theme.textDisabled }]}>{t.orWrite}</Text>
           </TouchableOpacity>
