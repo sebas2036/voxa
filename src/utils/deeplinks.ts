@@ -42,20 +42,14 @@ export const PLATFORMS: Platform[] = [
 
 export async function publishToPlatform(platform: Platform, content: string): Promise<boolean> {
   const deepLink = platform.getDeepLink(content)
-  
   try {
-    const canOpen = await Linking.canOpenURL(deepLink)
-    if (canOpen) {
-      await Linking.openURL(deepLink)
-      return true
-    } else {
-      // App no instalada — copiar al clipboard y abrir web
-      await Clipboard.setStringAsync(content)
-      await Linking.openURL(platform.fallbackUrl)
-      return false
-    }
-  } catch (e) {
     await Clipboard.setStringAsync(content)
+    await Linking.openURL(deepLink)
+    return true
+  } catch (e) {
+    try {
+      await Linking.openURL(platform.fallbackUrl)
+    } catch {}
     return false
   }
 }
@@ -66,8 +60,11 @@ export async function publishToAll(
 ): Promise<void> {
   for (const platform of platforms) {
     const content = contents[platform.key] || ''
-    await publishToPlatform(platform, content)
-    // Pequeña pausa entre apps
-    await new Promise(resolve => setTimeout(resolve, 800))
+    // Timeout de 1.5s por plataforma para no colgarse
+    await Promise.race([
+      publishToPlatform(platform, content),
+      new Promise(resolve => setTimeout(resolve, 1500))
+    ])
+    await new Promise(resolve => setTimeout(resolve, 300))
   }
 }

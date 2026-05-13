@@ -8,16 +8,23 @@ import { useVoxStore } from '../store/vox.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
-const PLATFORM_ICONS = [
-  { icon: 'x-twitter', lib: 'fa6', color: '#c8b99a', name: 'X' },
-  { icon: 'linkedin', lib: 'fa5', color: '#4a9eff', name: 'LinkedIn' },
-  { icon: 'T', lib: 'text', color: '#c8b99a', name: 'Threads' },
-  { icon: 'instagram', lib: 'fa5', color: '#e1306c', name: 'Instagram' },
-]
+const ALL_PLATFORM_ICONS: Record<string, { icon: string, lib: string, color: string, name: string }> = {
+  twitter: { icon: 'x-twitter', lib: 'fa6', color: '#1a1a1a', name: 'X' },
+  linkedin: { icon: 'linkedin', lib: 'fa5', color: '#4a9eff', name: 'LinkedIn' },
+  threads: { icon: 'T', lib: 'text', color: '#444444', name: 'Threads' },
+  instagram: { icon: 'instagram', lib: 'fa5', color: '#e1306c', name: 'Instagram' },
+  whatsapp: { icon: 'whatsapp', lib: 'fa5', color: '#25D366', name: 'WhatsApp' },
+  telegram: { icon: 'telegram', lib: 'fa5', color: '#2AABEE', name: 'Telegram' },
+  tiktok: { icon: 'tiktok', lib: 'fa6', color: '#333333', name: 'TikTok' },
+  facebook: { icon: 'facebook', lib: 'fa5', color: '#1877F2', name: 'Facebook' },
+  pinterest: { icon: 'pinterest', lib: 'fa5', color: '#E60023', name: 'Pinterest' },
+  email: { icon: 'envelope', lib: 'fa5', color: '#888888', name: 'Email' },
+}
 
 const HINTS_ES = ['hablá', 'revisá', 'publicá']
 const LOADING_ES = ['analizando...', 'generando...', 'casi listo...']
@@ -30,6 +37,7 @@ export default function CaptureScreen({ navigation }: any) {
   const { t } = useLanguage()
   const theme = useTheme()
   const [showInput, setShowInput] = useState(false)
+  const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter', 'linkedin', 'threads', 'instagram'])
   const [loadingStep, setLoadingStep] = useState(0)
   const [recentOpen, setRecentOpen] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
@@ -40,7 +48,15 @@ export default function CaptureScreen({ navigation }: any) {
   const recentAnim = useRef(new Animated.Value(0)).current
   const hintOpacity = useRef(new Animated.Value(1)).current
 
-  useEffect(() => { loadRecentIdeas() }, [])
+  useEffect(() => {
+    loadRecentIdeas()
+    AsyncStorage.getItem('vox_last_platforms').then(val => {
+      if (val) {
+        const keys = JSON.parse(val)
+        if (keys.length > 0) setActivePlatformKeys(keys)
+      }
+    })
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -224,16 +240,19 @@ export default function CaptureScreen({ navigation }: any) {
         </View>
 
         <View style={s.platformsRow}>
-          {PLATFORM_ICONS.map((p, i) => (
-            <View key={i} style={s.platformBadge}>
-              <View style={[s.platformDot, { backgroundColor: p.color + '22', borderColor: p.color + '44' }]}>
-                {p.lib === 'fa6' && <FontAwesome6 name={p.icon} size={18} color={p.color} />}
-                {p.lib === 'fa5' && <FontAwesome5 name={p.icon} size={18} color={p.color} />}
-                {p.lib === 'text' && <Text style={[s.platformLetter, { color: p.color }]}>{p.icon}</Text>}
+          {activePlatformKeys.slice(0, 4).map((key, i) => {
+            const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
+            return (
+              <View key={i} style={s.platformBadge}>
+                <View style={[s.platformDot, { backgroundColor: p.color + '22', borderColor: p.color + '44' }]}>
+                  {p.lib === 'fa6' && <FontAwesome6 name={p.icon as any} size={18} color={p.color} />}
+                  {p.lib === 'fa5' && <FontAwesome5 name={p.icon as any} size={18} color={p.color} />}
+                  {p.lib === 'text' && <Text style={[s.platformLetter, { color: p.color }]}>{p.icon}</Text>}
+                </View>
+                <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
               </View>
-              <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
-            </View>
-          ))}
+            )
+          })}
         </View>
 
       </ScrollView>
