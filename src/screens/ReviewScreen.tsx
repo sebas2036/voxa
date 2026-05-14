@@ -5,6 +5,7 @@ import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Ionicons } from '@expo/vector-icons'
 
 const ALL_EXTRA = [
   { key: 'whatsapp', name: 'WhatsApp', color: '#25D366' },
@@ -157,6 +158,7 @@ export default function ReviewScreen({ navigation }: any) {
                 <View style={[s.dot, { backgroundColor: platform.color }]} />
                 <Text style={[s.platformName, { color: theme.text, fontWeight: '600' }]}>{platform.name}</Text>
                 {!isExp && <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{pdata.content.slice(0, 35)}...</Text>}
+                <Ionicons name={isExp ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
                 <Switch
                   value={true}
                   onValueChange={() => {
@@ -215,6 +217,7 @@ export default function ReviewScreen({ navigation }: any) {
                     </View>
                   : !isExp && <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 35)}...</Text>
                 }
+                <Ionicons name={isExp ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
                 <Switch
                   value={enabled[platform.key] !== false}
                   onValueChange={() => {
@@ -341,6 +344,7 @@ const s = StyleSheet.create({
   addPlatformText: { fontSize: 13, letterSpacing: 0.5 },
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, flexDirection: 'row', alignItems: 'center', gap: 12, borderTopWidth: 0.5 },
   activeCount: { fontSize: 12 },
+  chevron: { fontSize: 16, marginRight: 2 },
   publishBtn: { flex: 1, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   publishBtnText: { fontSize: 16, fontWeight: '500' },
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
