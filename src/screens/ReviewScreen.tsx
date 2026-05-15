@@ -13,7 +13,7 @@ const ALL_EXTRA = [
   { key: 'tiktok', name: 'TikTok', color: '#333333' },
   { key: 'facebook', name: 'Facebook', color: '#1877F2' },
   { key: 'pinterest', name: 'Pinterest', color: '#E60023' },
-  { key: 'email', name: 'Email', color: '#888888' },
+  { key: 'reddit', name: 'Reddit', color: '#FF4500' },
 ]
 
 const PLATFORMS = PLATFORM_CONFIGS

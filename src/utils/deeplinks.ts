@@ -40,6 +40,8 @@ export const PLATFORMS: Platform[] = [
   },
 ]
 
+export const REDDIT_EXTRA = { key: 'reddit', name: 'Reddit', color: '#FF4500', getDeepLink: (content: string) => `reddit://submit?title=${encodeURIComponent(content)}`, fallbackUrl: 'https://www.reddit.com/submit' }
+
 export async function publishToPlatform(platform: Platform, content: string): Promise<boolean> {
   const deepLink = platform.getDeepLink(content)
   try {

@@ -99,7 +99,7 @@ export default function SettingsScreen({ navigation }: any) {
         <View style={s.section}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'plataformas' : 'platforms'}</Text>
           <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
-            <Text style={[s.rowText, { color: theme.text }]}>{t.lang === 'es' ? 'gestionar conexiones' : 'manage connections'}</Text>
+            <Text style={[s.rowText, { color: theme.text }]}>{t.lang === 'es' ? 'gestión de apps' : 'manage apps'}</Text>
             <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
           </TouchableOpacity>
         </View>
