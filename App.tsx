@@ -7,6 +7,7 @@ import CaptureScreen from './src/screens/CaptureScreen'
 import ReviewScreen from './src/screens/ReviewScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
 import SettingsScreen from './src/screens/SettingsScreen'
+import AppsScreen from './src/screens/AppsScreen'
 import AuthScreen from './src/screens/AuthScreen'
 import { supabase } from './src/lib/supabase'
 
@@ -37,6 +38,7 @@ export default function App() {
         <Stack.Screen name="Review" component={ReviewScreen} />
         <Stack.Screen name="Confirm" component={ConfirmScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="Apps" component={AppsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
