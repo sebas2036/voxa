@@ -145,29 +145,29 @@ export default function ReviewScreen({ navigation }: any) {
   }, [result])
 
   React.useEffect(() => {
-    // Respetar configuración de gestión de apps
-    AsyncStorage.getItem('vox_app_management').then(val => {
-      const mgmt = val ? JSON.parse(val) : {}
-      setEnabled({
-        twitter: mgmt.twitter !== false,
-        threads: mgmt.threads !== false,
-        instagram: mgmt.instagram !== false,
-        reddit: mgmt.reddit !== false,
-      })
-    })
     AsyncStorage.getItem('vox_app_management').then(appVal => {
-      if (appVal) setAppMgmt(JSON.parse(appVal))
-    })
-    AsyncStorage.getItem('vox_extra_platforms').then(val => {
-      if (val) {
-        AsyncStorage.getItem('vox_app_management').then(appVal => {
-          const mgmt = appVal ? JSON.parse(appVal) : {}
-          const REMOVED = ['email']
-          const extras = JSON.parse(val).filter((p: any) => mgmt[p.key] !== false && !REMOVED.includes(p.key))
-          setExtraPlatforms(extras)
-          extras.forEach((p: any) => generateExtraContent(p))
-        })
-      }
+      const mgmt = appVal ? JSON.parse(appVal) : {}
+      setEnabled({
+        twitter:   mgmt.twitter   !== false,
+        threads:   mgmt.threads   !== false,
+        instagram: mgmt.instagram !== false,
+        reddit:    mgmt.reddit    !== false,
+      })
+      setAppMgmt(mgmt)
+      AsyncStorage.getItem('vox_extra_platforms').then(val => {
+        const saved: any[] = val ? JSON.parse(val) : []
+        const REMOVED = ['email']
+        const fromMgmt = ALL_EXTRA.filter((app: any) =>
+          mgmt[app.key] === true &&
+          !REMOVED.includes(app.key) &&
+          !saved.some((s: any) => s.key === app.key)
+        )
+        const merged = [...saved, ...fromMgmt].filter(
+          (p: any) => mgmt[p.key] !== false && !REMOVED.includes(p.key)
+        )
+        setExtraPlatforms(merged)
+        merged.forEach((p: any) => generateExtraContent(p))
+      })
     })
   }, [])
 
