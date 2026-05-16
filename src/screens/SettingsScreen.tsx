@@ -258,6 +258,14 @@ export default function SettingsScreen({ navigation }: any) {
             <Text style={[s.rowText, { color: theme.text }]}>vox</Text>
             <Text style={[s.rowValue, { color: theme.textMuted }]}>v0.1.0</Text>
           </View>
+          <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate('Terms')}>
+            <Text style={[s.rowText, { color: theme.text }]}>{t.terms}</Text>
+            <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate('FAQ')}>
+            <Text style={[s.rowText, { color: theme.text }]}>FAQ</Text>
+            <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
+          </TouchableOpacity>
         </View>
 
       </ScrollView>

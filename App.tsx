@@ -10,6 +10,8 @@ import ReviewScreen from './src/screens/ReviewScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
 import SettingsScreen from './src/screens/SettingsScreen'
 import AppsScreen from './src/screens/AppsScreen'
+import TermsScreen from './src/screens/TermsScreen'
+import FAQScreen from './src/screens/FAQScreen'
 import AuthScreen from './src/screens/AuthScreen'
 import { supabase } from './src/lib/supabase'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -83,6 +85,8 @@ export default function App() {
         <Stack.Screen name="Confirm" component={ConfirmScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="Apps" component={AppsScreen} />
+        <Stack.Screen name="Terms" component={TermsScreen} />
+        <Stack.Screen name="FAQ" component={FAQScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
