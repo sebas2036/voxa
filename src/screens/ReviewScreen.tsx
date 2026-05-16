@@ -144,7 +144,10 @@ export default function ReviewScreen({ navigation }: any) {
 
   React.useEffect(() => {
     AsyncStorage.getItem('vox_enabled_platforms').then(val => {
-      if (val) setEnabled(prev => ({ ...prev, ...JSON.parse(val) }))
+      if (val) {
+        const saved = JSON.parse(val)
+        setEnabled({ ...saved, twitter: true, linkedin: true, threads: true, instagram: true })
+      }
     })
     AsyncStorage.getItem('vox_extra_platforms').then(val => {
       if (val) {

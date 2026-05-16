@@ -40,6 +40,7 @@ export default function CaptureScreen({ navigation }: any) {
   const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter', 'linkedin', 'threads', 'instagram'])
   const [loadingStep, setLoadingStep] = useState(0)
   const [recentOpen, setRecentOpen] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
 
   const ring1 = useRef(new Animated.Value(0)).current
@@ -47,6 +48,7 @@ export default function CaptureScreen({ navigation }: any) {
   const ring3 = useRef(new Animated.Value(0)).current
   const recentAnim = useRef(new Animated.Value(0)).current
   const hintOpacity = useRef(new Animated.Value(1)).current
+  const btnWidth = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
     loadRecentIdeas()
@@ -89,7 +91,7 @@ export default function CaptureScreen({ navigation }: any) {
     )
 
   useEffect(() => {
-    if (isRecording) {
+    if (isRecording || loading || isGenerating) {
       animateRing(ring1, 0).start()
       animateRing(ring2, 600).start()
       animateRing(ring3, 1200).start()
@@ -98,7 +100,7 @@ export default function CaptureScreen({ navigation }: any) {
       ring2.stopAnimation(); ring2.setValue(0)
       ring3.stopAnimation(); ring3.setValue(0)
     }
-  }, [isRecording])
+  }, [isRecording, loading, isGenerating])
 
   useEffect(() => { if (transcript) setInput(transcript) }, [transcript])
 
@@ -107,11 +109,9 @@ export default function CaptureScreen({ navigation }: any) {
   const handleGenerate = async () => {
     if (!input.trim()) return
     setLoadingStep(0)
-    const interval = setInterval(() => {
-      setLoadingStep(s => s < 2 ? s + 1 : 2)
-    }, 1000)
+    setIsGenerating(true)
     await generateProgressive()
-    clearInterval(interval)
+    setIsGenerating(false)
     navigation.navigate('Review')
   }
 
@@ -143,9 +143,9 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.micArea}>
           <View style={s.micWrapper}>
-            <Animated.View style={[s.ring, { backgroundColor: theme.accent }, makeRingStyle(ring1)]} />
-            <Animated.View style={[s.ring, { backgroundColor: theme.accent }, makeRingStyle(ring2)]} />
-            <Animated.View style={[s.ring, { backgroundColor: theme.accent }, makeRingStyle(ring3)]} />
+            <Animated.View style={[s.ring, { backgroundColor: isGenerating ? "#ff3b30" : theme.accent }, makeRingStyle(ring1)]} />
+            <Animated.View style={[s.ring, { backgroundColor: isGenerating ? "#ff3b30" : theme.accent }, makeRingStyle(ring2)]} />
+            <Animated.View style={[s.ring, { backgroundColor: isGenerating ? "#ff3b30" : theme.accent }, makeRingStyle(ring3)]} />
             <TouchableOpacity
               style={[s.micBtn, { backgroundColor: theme.accent }, isRecording && { backgroundColor: theme.recordActive }]}
               onPress={handleMicPress}
@@ -197,21 +197,15 @@ export default function CaptureScreen({ navigation }: any) {
 
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
 
-        <TouchableOpacity
-          style={[s.generateBtn, { backgroundColor: loading ? "#2e7d52" : theme.accent }, (!input.trim() || loading) && s.generateBtnDisabled]}
+                <TouchableOpacity
+          style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
           onPress={handleGenerate}
-          disabled={!input.trim() || loading}
+          disabled={!input.trim() || loading || isGenerating}
         >
-          {loading ? (
-            <View style={s.loadingRow}>
-              <ActivityIndicator color="#ffffff" size="small" />
-              <Text style={[s.loadingText, { color: "#ffffff" }]}>
-                {t.lang === 'es' ? LOADING_ES[loadingStep] : LOADING_EN[loadingStep]}
-              </Text>
-            </View>
-          ) : (
-            <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
-          )}
+          {loading
+            ? <ActivityIndicator color="#ffffff" size="small" />
+            : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
+          }
         </TouchableOpacity>
 
         {recentIdeas.length > 0 && (

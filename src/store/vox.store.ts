@@ -74,6 +74,7 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
   generateProgressive: async () => {
     const { input, tone, recentIdeas } = get()
     if (!input.trim()) return
+    set({ loading: true, error: null })
 
     const ordered = getPlatformGenerationOrder(PREDEFINED_PLATFORMS)
 
@@ -127,6 +128,7 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
     }
 
     await runPlatform(ordered[0])
+    set({ loading: false })
     ordered.slice(1).forEach(platform => runPlatform(platform))
 
     const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
