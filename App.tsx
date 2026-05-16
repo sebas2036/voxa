@@ -10,6 +10,7 @@ import SettingsScreen from './src/screens/SettingsScreen'
 import AppsScreen from './src/screens/AppsScreen'
 import AuthScreen from './src/screens/AuthScreen'
 import { supabase } from './src/lib/supabase'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Stack = createStackNavigator()
 
@@ -17,6 +18,15 @@ export default function App() {
   const [initialRoute, setInitialRoute] = useState<string | null>(null)
 
   useEffect(() => {
+    // Migración: limpiar storage corrupto
+    AsyncStorage.multiRemove(['vox_enabled_platforms', 'vox_extra_platforms'])
+    AsyncStorage.getItem('vox_app_management').then(val => {
+      const mgmt = val ? JSON.parse(val) : {}
+      const predefined = ['twitter', 'linkedin', 'threads', 'instagram']
+      let changed = false
+      predefined.forEach(k => { if (mgmt[k] === undefined || mgmt[k] === false) { mgmt[k] = true; changed = true } })
+      if (changed) AsyncStorage.setItem('vox_app_management', JSON.stringify(mgmt))
+    })
     supabase.auth.getSession().then(({ data: { session } }) => {
       setInitialRoute(session ? 'Capture' : 'Auth')
     })

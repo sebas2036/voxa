@@ -145,13 +145,10 @@ export default function ReviewScreen({ navigation }: any) {
   }, [result])
 
   React.useEffect(() => {
+    // Forzar enabled a true para las 4 predefinidas siempre
+    setEnabled({ twitter: true, linkedin: true, threads: true, instagram: true })
     AsyncStorage.getItem('vox_app_management').then(appVal => {
       if (appVal) setAppMgmt(JSON.parse(appVal))
-      const appMgmt = appVal ? JSON.parse(appVal) : null
-      const predefined = ['twitter', 'linkedin', 'threads', 'instagram']
-      const initial: Record<string, boolean> = {}
-      predefined.forEach(k => { initial[k] = appMgmt ? appMgmt[k] !== false : true })
-      setEnabled(initial)
     })
     AsyncStorage.getItem('vox_extra_platforms').then(val => {
       if (val) {
@@ -166,9 +163,7 @@ export default function ReviewScreen({ navigation }: any) {
     })
   }, [])
 
-  React.useEffect(() => {
-    AsyncStorage.setItem('vox_enabled_platforms', JSON.stringify(enabled))
-  }, [enabled])
+  // No persistimos el estado de switches — siempre arrancan ON al generar nuevo contenido
 
   React.useEffect(() => {
     if (extraPlatforms.length > 0)
@@ -178,7 +173,7 @@ export default function ReviewScreen({ navigation }: any) {
   if (!result) return null
 
   const activeCount = PLATFORMS.filter(p => enabled[p.key]).length +
-    extraPlatforms.filter(p => enabled[p.key] !== false).length
+    extraPlatforms.filter(p => enabled[p.key] !== false && extraContents[p.key]).length
 
   const generateExtraContent = async (platform: any) => {
     setLoadingExtra(platform.key)
@@ -390,7 +385,7 @@ export default function ReviewScreen({ navigation }: any) {
             </View>
             {[
               ...PLATFORMS.filter(p => !enabled[p.key]),
-              ...ALL_EXTRA.filter(p => appMgmt[p.key] !== false && (!extraPlatforms.some(ep => ep.key === p.key) || enabled[p.key] === false))
+              ...ALL_EXTRA.filter(p => !extraPlatforms.some(ep => ep.key === p.key) || enabled[p.key] === false)
             ].map(p => (
               <TouchableOpacity
                 key={p.key}

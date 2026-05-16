@@ -67,8 +67,8 @@ export default function AppsScreen({ navigation }: any) {
             <Switch
               value={enabled[app.key] !== false}
               onValueChange={() => toggle(app.key)}
-              trackColor={{ false: theme.bgTertiary, true: theme.accent + '55' }}
-              thumbColor={enabled[app.key] !== false ? theme.accent : theme.textMuted}
+              trackColor={{ false: theme.bgTertiary, true: theme.accent }}
+              thumbColor={enabled[app.key] !== false ? '#ffffff' : theme.textMuted}
             />
           </View>
         ))}
