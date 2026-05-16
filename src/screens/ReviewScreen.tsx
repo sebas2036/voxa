@@ -9,6 +9,8 @@ import { useTheme } from '../theme'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
+import * as WebBrowser from 'expo-web-browser'
+import * as Linking from 'expo-linking'
 
 const ALL_EXTRA = [
   { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
@@ -299,6 +301,29 @@ export default function ReviewScreen({ navigation }: any) {
   }
 
   const handlePublish = async () => {
+    const twitterEnabled = enabled['twitter']
+    const twitterToken = await AsyncStorage.getItem('twitter_access_token')
+    if (twitterEnabled && !twitterToken) {
+      try {
+        const res = await fetch('http://192.168.0.23:3000/auth/twitter')
+        const { url, codeVerifier } = await res.json()
+        await AsyncStorage.setItem('twitter_code_verifier', codeVerifier)
+        const authResult = await WebBrowser.openAuthSessionAsync(url, 'voxa://auth/twitter')
+        if (authResult.type === 'success' && authResult.url) {
+          const parsed = Linking.parse(authResult.url)
+          const code = parsed.queryParams?.code as string
+          if (code) {
+            const cbRes = await fetch('http://192.168.0.23:3000/auth/twitter/callback', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code, codeVerifier })
+            })
+            const data = await cbRes.json()
+            if (data.accessToken) await AsyncStorage.setItem('twitter_access_token', data.accessToken)
+          }
+        }
+      } catch (e) { console.error('Twitter auto-auth:', e) }
+    }
     setPublishing(true)
     const activePredefined = PLATFORMS.filter(p => enabled[p.key])
     const activeExtra = extraPlatforms.filter(p => enabled[p.key] !== false)

@@ -1,5 +1,6 @@
 import { Linking } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export interface Platform {
   key: string
@@ -43,6 +44,22 @@ export const PLATFORMS: Platform[] = [
 export const REDDIT_EXTRA = { key: 'reddit', name: 'Reddit', color: '#FF4500', getDeepLink: (content: string) => `reddit://submit?title=${encodeURIComponent(content)}`, fallbackUrl: 'https://www.reddit.com/submit' }
 
 export async function publishToPlatform(platform: Platform, content: string): Promise<boolean> {
+  if (platform.key === 'twitter') {
+    const token = await AsyncStorage.getItem('twitter_access_token')
+    if (token) {
+      try {
+        const res = await fetch('http://192.168.0.23:3000/publish/twitter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accessToken: token, content })
+        })
+        const data = await res.json()
+        if (data.success) return true
+      } catch (e) {
+        console.error('Twitter API error:', e)
+      }
+    }
+  }
   const deepLink = platform.getDeepLink(content)
   try {
     await Clipboard.setStringAsync(content)
@@ -50,6 +67,7 @@ export async function publishToPlatform(platform: Platform, content: string): Pr
     return true
   } catch (e) {
     try {
+      await Clipboard.setStringAsync(content)
       await Linking.openURL(platform.fallbackUrl)
     } catch {}
     return false
