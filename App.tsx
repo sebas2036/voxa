@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { View, ActivityIndicator } from 'react-native'
 import * as Linking from 'expo-linking'
+import { initAppManagement } from './src/utils/appDetection'
 import CaptureScreen from './src/screens/CaptureScreen'
 import ReviewScreen from './src/screens/ReviewScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
@@ -45,6 +46,7 @@ export default function App() {
     }
 
     Linking.getInitialURL().then(url => { if (url) handleDeepLink(url) })
+    initAppManagement()
     const sub = Linking.addEventListener('url', ({ url }) => handleDeepLink(url))
     return () => sub.remove()
   }, [])
