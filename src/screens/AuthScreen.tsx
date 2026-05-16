@@ -47,7 +47,7 @@ export default function AuthScreen({ navigation }: any) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.container}>
         <View style={s.header}>
           <Text style={[s.logo, { color: theme.text }]}>vo<Text style={[s.logoAccent, { color: theme.accent }]}>x</Text></Text>
-          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu voz, en todas tus redes' : 'your voice, across all your networks'}</Text>
+          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.tagline}</Text>
         </View>
         <View style={s.form}>
           <Text style={[s.formTitle, { color: theme.text }]}>

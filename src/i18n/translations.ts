@@ -3,6 +3,7 @@ export type Language = 'es' | 'en' | 'zh' | 'hi' | 'ar' | 'pt' | 'ru' | 'ja' | '
 export const translations: Record<Language, any> = {
   es: {
     lang: 'es',
+    addPlatform: 'agregar plataforma',
     noAccount: '¿No tenés cuenta? Registrate',
     haveAccount: '¿Ya tenés cuenta? Iniciá sesión',
     continueWithout: 'continuar sin cuenta',
@@ -60,6 +61,7 @@ export const translations: Record<Language, any> = {
   },
   en: {
     lang: 'en',
+    addPlatform: 'add platform',
     noAccount: "Don't have an account? Sign up",
     haveAccount: 'Already have an account? Sign in',
     continueWithout: 'continue without account',
@@ -117,6 +119,7 @@ export const translations: Record<Language, any> = {
   },
   zh: {
     lang: 'zh',
+    addPlatform: '添加平台',
     noAccount: '没有账户？注册',
     haveAccount: '已有账户？登录',
     continueWithout: '不用账户继续',
@@ -174,6 +177,7 @@ export const translations: Record<Language, any> = {
   },
   hi: {
     lang: 'hi',
+    addPlatform: 'प्लेटफॉर्म जोड़ें',
     noAccount: 'खाता नहीं है? साइन अप करें',
     haveAccount: 'पहले से खाता है? साइन इन करें',
     continueWithout: 'बिना खाते के जारी रखें',
@@ -231,6 +235,7 @@ export const translations: Record<Language, any> = {
   },
   ar: {
     lang: 'ar',
+    addPlatform: 'إضافة منصة',
     noAccount: 'ليس لديك حساب؟ سجل',
     haveAccount: 'لديك حساب بالفعل؟ سجل دخولك',
     continueWithout: 'المتابعة بدون حساب',
@@ -288,6 +293,7 @@ export const translations: Record<Language, any> = {
   },
   pt: {
     lang: 'pt',
+    addPlatform: 'adicionar plataforma',
     noAccount: 'Não tem conta? Cadastre-se',
     haveAccount: 'Já tem conta? Entre',
     continueWithout: 'continuar sem conta',
@@ -345,6 +351,7 @@ export const translations: Record<Language, any> = {
   },
   ru: {
     lang: 'ru',
+    addPlatform: 'добавить платформу',
     noAccount: 'Нет аккаунта? Зарегистрируйтесь',
     haveAccount: 'Уже есть аккаунт? Войдите',
     continueWithout: 'продолжить без аккаунта',
@@ -402,6 +409,7 @@ export const translations: Record<Language, any> = {
   },
   ja: {
     lang: 'ja',
+    addPlatform: 'プラットフォームを追加',
     noAccount: 'アカウントがない？登録する',
     haveAccount: 'すでにアカウントがある？ログイン',
     continueWithout: 'アカウントなしで続ける',
@@ -459,6 +467,7 @@ export const translations: Record<Language, any> = {
   },
   fr: {
     lang: 'fr',
+    addPlatform: 'ajouter une plateforme',
     noAccount: "Pas de compte ? S'inscrire",
     haveAccount: 'Déjà un compte ? Se connecter',
     continueWithout: 'continuer sans compte',
@@ -516,6 +525,7 @@ export const translations: Record<Language, any> = {
   },
   de: {
     lang: 'de',
+    addPlatform: 'Plattform hinzufügen',
     noAccount: 'Kein Konto? Registrieren',
     haveAccount: 'Bereits ein Konto? Anmelden',
     continueWithout: 'ohne Konto fortfahren',

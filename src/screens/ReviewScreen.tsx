@@ -378,7 +378,7 @@ export default function ReviewScreen({ navigation }: any) {
         ) : null}
 
         <TouchableOpacity style={[s.addPlatformBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => setShowAddModal(true)}>
-          <Text style={[s.addPlatformText, { color: theme.textMuted }]}>+ {t.lang === 'es' ? 'agregar plataforma' : 'add platform'}</Text>
+          <Text style={[s.addPlatformText, { color: theme.textMuted }]}>+ {t.addPlatform}</Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -422,7 +422,7 @@ export default function ReviewScreen({ navigation }: any) {
       </Modal>
 
       <View style={[s.footer, { backgroundColor: theme.bg, borderTopColor: theme.bgSecondary }]}>
-        <Text style={[s.activeCount, { color: theme.textMuted }]}>{activeCount} {t.lang === 'es' ? 'activas' : 'active'}</Text>
+        <Text style={[s.activeCount, { color: theme.textMuted }]}>{activeCount} {t.active}</Text>
         <TouchableOpacity
           style={[s.publishBtn, { backgroundColor: theme.accent }, (activeCount === 0 || publishing || !allDone) && { opacity: 0.4 }]}
           onPress={handlePublish}
