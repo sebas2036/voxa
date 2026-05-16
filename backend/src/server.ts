@@ -84,6 +84,70 @@ Return only the adapted text, no explanations.`
   }
 })
 
+// Twitter OAuth 2.0
+server.get('/auth/twitter', async (request, reply) => {
+  const clientId = process.env.TWITTER_CLIENT_ID
+  const redirectUri = 'voxa://auth/twitter'
+  const scope = 'tweet.read tweet.write users.read offline.access'
+  const state = Math.random().toString(36).substring(2)
+  const codeVerifier = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
+  const codeChallenge = codeVerifier // simplified for now
+  const url = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=plain`
+  return { url, codeVerifier, state }
+})
+
+server.post('/auth/twitter/callback', async (request, reply) => {
+  const { code, codeVerifier } = request.body as any
+  const clientId = process.env.TWITTER_CLIENT_ID
+  const clientSecret = process.env.TWITTER_CLIENT_SECRET
+  const redirectUri = 'voxa://auth/twitter'
+  try {
+    const params = new URLSearchParams({
+      code,
+      grant_type: 'authorization_code',
+      client_id: clientId!,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+    })
+    const response = await fetch('https://api.twitter.com/2/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+      },
+      body: params.toString(),
+    })
+    const data = await response.json() as any
+    if (data.access_token) {
+      return { accessToken: data.access_token, refreshToken: data.refresh_token }
+    }
+    return reply.status(400).send({ error: 'Token exchange failed', details: data })
+  } catch (e: any) {
+    return reply.status(500).send({ error: e.message })
+  }
+})
+
+server.post('/publish/twitter', async (request, reply) => {
+  const { accessToken, content } = request.body as any
+  try {
+    const response = await fetch('https://api.twitter.com/2/tweets', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text: content }),
+    })
+    const data = await response.json() as any
+    if (data.data?.id) {
+      return { success: true, tweetId: data.data.id }
+    }
+    return reply.status(400).send({ error: 'Tweet failed', details: data })
+  } catch (e: any) {
+    return reply.status(500).send({ error: e.message })
+  }
+})
+
 const start = async () => {
   try {
     await server.listen({ port: 3000, host: '0.0.0.0' })

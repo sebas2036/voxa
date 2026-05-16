@@ -19,7 +19,8 @@
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.sebasjasinsky.vox"
+      "bundleIdentifier": "com.sebasjasinsky.vox",
+      "associatedDomains": []
     },
     "android": {
       "adaptiveIcon": {
@@ -37,13 +38,15 @@
     },
     "plugins": [
       "expo-speech-recognition",
-      "expo-localization"
+      "expo-localization",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
         "projectId": "87c33e3f-9a67-4673-9feb-b274f18c648a"
       }
     },
-    "owner": "sebasjasinsky"
+    "owner": "sebasjasinsky",
+    "scheme": "voxa"
   }
 }

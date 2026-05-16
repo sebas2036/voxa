@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { View, ActivityIndicator } from 'react-native'
+import * as Linking from 'expo-linking'
 import CaptureScreen from './src/screens/CaptureScreen'
 import ReviewScreen from './src/screens/ReviewScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
@@ -16,6 +17,37 @@ const Stack = createStackNavigator()
 
 export default function App() {
   const [initialRoute, setInitialRoute] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Handler deep links OAuth
+    const handleDeepLink = async (url: string) => {
+      if (url.startsWith('voxa://auth/twitter')) {
+        const parsed = Linking.parse(url)
+        const code = parsed.queryParams?.code as string
+        if (code) {
+          const codeVerifier = await AsyncStorage.getItem('twitter_code_verifier')
+          try {
+            const res = await fetch('http://192.168.0.23:3000/auth/twitter/callback', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code, codeVerifier })
+            })
+            const data = await res.json()
+            if (data.accessToken) {
+              await AsyncStorage.setItem('twitter_access_token', data.accessToken)
+              if (data.refreshToken) await AsyncStorage.setItem('twitter_refresh_token', data.refreshToken)
+            }
+          } catch (e) {
+            console.error('Twitter callback error:', e)
+          }
+        }
+      }
+    }
+
+    Linking.getInitialURL().then(url => { if (url) handleDeepLink(url) })
+    const sub = Linking.addEventListener('url', ({ url }) => handleDeepLink(url))
+    return () => sub.remove()
+  }, [])
 
   useEffect(() => {
     // Migración: limpiar storage corrupto

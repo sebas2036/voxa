@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, Modal } from 'react-native'
 import { useLanguage, setLanguagePreference, LanguagePreference } from '../hooks/useLanguage'
 import { useTheme, setThemePreference, ThemePreference } from '../theme'
 import { useAuth } from '../hooks/useAuth'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Linking from 'expo-linking'
+import * as WebBrowser from 'expo-web-browser'
+
+WebBrowser.maybeCompleteAuthSession()
 
 export default function SettingsScreen({ navigation }: any) {
   const { t, preference: langPref, lang } = useLanguage()
@@ -17,6 +22,47 @@ export default function SettingsScreen({ navigation }: any) {
   ]
 
   const [showLangModal, setShowLangModal] = useState(false)
+  const [twitterConnected, setTwitterConnected] = useState(false)
+
+  useEffect(() => {
+    AsyncStorage.getItem('twitter_access_token').then(token => setTwitterConnected(!!token))
+  }, [])
+
+  const connectTwitter = async () => {
+    try {
+      const res = await fetch('http://192.168.0.23:3000/auth/twitter')
+      const { url, codeVerifier, state } = await res.json()
+      await AsyncStorage.setItem('twitter_code_verifier', codeVerifier)
+      await AsyncStorage.setItem('twitter_state', state)
+      const result = await WebBrowser.openAuthSessionAsync(url, 'voxa://auth/twitter')
+      if (result.type === 'success' && result.url) {
+        const parsed = Linking.parse(result.url)
+        const code = parsed.queryParams?.code as string
+        if (code) {
+          const callbackRes = await fetch('http://192.168.0.23:3000/auth/twitter/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, codeVerifier })
+          })
+          const data = await callbackRes.json()
+          if (data.accessToken) {
+            await AsyncStorage.setItem('twitter_access_token', data.accessToken)
+            if (data.refreshToken) await AsyncStorage.setItem('twitter_refresh_token', data.refreshToken)
+            setTwitterConnected(true)
+            Alert.alert('✅', lang !== 'en' ? 'Twitter conectado' : 'Twitter connected')
+          }
+        }
+      }
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo conectar con Twitter')
+    }
+  }
+
+  const disconnectTwitter = async () => {
+    await AsyncStorage.removeItem('twitter_access_token')
+    await AsyncStorage.removeItem('twitter_refresh_token')
+    setTwitterConnected(false)
+  }
 
   const langOptions: { key: LanguagePreference, tKey: string }[] = [
     { key: 'auto', tKey: 'automatic' },
@@ -115,6 +161,20 @@ export default function SettingsScreen({ navigation }: any) {
           <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate("Apps")}>
             <Text style={[s.rowText, { color: theme.text }]}>{t.manageApps}</Text>
             <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={s.section}>
+          <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{lang !== 'en' ? 'conexiones' : 'connections'}</Text>
+          <Text style={[s.sectionHint, { color: theme.textMuted }]}>{lang !== 'en' ? 'Conectá tus cuentas para publicar directo sin copiar y pegar.' : 'Connect your accounts to publish directly without copy-paste.'}</Text>
+          <TouchableOpacity
+            style={[s.row, { backgroundColor: twitterConnected ? '#1a1a1a' : theme.bgSecondary, borderColor: twitterConnected ? '#1a1a1a' : theme.border }]}
+            onPress={twitterConnected ? disconnectTwitter : connectTwitter}
+          >
+            <Text style={[s.rowText, { color: twitterConnected ? '#ffffff' : theme.text }]}>𝕏 Twitter</Text>
+            <View style={[s.badge, { backgroundColor: twitterConnected ? '#2e7d52' : theme.bgTertiary, borderColor: twitterConnected ? '#2e7d52' : theme.border }]}>
+              <Text style={[s.badgeText, { color: twitterConnected ? '#ffffff' : theme.textMuted }]}>{twitterConnected ? (lang !== 'en' ? 'conectado' : 'connected') : (lang !== 'en' ? 'conectar' : 'connect')}</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
