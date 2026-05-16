@@ -18,23 +18,31 @@ const ALL_APPS = [
   { key: 'reddit',    name: 'Reddit',       icon: 'logo-reddit' },
 ]
 
+const DEFAULT_STATE = {
+  __v: 3,
+  twitter: true, threads: true, instagram: true, reddit: true,
+  linkedin: false, whatsapp: false, telegram: false,
+  tiktok: false, facebook: false, pinterest: false
+}
+
 export default function AppsScreen({ navigation }: any) {
   const theme = useTheme()
   const { t } = useLanguage()
-  const [enabled, setEnabled] = useState<Record<string, boolean>>({})
+  const [enabled, setEnabled] = useState<Record<string, boolean>>(DEFAULT_STATE)
 
   useEffect(() => {
     AsyncStorage.getItem('vox_app_management').then(val => {
       if (val) {
         const saved = JSON.parse(val)
-        const predefined = ['twitter', 'linkedin', 'threads', 'instagram']
-        predefined.forEach(k => { if (saved[k] === undefined) saved[k] = true })
-        setEnabled(saved)
-      }
-      else {
-        const defaults: Record<string, boolean> = {}
-        ALL_APPS.forEach(a => { defaults[a.key] = true })
-        setEnabled(defaults)
+        if (saved.__v !== 3) {
+          setEnabled(DEFAULT_STATE)
+          AsyncStorage.setItem('vox_app_management', JSON.stringify(DEFAULT_STATE))
+        } else {
+          setEnabled(saved)
+        }
+      } else {
+        setEnabled(DEFAULT_STATE)
+        AsyncStorage.setItem('vox_app_management', JSON.stringify(DEFAULT_STATE))
       }
     })
   }, [])
