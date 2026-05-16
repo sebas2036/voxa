@@ -53,9 +53,60 @@ function SkeletonCard({ platform, theme }: { platform: any; theme: any }) {
   )
 }
 
+function AnimatedDots({ color }: { color: string }) {
+  const anims = [
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+  ]
+  useEffect(() => {
+    const animations = anims.map((anim, i) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(i * 150),
+          Animated.timing(anim, { toValue: -3, duration: 400, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0, duration: 400, useNativeDriver: true }),
+          Animated.delay(600),
+        ])
+      )
+    )
+    animations.forEach(a => a.start())
+    return () => animations.forEach(a => a.stop())
+  }, [])
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, flex: 1 }}>
+      {anims.map((anim, i) => (
+        <Animated.View key={i} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: color + '99', transform: [{ translateY: anim }] }} />
+      ))}
+    </View>
+  )
+}
+
 function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, theme, t }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(12)).current
+  const [textStyle, setTextStyle] = React.useState<'normal'|'bold'|'italic'|'caps'|'mono'|'strike'|'wide'>('normal')
+
+  const applyStyle = (text: string, style: string) => {
+    switch(style) {
+      case 'bold': return text.split('').map((c: string) => {
+        const bold: Record<string,string> = {'A':'𝐀','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋','M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗','Y':'𝐘','Z':'𝐙','a':'𝐚','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣','k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯','w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳'}
+        return bold[c] || c
+      }).join('')
+      case 'italic': return text.split('').map((c: string) => {
+        const italic: Record<string,string> = {'A':'𝘈','B':'𝘉','C':'𝘊','D':'𝘋','E':'𝘌','F':'𝘍','G':'𝘎','H':'𝘏','I':'𝘐','J':'𝘑','K':'𝘒','L':'𝘓','M':'𝘔','N':'𝘕','O':'𝘖','P':'𝘗','Q':'𝘘','R':'𝘙','S':'𝘚','T':'𝘛','U':'𝘜','V':'𝘝','W':'𝘞','X':'𝘟','Y':'𝘠','Z':'𝘡','a':'𝘢','b':'𝘣','c':'𝘤','d':'𝘥','e':'𝘦','f':'𝘧','g':'𝘨','h':'𝘩','i':'𝘪','j':'𝘫','k':'𝘬','l':'𝘭','m':'𝘮','n':'𝘯','o':'𝘰','p':'𝘱','q':'𝘲','r':'𝘳','s':'𝘴','t':'𝘵','u':'𝘶','v':'𝘷','w':'𝘸','x':'𝘹','y':'𝘺','z':'𝘻'}
+        return italic[c] || c
+      }).join('')
+      case 'caps': return text.toUpperCase()
+      case 'mono': return text.split('').map((c: string) => {
+        const mono: Record<string,string> = {'A':'𝙰','B':'𝙱','C':'𝙲','D':'𝙳','E':'𝙴','F':'𝙵','G':'𝙶','H':'𝙷','I':'𝙸','J':'𝙹','K':'𝙺','L':'𝙻','M':'𝙼','N':'𝙽','O':'𝙾','P':'𝙿','Q':'𝚀','R':'𝚁','S':'𝚂','T':'𝚃','U':'𝚄','V':'𝚅','W':'𝚆','X':'𝚇','Y':'𝚈','Z':'𝚉','a':'𝚊','b':'𝚋','c':'𝚌','d':'𝚍','e':'𝚎','f':'𝚏','g':'𝚐','h':'𝚑','i':'𝚒','j':'𝚓','k':'𝚔','l':'𝚕','m':'𝚖','n':'𝚗','o':'𝚘','p':'𝚙','q':'𝚚','r':'𝚛','s':'𝚜','t':'𝚝','u':'𝚞','v':'𝚟','w':'𝚠','x':'𝚡','y':'𝚢','z':'𝚣'}
+        return mono[c] || c
+      }).join('')
+      case 'strike': return text.split('').map((c: string) => c === ' ' ? ' ' : c + '̶').join('')
+      case 'wide': return text.split('').join(' ')
+      default: return text
+    }
+  }
 
   useEffect(() => {
     Animated.parallel([
@@ -73,9 +124,12 @@ function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enable
           <View style={[s.dot, { backgroundColor: platform.color }]} />
           <Text style={[s.platformName, { color: theme.text, fontWeight: '600' }]}>{platform.name}</Text>
           {!isExpanded && (
-            <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>
-              {pdata.content.slice(0, 35)}...
-            </Text>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>
+                {pdata.content.slice(0, 42)}
+              </Text>
+              <AnimatedDots color={platform.color} />
+            </View>
           )}
           <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
           <Switch
@@ -92,6 +146,27 @@ function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enable
             <TouchableOpacity style={[s.editTopBtn, { borderColor: theme.border }]} onPress={onToggleEdit}>
               <Text style={[s.editTopBtnText, { color: isEditing ? theme.accent : theme.textSecondary }]}>{isEditing ? t.save : t.edit}</Text>
             </TouchableOpacity>
+            <View style={s.styleBar}>
+              {([
+                { key: 'normal', label: 'Aa', fw: '400', fi: 'normal', ls: 0 },
+                { key: 'bold',   label: 'Aa', fw: '800', fi: 'normal', ls: 0 },
+                { key: 'italic', label: 'Aa', fw: '400', fi: 'italic', ls: 0 },
+                { key: 'caps',   label: 'AA', fw: '600', fi: 'normal', ls: 1 },
+                { key: 'mono',   label: 'Aa', fw: '400', fi: 'normal', ls: 0, mono: true },
+                { key: 'strike', label: 'Aa̶', fw: '400', fi: 'normal', ls: 0 },
+                { key: 'wide',   label: 'A a', fw: '400', fi: 'normal', ls: 2 },
+              ] as any[]).map(style => (
+                <TouchableOpacity
+                  key={style.key}
+                  style={[s.styleBtn, textStyle === style.key && { borderColor: platform.color, backgroundColor: platform.color + '15' }]}
+                  onPress={() => setTextStyle(style.key)}
+                >
+                  <Text style={[s.styleBtnText, { color: textStyle === style.key ? platform.color : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
+                    {style.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
             {isEditing ? (
               <TextInput
                 style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
@@ -102,7 +177,7 @@ function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enable
               />
             ) : (
               <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled showsVerticalScrollIndicator={false}>
-                <Text style={[s.content, { color: theme.text }]}>{pdata.content}</Text>
+                <Text style={[s.content, { color: theme.text }]}>{applyStyle(pdata.content, textStyle)}</Text>
                 {hashtags.length > 0 && <Text style={[s.hashtags, { color: theme.accent + '66' }]}>{hashtags.join(' ')}</Text>}
               </ScrollView>
             )}
@@ -129,6 +204,28 @@ export default function ReviewScreen({ navigation }: any) {
   const [extraContents, setExtraContents] = useState<Record<string, string>>({})
   const [loadingExtra, setLoadingExtra] = useState<string | null>(null)
   const [appMgmt, setAppMgmt] = useState<Record<string, boolean>>({})
+  const [extraTextStyles, setExtraTextStyles] = useState<Record<string, string>>({})
+
+  const applyTextStyle = (text: string, style: string) => {
+    switch(style) {
+      case 'bold': return text.split('').map((c: string) => {
+        const m: Record<string,string> = {'A':'𝐀','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋','M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗','Y':'𝐘','Z':'𝐙','a':'𝐚','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣','k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯','w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳'}
+        return m[c] || c
+      }).join('')
+      case 'italic': return text.split('').map((c: string) => {
+        const m: Record<string,string> = {'A':'𝘈','B':'𝘉','C':'𝘊','D':'𝘋','E':'𝘌','F':'𝘍','G':'𝘎','H':'𝘏','I':'𝘐','J':'𝘑','K':'𝘒','L':'𝘓','M':'𝘔','N':'𝘕','O':'𝘖','P':'𝘗','Q':'𝘘','R':'𝘙','S':'𝘚','T':'𝘛','U':'𝘜','V':'𝘝','W':'𝘞','X':'𝘟','Y':'𝘠','Z':'𝘡','a':'𝘢','b':'𝘣','c':'𝘤','d':'𝘥','e':'𝘦','f':'𝘧','g':'𝘨','h':'𝘩','i':'𝘪','j':'𝘫','k':'𝘬','l':'𝘭','m':'𝘮','n':'𝘯','o':'𝘰','p':'𝘱','q':'𝘲','r':'𝘳','s':'𝘴','t':'𝘵','u':'𝘶','v':'𝘷','w':'𝘸','x':'𝘹','y':'𝘺','z':'𝘻'}
+        return m[c] || c
+      }).join('')
+      case 'caps': return text.toUpperCase()
+      case 'mono': return text.split('').map((c: string) => {
+        const m: Record<string,string> = {'A':'𝙰','B':'𝙱','C':'𝙲','D':'𝙳','E':'𝙴','F':'𝙵','G':'𝙶','H':'𝙷','I':'𝙸','J':'𝙹','K':'𝙺','L':'𝙻','M':'𝙼','N':'𝙽','O':'𝙾','P':'𝙿','Q':'𝚀','R':'𝚁','S':'𝚂','T':'𝚃','U':'𝚄','V':'𝚅','W':'𝚆','X':'𝚇','Y':'𝚈','Z':'𝚉','a':'𝚊','b':'𝚋','c':'𝚌','d':'𝚍','e':'𝚎','f':'𝚏','g':'𝚐','h':'𝚑','i':'𝚒','j':'𝚓','k':'𝚔','l':'𝚕','m':'𝚖','n':'𝚗','o':'𝚘','p':'𝚙','q':'𝚚','r':'𝚛','s':'𝚜','t':'𝚝','u':'𝚞','v':'𝚟','w':'𝚠','x':'𝚡','y':'𝚢','z':'𝚣'}
+        return m[c] || c
+      }).join('')
+      case 'strike': return text.split('').map((c: string) => c === ' ' ? ' ' : c + '̶').join('')
+      case 'wide': return text.split('').join(' ')
+      default: return text
+    }
+  }
 
   const firstExpanded = useRef(false)
   useEffect(() => {
@@ -326,6 +423,7 @@ export default function ReviewScreen({ navigation }: any) {
           const isLoading = loadingExtra === platform.key
           const isExp = expanded === platform.key
           const isEdit = editing === platform.key
+          const extraStyle = extraTextStyles[platform.key] || 'normal'
           return (
             <View key={platform.key} style={[s.card, { backgroundColor: isLoading ? '#2e7d5222' : platform.color + '15', borderColor: isLoading ? '#2e7d52' : platform.color, borderWidth: 1.5 }]}>
               <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(isExp ? null : platform.key)}>
@@ -336,7 +434,7 @@ export default function ReviewScreen({ navigation }: any) {
                       <ActivityIndicator size="small" color="#2e7d52" />
                       <Text style={{ color: '#2e7d52', fontSize: 12 }}>{t.lang === 'es' ? 'generando...' : 'generating...'}</Text>
                     </View>
-                  : !isExp && <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 35)}...</Text>
+                  : !isExp && <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}><Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 42)}</Text><AnimatedDots color={platform.color} /></View>
                 }
                 <Ionicons name={isExp ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
                 <Switch
@@ -354,6 +452,27 @@ export default function ReviewScreen({ navigation }: any) {
                     onPress={() => { setEditTexts(prev => ({ ...prev, [platform.key]: cnt })); setEditing(isEdit ? null : platform.key) }}>
                     <Text style={[s.editTopBtnText, { color: isEdit ? theme.accent : theme.textSecondary }]}>{isEdit ? t.save : t.edit}</Text>
                   </TouchableOpacity>
+                  <View style={s.styleBar}>
+                    {([
+                      { key: 'normal', label: 'Aa', fw: '400', fi: 'normal', ls: 0 },
+                      { key: 'bold',   label: 'Aa', fw: '800', fi: 'normal', ls: 0 },
+                      { key: 'italic', label: 'Aa', fw: '400', fi: 'italic', ls: 0 },
+                      { key: 'caps',   label: 'AA', fw: '600', fi: 'normal', ls: 1 },
+                      { key: 'mono',   label: 'Aa', fw: '400', fi: 'normal', ls: 0, mono: true },
+                      { key: 'strike', label: 'Aa̶', fw: '400', fi: 'normal', ls: 0 },
+                      { key: 'wide',   label: 'A a', fw: '400', fi: 'normal', ls: 2 },
+                    ] as any[]).map(style => (
+                      <TouchableOpacity
+                        key={style.key}
+                        style={[s.styleBtn, extraStyle === style.key && { borderColor: platform.color, backgroundColor: platform.color + '15' }]}
+                        onPress={() => setExtraTextStyles(prev => ({ ...prev, [platform.key]: style.key }))}
+                      >
+                        <Text style={[s.styleBtnText, { color: extraStyle === style.key ? platform.color : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
+                          {style.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                   {isEdit ? (
                     <TextInput
                       style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
@@ -363,7 +482,7 @@ export default function ReviewScreen({ navigation }: any) {
                       onBlur={() => setEditing(null)}
                     />
                   ) : (
-                    <Text style={[s.content, { color: theme.text }]}>{cnt}</Text>
+                    <Text style={[s.content, { color: theme.text }]}>{applyTextStyle(cnt, extraStyle)}</Text>
                   )}
                 </View>
               )}
@@ -463,6 +582,9 @@ const s = StyleSheet.create({
   activeCount: { fontSize: 12 },
   publishBtn: { flex: 1, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   publishBtnText: { fontSize: 16, fontWeight: '500' },
+  styleBar: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  styleBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'transparent' },
+  styleBtnText: { fontSize: 13 },
   skeletonLine: { height: 11, borderRadius: 6, width: '100%' },
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
   modal: { borderTopLeftRadius: 20, borderTopRightRadius: 20, borderWidth: 0.5, padding: 20, paddingBottom: 40 },
