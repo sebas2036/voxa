@@ -123,10 +123,12 @@ export default function ReviewScreen({ navigation }: any) {
   const [editTexts, setEditTexts] = useState<Record<string, string>>({})
   const [publishing, setPublishing] = useState(false)
   const [published, setPublished] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [extraPlatforms, setExtraPlatforms] = useState<any[]>([])
   const [extraContents, setExtraContents] = useState<Record<string, string>>({})
   const [loadingExtra, setLoadingExtra] = useState<string | null>(null)
+  const [appMgmt, setAppMgmt] = useState<Record<string, boolean>>({})
 
   const firstExpanded = useRef(false)
   useEffect(() => {
@@ -143,17 +145,23 @@ export default function ReviewScreen({ navigation }: any) {
   }, [result])
 
   React.useEffect(() => {
-    AsyncStorage.getItem('vox_enabled_platforms').then(val => {
-      if (val) {
-        const saved = JSON.parse(val)
-        setEnabled({ ...saved, twitter: true, linkedin: true, threads: true, instagram: true })
-      }
+    AsyncStorage.getItem('vox_app_management').then(appVal => {
+      if (appVal) setAppMgmt(JSON.parse(appVal))
+      const appMgmt = appVal ? JSON.parse(appVal) : null
+      const predefined = ['twitter', 'linkedin', 'threads', 'instagram']
+      const initial: Record<string, boolean> = {}
+      predefined.forEach(k => { initial[k] = appMgmt ? appMgmt[k] !== false : true })
+      setEnabled(initial)
     })
     AsyncStorage.getItem('vox_extra_platforms').then(val => {
       if (val) {
-        const extras = JSON.parse(val)
-        setExtraPlatforms(extras)
-        extras.forEach((p: any) => generateExtraContent(p))
+        AsyncStorage.getItem('vox_app_management').then(appVal => {
+          const mgmt = appVal ? JSON.parse(appVal) : {}
+          const REMOVED = ['email']
+          const extras = JSON.parse(val).filter((p: any) => mgmt[p.key] !== false && !REMOVED.includes(p.key))
+          setExtraPlatforms(extras)
+          extras.forEach((p: any) => generateExtraContent(p))
+        })
       }
     })
   }, [])
@@ -203,7 +211,7 @@ export default function ReviewScreen({ navigation }: any) {
     activeExtra.forEach(platform => {
       contents[platform.key] = extraContents[platform.key] || ''
     })
-    const usedKeys = [...activePredefined.map(p => p.key), ...activeExtra.map(p => p.key)]
+    const usedKeys = [...new Set([...activePredefined.map(p => p.key), ...activeExtra.map(p => p.key)])]
     await AsyncStorage.setItem('vox_last_platforms', JSON.stringify(usedKeys))
     try {
       await Promise.race([
@@ -213,7 +221,10 @@ export default function ReviewScreen({ navigation }: any) {
     } catch {}
     setPublishing(false)
     setPublished(true)
-    setTimeout(() => { reset(); navigation.navigate('Capture') }, 2000)
+    AsyncStorage.getItem('vox_onboarding_shown').then(val => {
+      if (!val) setShowOnboarding(true)
+    })
+    setTimeout(() => { reset(); navigation.navigate('Capture') }, showOnboarding ? 4000 : 2000)
   }
 
   const activePlatformsList = [
@@ -243,6 +254,20 @@ export default function ReviewScreen({ navigation }: any) {
               </View>
             ))}
           </View>
+          {showOnboarding && (
+            <TouchableOpacity
+              style={[s.onboardingBanner, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}
+              onPress={() => {
+                AsyncStorage.setItem('vox_onboarding_shown', '1')
+                setShowOnboarding(false)
+                reset()
+                navigation.navigate('Settings')
+              }}
+            >
+              <Text style={[s.onboardingText, { color: theme.text }]}>{t.lang === 'es' ? '¿Usas otras apps? Personalizá tus plataformas' : 'Use other apps? Customize your platforms'}</Text>
+              <Text style={[s.onboardingArrow, { color: theme.accent }]}>→</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </SafeAreaView>
     )
@@ -365,7 +390,7 @@ export default function ReviewScreen({ navigation }: any) {
             </View>
             {[
               ...PLATFORMS.filter(p => !enabled[p.key]),
-              ...ALL_EXTRA.filter(p => !extraPlatforms.some(ep => ep.key === p.key) || enabled[p.key] === false)
+              ...ALL_EXTRA.filter(p => appMgmt[p.key] !== false && (!extraPlatforms.some(ep => ep.key === p.key) || enabled[p.key] === false))
             ].map(p => (
               <TouchableOpacity
                 key={p.key}
@@ -454,4 +479,7 @@ const s = StyleSheet.create({
   successBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
   successDot: { width: 6, height: 6, borderRadius: 3 },
   successPlatformName: { fontSize: 12, fontWeight: '500' },
+  onboardingBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, paddingHorizontal: 20, paddingVertical: 14, borderRadius: 14, borderWidth: 0.5, marginHorizontal: 24 },
+  onboardingText: { fontSize: 13, flex: 1 },
+  onboardingArrow: { fontSize: 18, marginLeft: 8 },
 })

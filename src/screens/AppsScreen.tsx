@@ -25,7 +25,12 @@ export default function AppsScreen({ navigation }: any) {
 
   useEffect(() => {
     AsyncStorage.getItem('vox_app_management').then(val => {
-      if (val) setEnabled(JSON.parse(val))
+      if (val) {
+        const saved = JSON.parse(val)
+        const predefined = ['twitter', 'linkedin', 'threads', 'instagram']
+        predefined.forEach(k => { if (saved[k] === undefined) saved[k] = true })
+        setEnabled(saved)
+      }
       else {
         const defaults: Record<string, boolean> = {}
         ALL_APPS.forEach(a => { defaults[a.key] = true })

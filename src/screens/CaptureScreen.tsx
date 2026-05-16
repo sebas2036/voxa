@@ -23,7 +23,7 @@ const ALL_PLATFORM_ICONS: Record<string, { icon: string, lib: string, color: str
   tiktok: { icon: 'tiktok', lib: 'fa6', color: '#333333', name: 'TikTok' },
   facebook: { icon: 'facebook', lib: 'fa5', color: '#1877F2', name: 'Facebook' },
   pinterest: { icon: 'pinterest', lib: 'fa5', color: '#E60023', name: 'Pinterest' },
-  email: { icon: 'envelope', lib: 'fa5', color: '#888888', name: 'Email' },
+  reddit: { icon: 'reddit', lib: 'fa5', color: '#FF4500', name: 'Reddit' },
 }
 
 const HINTS_ES = ['hablá', 'revisá', 'publicá']
