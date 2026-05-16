@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/voxa.service'
 import { trackTone, buildVoiceProfilePrompt, getVoiceProfile } from '../services/voiceProfile'
+import { cacheResult, getCachedResult, isOnline } from '../utils/cache'
 
 const HISTORY_KEY = 'voxa_recent_ideas'
 const MAX_RECENT = 10
@@ -76,6 +77,16 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
     const { input, tone, recentIdeas } = get()
     if (!input.trim()) return
     if (tone !== 'auto') await trackTone(tone)
+    const online = await isOnline()
+    if (!online) {
+      const cached = await getCachedResult(input.trim(), tone)
+      if (cached) {
+        set({ result: cached.result, loading: false, error: null, progressivePlatforms: {} })
+        return
+      }
+      set({ error: 'Sin conexión y sin caché para esta idea', loading: false })
+      return
+    }
     set({ loading: true, error: null })
 
     const ordered = getPlatformGenerationOrder(PREDEFINED_PLATFORMS)
@@ -137,6 +148,8 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
     const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
     await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
     set({ recentIdeas: updated })
+    const finalResult = get().result
+    if (finalResult) await cacheResult(input.trim(), tone, finalResult)
   },
 
   updatePlatformContent: (platform, newContent) => set(state => ({
