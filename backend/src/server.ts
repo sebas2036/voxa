@@ -1,6 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { generateContent } from './services/ai.service'
+import { generateContent, generateContentForPlatform } from './services/ai.service'
 
 const server = Fastify({ logger: false })
 
@@ -28,6 +28,26 @@ server.post('/generate', async (request, reply) => {
   return result
 })
 
+server.post('/generate-single', async (request, reply) => {
+  const { platform, input, tone } = request.body as {
+    platform: string
+    input: string
+    tone?: string
+  }
+
+  if (!platform || !input || input.trim().length === 0) {
+    return reply.status(400).send({ error: 'platform e input son requeridos' })
+  }
+
+  try {
+    const content = await generateContentForPlatform(platform, input.trim(), tone)
+    return { platform, content }
+  } catch (error: any) {
+    console.error(`Error generando ${platform}:`, error.message)
+    return reply.status(500).send({ error: `Error generando contenido para ${platform}` })
+  }
+})
+
 server.post('/generate-extra', async (request, reply) => {
   const { platform, topic, baseContent, lang } = request.body as any
   try {
@@ -52,10 +72,7 @@ server.post('/generate-extra', async (request, reply) => {
 const start = async () => {
   try {
     await server.listen({ port: 3000, host: '0.0.0.0' })
-    console.log('🎙  Voxa API corriendo en http://localhost:3000')
-    console.log('   POST /generate — genera contenido')
-  console.log('   POST /generate-extra — adapta contenido para plataforma extra')
-    console.log('   GET  /health   — estado del servidor')
+    console.log('Voxa API corriendo en http://localhost:3000')
   } catch (err) {
     console.error(err)
     process.exit(1)
@@ -63,4 +80,3 @@ const start = async () => {
 }
 
 start()
-

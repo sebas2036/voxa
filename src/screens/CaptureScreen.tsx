@@ -32,7 +32,7 @@ const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
 
 export default function CaptureScreen({ navigation }: any) {
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useVoxStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useVoxStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
@@ -110,7 +110,7 @@ export default function CaptureScreen({ navigation }: any) {
     const interval = setInterval(() => {
       setLoadingStep(s => s < 2 ? s + 1 : 2)
     }, 1000)
-    await generate()
+    await generateProgressive()
     clearInterval(interval)
     navigation.navigate('Review')
   }

@@ -1,4 +1,3 @@
-import Anthropic from '@anthropic-ai/sdk'
 import * as dotenv from 'dotenv'
 
 dotenv.config({ path: '../.env' })
@@ -15,14 +14,6 @@ LANGUAGE RULES (critical):
   but content that feels originally written in that language.
 - Supported languages: Spanish, English. If another language is detected, 
   default to English.
-
-ANALYSIS (do this silently before generating):
-- Main topic
-- Dominant emotion
-- Intent (educate / inspire / inform / provoke thought / tell a story)
-- Target audience
-- Technical level (basic / intermediate / advanced)
-- Content type (educational / motivational / professional / casual / storytelling)
 
 CONTENT ADAPTATION RULES:
 - technical content → simplify and structure
@@ -82,4 +73,38 @@ OUTPUT FORMAT — return only this JSON, nothing else:
 export const buildUserPrompt = (input: string, styleProfile?: string): string => {
   const profile = styleProfile ? `\nUSER STYLE PROFILE:\n${styleProfile}\n` : ''
   return `${profile}\nUSER IDEA:\n${input}\n\nReturn only valid JSON.`
+}
+
+const PLATFORM_SCHEMAS: Record<string, string> = {
+  twitter:   '{ "content": "string (max 280 chars)", "charCount": 0 }',
+  threads:   '{ "content": "string (100-300 chars)", "charCount": 0 }',
+  instagram: '{ "content": "string", "hashtags": ["string"] }',
+  linkedin:  '{ "content": "string (150-400 words)", "wordCount": 0 }',
+}
+
+const PLATFORM_RULES: Record<string, string> = {
+  twitter:   'Maximum 280 characters. Strong hook in first line. Direct and shareable.',
+  threads:   'Relaxed, spontaneous, authentic tone. 100-300 characters.',
+  instagram: 'Emotional or aspirational tone. Include 3-7 relevant hashtags.',
+  linkedin:  'Professional but human tone. Scannable format. End with a conversational question. 150-400 words.',
+}
+
+export const buildSinglePlatformPrompt = (
+  platform: string,
+  input: string,
+  tone?: string
+): string => {
+  const schema = PLATFORM_SCHEMAS[platform] ?? '{ "content": "string" }'
+  const rules = PLATFORM_RULES[platform] ?? 'Adapt the content for this platform.'
+  const toneNote = tone && tone !== 'auto' ? `\nTone: ${tone}` : ''
+  return `You are Voxa, a content generation engine.
+Detect the language of the user idea and generate content in that same language.
+Maintain native tone and idioms.${toneNote}
+Platform: ${platform.toUpperCase()}
+Rules: ${rules}
+USER IDEA:
+${input}
+Return ONLY this JSON, nothing else, no markdown:
+${schema}
+Fill in charCount or wordCount with the accurate number.`
 }

@@ -1,9 +1,14 @@
+**Cmd+A**, borrá todo y pegá esto:
+
+```
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { VoxaResult, generateContent } from '../services/voxa.service'
+import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/voxa.service'
 
 const HISTORY_KEY = 'voxa_recent_ideas'
 const MAX_RECENT = 10
+
+const PREDEFINED_PLATFORMS = ['twitter', 'threads', 'instagram', 'linkedin']
 
 interface VoxaStore {
   input: string
@@ -12,9 +17,11 @@ interface VoxaStore {
   loading: boolean
   error: string | null
   recentIdeas: string[]
+  progressivePlatforms: Record<string, 'pending' | 'loading' | 'done' | 'error'>
   setInput: (input: string) => void
   setTone: (tone: string) => void
   generate: () => Promise<void>
+  generateProgressive: () => Promise<void>
   updatePlatformContent: (platform: string, content: string) => void
   loadRecentIdeas: () => Promise<void>
   removeRecentIdea: (idea: string) => Promise<void>
@@ -29,6 +36,7 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
   loading: false,
   error: null,
   recentIdeas: [],
+  progressivePlatforms: {},
 
   setInput: (input) => set({ input }),
   setTone: (tone) => set({ tone }),
@@ -58,13 +66,75 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
         input.trim(),
         tone !== 'auto' ? tone : undefined
       )
-      // Guardar en historial
       const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
       await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
       set({ result, loading: false, recentIdeas: updated })
     } catch (err: any) {
       set({ error: err.message, loading: false })
     }
+  },
+
+  generateProgressive: async () => {
+    const { input, tone, recentIdeas } = get()
+    if (!input.trim()) return
+
+    const ordered = getPlatformGenerationOrder(PREDEFINED_PLATFORMS)
+
+    const initialProgress: Record<string, 'pending' | 'loading' | 'done' | 'error'> = {}
+    ordered.forEach(p => { initialProgress[p] = 'pending' })
+
+    const emptyResult: VoxaResult = {
+      detectedLanguage: 'spanish',
+      analysis: { topic: input.trim(), emotion: '', intent: '', audience: '', contentType: '' },
+      platforms: {
+        twitter: { content: '', charCount: 0 },
+        linkedin: { content: '', wordCount: 0 },
+        threads: { content: '', charCount: 0 },
+        instagram: { content: '', hashtags: [] },
+      },
+      recommendation: { bestPlatform: '', bestDay: '', bestTime: '', reason: '' },
+    }
+
+    set({
+      loading: false,
+      error: null,
+      result: emptyResult,
+      progressivePlatforms: initialProgress,
+    })
+
+    const runPlatform = async (platform: string) => {
+      set(state => ({
+        progressivePlatforms: { ...state.progressivePlatforms, [platform]: 'loading' }
+      }))
+      try {
+        const { content } = await generateSinglePlatform(
+          platform,
+          input.trim(),
+          tone !== 'auto' ? tone : undefined
+        )
+        set(state => ({
+          progressivePlatforms: { ...state.progressivePlatforms, [platform]: 'done' },
+          result: state.result ? {
+            ...state.result,
+            platforms: {
+              ...state.result.platforms,
+              [platform]: content,
+            }
+          } : null,
+        }))
+      } catch {
+        set(state => ({
+          progressivePlatforms: { ...state.progressivePlatforms, [platform]: 'error' }
+        }))
+      }
+    }
+
+    await runPlatform(ordered[0])
+    ordered.slice(1).forEach(platform => runPlatform(platform))
+
+    const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
+    await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
+    set({ recentIdeas: updated })
   },
 
   updatePlatformContent: (platform, newContent) => set(state => ({
@@ -82,6 +152,10 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
     tone: 'auto',
     result: null,
     loading: false,
-    error: null
+    error: null,
+    progressivePlatforms: {},
   })
 }))
+```
+
+**Cmd+S**
