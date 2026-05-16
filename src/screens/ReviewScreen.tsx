@@ -1,6 +1,3 @@
-**Cmd+A**, borrá todo y pegá esto:
-
-```
 import React, { useState, useEffect, useRef } from 'react'
 import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
@@ -455,6 +452,3 @@ const s = StyleSheet.create({
   successDot: { width: 6, height: 6, borderRadius: 3 },
   successPlatformName: { fontSize: 12, fontWeight: '500' },
 })
-```
-
-**Cmd+S**

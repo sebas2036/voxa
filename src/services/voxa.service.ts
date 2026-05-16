@@ -1,6 +1,3 @@
-**Cmd+A**, borrá todo y pegá esto:
-
-```
 import { API_URL } from '../constants/api'
 
 export interface VoxaResult {
@@ -72,6 +69,3 @@ export async function generateSinglePlatform(
 
   return response.json()
 }
-```
-
-**Cmd+S**

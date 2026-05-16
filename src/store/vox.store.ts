@@ -1,6 +1,3 @@
-**Cmd+A**, borrá todo y pegá esto:
-
-```
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/voxa.service'
@@ -156,6 +153,3 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
     progressivePlatforms: {},
   })
 }))
-```
-
-**Cmd+S**
