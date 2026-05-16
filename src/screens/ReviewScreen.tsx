@@ -7,6 +7,7 @@ import { useVoxStore } from '../store/vox.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
+import { trackEdit, trackPlatform } from '../services/voiceProfile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
 import * as WebBrowser from 'expo-web-browser'
@@ -437,7 +438,7 @@ export default function ReviewScreen({ navigation }: any) {
               onToggleExpand={() => setExpanded(isExp ? null : platform.key)}
               onToggleEdit={() => { setEditTexts(prev => ({ ...prev, [platform.key]: pdata.content })); setEditing(isEdit ? null : platform.key) }}
               onEditChange={(text: string) => { setEditTexts(prev => ({ ...prev, [platform.key]: text })); updatePlatformContent(platform.key, text) }}
-              onEditBlur={() => setEditing(null)}
+              onEditBlur={() => { setEditing(null); trackEdit(pdata.content, editTexts[platform.key] || pdata.content) }}
               onToggleEnabled={() => setEnabled(prev => ({ ...prev, [platform.key]: false }))}
             />
           )

@@ -29,10 +29,11 @@ server.post('/generate', async (request, reply) => {
 })
 
 server.post('/generate-single', async (request, reply) => {
-  const { platform, input, tone } = request.body as {
+  const { platform, input, tone, voiceProfile } = request.body as {
     platform: string
     input: string
     tone?: string
+    voiceProfile?: string
   }
 
   if (!platform || !input || input.trim().length === 0) {
@@ -40,7 +41,7 @@ server.post('/generate-single', async (request, reply) => {
   }
 
   try {
-    const content = await generateContentForPlatform(platform, input.trim(), tone)
+    const content = await generateContentForPlatform(platform, input.trim(), tone, voiceProfile)
     return { platform, content }
   } catch (error: any) {
     console.error(`Error generando ${platform}:`, error.message)

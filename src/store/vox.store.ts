@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/voxa.service'
+import { trackTone, buildVoiceProfilePrompt, getVoiceProfile } from '../services/voiceProfile'
 
 const HISTORY_KEY = 'voxa_recent_ideas'
 const MAX_RECENT = 10
@@ -74,6 +75,7 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
   generateProgressive: async () => {
     const { input, tone, recentIdeas } = get()
     if (!input.trim()) return
+    if (tone !== 'auto') await trackTone(tone)
     set({ loading: true, error: null })
 
     const ordered = getPlatformGenerationOrder(PREDEFINED_PLATFORMS)
