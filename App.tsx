@@ -22,7 +22,7 @@ export default function App() {
     AsyncStorage.multiRemove(['vox_enabled_platforms', 'vox_extra_platforms'])
     AsyncStorage.getItem('vox_app_management').then(val => {
       const mgmt = val ? JSON.parse(val) : {}
-      const predefined = ['twitter', 'linkedin', 'threads', 'instagram']
+      const predefined = ['twitter', 'threads', 'instagram', 'reddit']
       let changed = false
       predefined.forEach(k => { if (mgmt[k] === undefined || mgmt[k] === false) { mgmt[k] = true; changed = true } })
       if (changed) AsyncStorage.setItem('vox_app_management', JSON.stringify(mgmt))

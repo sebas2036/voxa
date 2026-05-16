@@ -5,7 +5,7 @@ import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerat
 const HISTORY_KEY = 'voxa_recent_ideas'
 const MAX_RECENT = 10
 
-const PREDEFINED_PLATFORMS = ['twitter', 'threads', 'instagram', 'linkedin']
+const PREDEFINED_PLATFORMS = ['twitter', 'threads', 'instagram', 'reddit']
 
 interface VoxaStore {
   input: string
@@ -89,6 +89,7 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
         linkedin: { content: '', wordCount: 0 },
         threads: { content: '', charCount: 0 },
         instagram: { content: '', hashtags: [] },
+        reddit: { content: '', charCount: 0 },
       },
       recommendation: { bestPlatform: '', bestDay: '', bestTime: '', reason: '' },
     }

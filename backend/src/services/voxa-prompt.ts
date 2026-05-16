@@ -80,6 +80,7 @@ const PLATFORM_SCHEMAS: Record<string, string> = {
   threads:   '{ "content": "string (100-300 chars)", "charCount": 0 }',
   instagram: '{ "content": "string", "hashtags": ["string"] }',
   linkedin:  '{ "content": "string (150-400 words)", "wordCount": 0 }',
+  reddit:    '{ "content": "string (title max 300 chars)", "charCount": 0 }',
 }
 
 const PLATFORM_RULES: Record<string, string> = {
@@ -87,6 +88,7 @@ const PLATFORM_RULES: Record<string, string> = {
   threads:   'Relaxed, spontaneous, authentic tone. 100-300 characters.',
   instagram: 'Emotional or aspirational tone. Include 3-7 relevant hashtags.',
   linkedin:  'Professional but human tone. Scannable format. End with a conversational question. 150-400 words.',
+  reddit:    'Engaging title, direct and curiosity-inducing. Max 300 characters. No hashtags.',
 }
 
 export const buildSinglePlatformPrompt = (

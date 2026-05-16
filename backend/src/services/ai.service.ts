@@ -25,7 +25,7 @@ export async function generateContentForPlatform(
 ) {
   const response = await client.messages.create({
     model: 'claude-opus-4-7',
-    max_tokens: 600,
+    max_tokens: 1200,
     messages: [{ role: 'user', content: buildSinglePlatformPrompt(platform, input, tone) }]
   })
 

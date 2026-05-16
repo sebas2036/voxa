@@ -18,11 +18,11 @@ export const PLATFORMS: Platform[] = [
     fallbackUrl: 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(''),
   },
   {
-    key: 'linkedin',
-    name: 'LinkedIn',
-    color: '#4a9eff',
-    getDeepLink: (content) => `linkedin://shareArticle?text=${encodeURIComponent(content)}`,
-    fallbackUrl: 'https://www.linkedin.com/sharing/share-offsite/?url=',
+    key: 'reddit',
+    name: 'Reddit',
+    color: '#FF4500',
+    getDeepLink: (content) => `reddit://submit?title=${encodeURIComponent(content)}`,
+    fallbackUrl: 'https://www.reddit.com/submit',
   },
   {
     key: 'threads',

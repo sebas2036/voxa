@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
 
 const ALL_EXTRA = [
+  { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
   { key: 'whatsapp', name: 'WhatsApp', color: '#25D366' },
   { key: 'telegram', name: 'Telegram', color: '#2AABEE' },
   { key: 'tiktok', name: 'TikTok', color: '#333333' },
@@ -117,7 +118,7 @@ export default function ReviewScreen({ navigation }: any) {
   const { result, reset, updatePlatformContent, progressivePlatforms } = useVoxStore()
   const { t } = useLanguage()
   const theme = useTheme()
-  const [enabled, setEnabled] = useState<Record<string, boolean>>({ twitter: true, linkedin: true, threads: true, instagram: true })
+  const [enabled, setEnabled] = useState<Record<string, boolean>>({ twitter: true, threads: true, instagram: true, reddit: true })
   const [expanded, setExpanded] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const [editTexts, setEditTexts] = useState<Record<string, string>>({})
@@ -146,7 +147,7 @@ export default function ReviewScreen({ navigation }: any) {
 
   React.useEffect(() => {
     // Forzar enabled a true para las 4 predefinidas siempre
-    setEnabled({ twitter: true, linkedin: true, threads: true, instagram: true })
+    setEnabled({ twitter: true, threads: true, instagram: true, reddit: true })
     AsyncStorage.getItem('vox_app_management').then(appVal => {
       if (appVal) setAppMgmt(JSON.parse(appVal))
     })

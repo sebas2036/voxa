@@ -37,7 +37,7 @@ export default function CaptureScreen({ navigation }: any) {
   const { t } = useLanguage()
   const theme = useTheme()
   const [showInput, setShowInput] = useState(false)
-  const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter', 'linkedin', 'threads', 'instagram'])
+  const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter', 'threads', 'instagram', 'reddit'])
   const [loadingStep, setLoadingStep] = useState(0)
   const [recentOpen, setRecentOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)

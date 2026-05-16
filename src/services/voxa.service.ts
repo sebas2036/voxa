@@ -12,6 +12,7 @@ export interface VoxaResult {
   platforms: {
     twitter: { content: string; charCount: number }
     linkedin: { content: string; wordCount: number }
+    reddit: { content: string; charCount: number }
     threads: { content: string; charCount: number }
     instagram: { content: string; hashtags: string[] }
   }
