@@ -17,7 +17,6 @@ const ALL_EXTRA = [
   { key: 'tiktok', name: 'TikTok', color: '#333333' },
   { key: 'facebook', name: 'Facebook', color: '#1877F2' },
   { key: 'pinterest', name: 'Pinterest', color: '#E60023' },
-  { key: 'reddit', name: 'Reddit', color: '#FF4500' },
 ]
 
 const PLATFORMS = PLATFORM_CONFIGS
@@ -146,8 +145,16 @@ export default function ReviewScreen({ navigation }: any) {
   }, [result])
 
   React.useEffect(() => {
-    // Forzar enabled a true para las 4 predefinidas siempre
-    setEnabled({ twitter: true, threads: true, instagram: true, reddit: true })
+    // Respetar configuración de gestión de apps
+    AsyncStorage.getItem('vox_app_management').then(val => {
+      const mgmt = val ? JSON.parse(val) : {}
+      setEnabled({
+        twitter: mgmt.twitter !== false,
+        threads: mgmt.threads !== false,
+        instagram: mgmt.instagram !== false,
+        reddit: mgmt.reddit !== false,
+      })
+    })
     AsyncStorage.getItem('vox_app_management').then(appVal => {
       if (appVal) setAppMgmt(JSON.parse(appVal))
     })
