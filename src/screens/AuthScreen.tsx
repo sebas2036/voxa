@@ -33,7 +33,7 @@ export default function AuthScreen({ navigation }: any) {
       } else {
         const { error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
-        setSuccess(t.lang === 'es' ? 'Revisá tu email para confirmar tu cuenta' : 'Check your email to confirm your account')
+        setSuccess(t.checkEmail)
       }
     } catch (e: any) {
       setError(e.message)
@@ -51,7 +51,7 @@ export default function AuthScreen({ navigation }: any) {
         </View>
         <View style={s.form}>
           <Text style={[s.formTitle, { color: theme.text }]}>
-            {mode === 'login' ? (t.lang === 'es' ? 'iniciar sesión' : 'sign in') : (t.lang === 'es' ? 'crear cuenta' : 'create account')}
+            {mode === 'login' ? t.signIn : t.createAccount}
           </Text>
           <TextInput
             style={[s.input, { backgroundColor: theme.bgSecondary, borderColor: theme.border, color: theme.text }]}
@@ -64,7 +64,7 @@ export default function AuthScreen({ navigation }: any) {
           />
           <TextInput
             style={[s.input, { backgroundColor: theme.bgSecondary, borderColor: theme.border, color: theme.text }]}
-            placeholder={t.lang === 'es' ? 'contraseña' : 'password'}
+            placeholder={t.password}
             placeholderTextColor={theme.textMuted}
             value={password}
             onChangeText={setPassword}
@@ -75,16 +75,16 @@ export default function AuthScreen({ navigation }: any) {
           <TouchableOpacity style={[s.btn, { backgroundColor: theme.accent }, loading && s.btnDisabled]} onPress={handleAuth} disabled={loading}>
             {loading
               ? <ActivityIndicator color={theme.bg} />
-              : <Text style={[s.btnText, { color: theme.bg }]}>{mode === 'login' ? (t.lang === 'es' ? 'entrar' : 'sign in') : (t.lang === 'es' ? 'crear cuenta' : 'create account')}</Text>
+              : <Text style={[s.btnText, { color: theme.bg }]}>{mode === 'login' ? t.enter : t.createAccount}</Text>
             }
           </TouchableOpacity>
           <TouchableOpacity onPress={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(null) }}>
             <Text style={[s.switchText, { color: theme.textMuted }]}>
-              {mode === 'login' ? (t.lang === 'es' ? '¿No tenés cuenta? Registrate' : "Don't have an account? Sign up") : (t.lang === 'es' ? '¿Ya tenés cuenta? Iniciá sesión' : 'Already have an account? Sign in')}
+              {mode === 'login' ? t.noAccount : t.haveAccount}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.replace('Capture')} style={s.skipBtn}>
-            <Text style={[s.skipText, { color: theme.textMuted }]}>{t.lang === 'es' ? 'continuar sin cuenta' : 'continue without account'}</Text>
+            <Text style={[s.skipText, { color: theme.textMuted }]}>{t.continueWithout}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

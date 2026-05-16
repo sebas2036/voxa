@@ -27,6 +27,18 @@ const ALL_PLATFORM_ICONS: Record<string, { icon: string, lib: string, color: str
 }
 
 const HINTS_ES = ['hablá', 'revisá', 'publicá']
+const HINTS_MAP: Record<string, string[]> = {
+  es: ['hablá', 'revisá', 'publicá'],
+  en: ['speak', 'review', 'publish'],
+  zh: ['说', '审阅', '发布'],
+  hi: ['बोलें', 'समीक्षा', 'प्रकाशित'],
+  ar: ['تحدث', 'راجع', 'انشر'],
+  pt: ['fale', 'revise', 'publique'],
+  ru: ['говорите', 'просмотр', 'публикуй'],
+  ja: ['話す', 'レビュー', '投稿'],
+  fr: ['parlez', 'révisez', 'publiez'],
+  de: ['sprechen', 'überprüfen', 'veröffentlichen'],
+}
 const LOADING_ES = ['analizando...', 'generando...', 'casi listo...']
 const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
@@ -65,7 +77,7 @@ export default function CaptureScreen({ navigation }: any) {
       Animated.sequence([
         Animated.timing(hintOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
       ]).start(() => {
-        setHintIndex(i => (i + 1) % (t.lang === 'en' ? HINTS_EN : HINTS_ES).length)
+        setHintIndex(i => (i + 1) % (HINTS_MAP[t.lang] || HINTS_ES).length)
         Animated.timing(hintOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start()
       })
     }, 1800)
@@ -138,7 +150,7 @@ export default function CaptureScreen({ navigation }: any) {
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
             </TouchableOpacity>
           </View>
-          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.lang === 'es' ? 'tu voz, en todas tus redes' : 'your voice, across all your networks'}</Text>
+          <Text style={[s.tagline, { color: theme.textMuted }]}>{t.tagline}</Text>
         </View>
 
         <View style={s.micArea}>
@@ -154,7 +166,7 @@ export default function CaptureScreen({ navigation }: any) {
               <Ionicons name="mic" size={38} color={theme.bg} />
             </TouchableOpacity>
           </View>
-          <Animated.Text style={[s.hintText, { color: theme.text, opacity: hintOpacity }]}>{(t.lang === 'en' ? HINTS_EN : HINTS_ES)[hintIndex]}</Animated.Text>
+          <Animated.Text style={[s.hintText, { color: theme.text, opacity: hintOpacity }]}>{(HINTS_MAP[t.lang] || HINTS_ES)[hintIndex]}</Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
             <Text style={[s.orWrite, { color: theme.textSecondary }]}>{t.orWrite}</Text>
           </TouchableOpacity>
