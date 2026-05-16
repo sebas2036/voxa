@@ -190,8 +190,7 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.toneSection}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.toneLabel}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={s.toneRow}>
+          <View style={s.tonesWrap}>
               {TONES.map(key => (
                 <TouchableOpacity
                   key={key}
@@ -203,8 +202,7 @@ export default function CaptureScreen({ navigation }: any) {
                   </Text>
                 </TouchableOpacity>
               ))}
-            </View>
-          </ScrollView>
+          </View>
         </View>
 
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
@@ -304,6 +302,7 @@ const s = StyleSheet.create({
   inputContainer: { marginBottom: 24 },
   input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: "300", minHeight: 90, lineHeight: 24 },
   toneSection: { marginBottom: 28 },
+  tonesWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4, justifyContent: 'center' },
   sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
   toneRow: { flexDirection: "row", gap: 8 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5 },
@@ -316,7 +315,7 @@ const s = StyleSheet.create({
   loadingText: { fontSize: 15, fontWeight: '400', letterSpacing: 0.3 },
   generateBtnText: { fontSize: 17, fontWeight: "500" },
   recentSection: { marginBottom: 24 },
-  recentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, borderBottomWidth: 0.5 },
+  recentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 10, borderBottomWidth: 0.5, gap: 8 },
   recentLabel: { fontSize: 11, letterSpacing: 2, textTransform: "uppercase" },
   recentItem: { flexDirection: "row", alignItems: "center", paddingVertical: 12, borderBottomWidth: 0.5 },
   recentItemText: { fontSize: 13, flex: 1 },
