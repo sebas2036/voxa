@@ -5,11 +5,11 @@ import { Ionicons } from '@expo/vector-icons'
 export type MicState = 'idle' | 'recording' | 'thinking' | 'generating' | 'ready'
 
 export const MIC_STATES = {
-  idle:       { color: '#c8b99a', pulseSpeed: 2400, pulseScale: 1.8 },
-  recording:  { color: '#ff3b30', pulseSpeed: 800,  pulseScale: 2.2 },
-  thinking:   { color: '#4a9eff', pulseSpeed: 1200, pulseScale: 2.0 },
-  generating: { color: '#2e7d52', pulseSpeed: 1600, pulseScale: 2.6 },
-  ready:      { color: '#c8b99a', pulseSpeed: 400,  pulseScale: 1.4 },
+  idle:       { color: '#c8b99a', pulseSpeed: 3000 },
+  recording:  { color: '#ff3b30', pulseSpeed: 900  },
+  thinking:   { color: '#4a9eff', pulseSpeed: 2000 },
+  generating: { color: '#2e7d52', pulseSpeed: 2400 },
+  ready:      { color: '#c8b99a', pulseSpeed: 1200 },
 }
 
 interface MicButtonProps {
@@ -19,45 +19,66 @@ interface MicButtonProps {
 }
 
 export function MicButton({ micState, onPress, bgColor }: MicButtonProps) {
-  const ring1 = useRef(new Animated.Value(0)).current
-  const ring2 = useRef(new Animated.Value(0)).current
-  const ring3 = useRef(new Animated.Value(0)).current
-
-  const animateRing = (anim: Animated.Value, delay: number, speed: number) =>
-    Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(anim, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
-        Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
-      ])
-    )
-
-  const makeRingStyle = (anim: Animated.Value) => ({
-    opacity: anim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 0.25, 0] }),
-    transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 2.8] }) }]
-  })
+  const breath = useRef(new Animated.Value(0)).current
+  const ring2  = useRef(new Animated.Value(0)).current
+  const ring3  = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
+    breath.stopAnimation(); breath.setValue(0)
+    ring2.stopAnimation();  ring2.setValue(0)
+    ring3.stopAnimation();  ring3.setValue(0)
+
+    if (micState === 'idle') return
+
     const speed = MIC_STATES[micState].pulseSpeed
-    const delay = speed / 3
-    if (micState !== 'idle') {
-      animateRing(ring1, 0, speed).start()
-      animateRing(ring2, delay, speed).start()
-      animateRing(ring3, delay * 2, speed).start()
-    } else {
-      ring1.stopAnimation(); ring1.setValue(0)
-      ring2.stopAnimation(); ring2.setValue(0)
-      ring3.stopAnimation(); ring3.setValue(0)
+
+    // Respiración principal — sube y baja suave
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(breath, { toValue: 1, duration: speed, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(breath, { toValue: 0, duration: speed, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    ).start()
+
+    // Solo recording usa los 3 anillos — más intenso
+    if (micState === 'recording') {
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(speed * 0.33),
+          Animated.timing(ring2, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+          Animated.timing(ring2, { toValue: 0, duration: 0, useNativeDriver: true }),
+        ])
+      ).start()
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(speed * 0.66),
+          Animated.timing(ring3, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+          Animated.timing(ring3, { toValue: 0, duration: 0, useNativeDriver: true }),
+        ])
+      ).start()
     }
   }, [micState])
 
   const color = MIC_STATES[micState].color
 
+  const breathStyle = {
+    opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [0, 0.18] }),
+    transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 2.2] }) }]
+  }
+  const ringStyle = (anim: Animated.Value) => ({
+    opacity: anim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 0.15, 0] }),
+    transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 2.8] }) }]
+  })
+
   return (
     <View style={s.micWrapper}>
-      <Animated.View style={[s.ring, { backgroundColor: color }, makeRingStyle(ring1)]} />
-      <Animated.View style={[s.ring, { backgroundColor: color }, makeRingStyle(ring2)]} />
-      <Animated.View style={[s.ring, { backgroundColor: color }, makeRingStyle(ring3)]} />
+      <Animated.View style={[s.ring, { backgroundColor: color }, breathStyle]} />
+      {micState === 'recording' && (
+        <>
+          <Animated.View style={[s.ring, { backgroundColor: color }, ringStyle(ring2)]} />
+          <Animated.View style={[s.ring, { backgroundColor: color }, ringStyle(ring3)]} />
+        </>
+      )}
       <TouchableOpacity style={[s.micBtn, { backgroundColor: color }]} onPress={onPress} activeOpacity={0.85}>
         <Ionicons name={micState === 'recording' ? 'stop' : 'mic'} size={38} color={bgColor} />
       </TouchableOpacity>

@@ -4,6 +4,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { AnimatedDots } from './AnimatedDots'
 import { applyTextStyle, STYLE_OPTIONS, TextStyleType } from '../utils/textStyles'
 
+const DARK_COLORS = ['#1a1a1a', '#333333', '#000000', '#1a1a2e', '#444444', '#555555']
+const getVisibleColor = (color: string, fallback: string) => DARK_COLORS.includes(color) ? fallback : color
+
 export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, theme, t }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(12)).current
@@ -29,7 +32,7 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
               <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>
                 {pdata.content.slice(0, 42)}
               </Text>
-              <AnimatedDots color={platform.color} />
+              <AnimatedDots color={platform.color} fallbackColor={theme.text} />
             </View>
           )}
           <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
@@ -51,10 +54,10 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
               {(STYLE_OPTIONS as any[]).map(style => (
                 <TouchableOpacity
                   key={style.key}
-                  style={[s.styleBtn, textStyle === style.key && { borderColor: platform.color, backgroundColor: platform.color + '15' }]}
+                  style={[s.styleBtn, textStyle === style.key && { borderColor: getVisibleColor(platform.color, theme.accent), backgroundColor: getVisibleColor(platform.color, theme.accent) + '30' }]}
                   onPress={() => setTextStyle(style.key)}
                 >
-                  <Text style={[s.styleBtnText, { color: textStyle === style.key ? platform.color : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
+                  <Text style={[s.styleBtnText, { color: textStyle === style.key ? getVisibleColor(platform.color, theme.accent) : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
                     {style.label}
                   </Text>
                 </TouchableOpacity>

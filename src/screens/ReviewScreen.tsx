@@ -6,7 +6,7 @@ import {
 import { useGlosXStore } from '../store/glosx.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
-import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
+import { PLATFORMS, publishToAll } from '../utils/deeplinks'
 import { trackEdit, trackPlatform } from '../services/voiceProfile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
@@ -40,10 +40,10 @@ export default function ReviewScreen({ navigation }: any) {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
 
+  const { extraPlatforms, setExtraPlatforms, extraContents, setExtraContents, loadingExtra, generateExtraContent } = useExtraPlatforms(result, t)
   const { publishing, published, setPublished, handlePublish } = usePublish({
     result, extraContents, enabled, extraPlatforms, PLATFORMS, reset, navigation, t, showOnboarding, setShowOnboarding
   })
-  const { extraPlatforms, setExtraPlatforms, extraContents, setExtraContents, loadingExtra, generateExtraContent } = useExtraPlatforms(result, t)
   const [appMgmt, setAppMgmt] = useState<Record<string, boolean>>({})
   const [extraTextStyles, setExtraTextStyles] = useState<Record<string, string>>({})
 
@@ -214,7 +214,7 @@ export default function ReviewScreen({ navigation }: any) {
                       <ActivityIndicator size="small" color="#2e7d52" />
                       <Text style={{ color: '#2e7d52', fontSize: 12 }}>{t.lang === 'es' ? 'generando...' : 'generating...'}</Text>
                     </View>
-                  : !isExp && <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}><Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 42)}</Text><AnimatedDots color={platform.color} /></View>
+                  : !isExp && <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}><Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 42)}</Text><AnimatedDots color={platform.color} fallbackColor={theme.text} /></View>
                 }
                 <Ionicons name={isExp ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
                 <Switch

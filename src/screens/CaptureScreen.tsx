@@ -140,12 +140,10 @@ export default function CaptureScreen({ navigation }: any) {
     if (!input.trim()) return
     setLoadingStep(0)
     setIsGenerating(true)
-    setMicState('thinking')
-    setEmotionalHintIndex(0)
-    setTimeout(() => setMicState('generating'), 800)
+    setMicState('generating')
     await generateProgressive()
     setMicState('ready')
-    setTimeout(() => { setIsGenerating(false); setMicState('idle'); navigation.navigate('Review') }, 600)
+    setTimeout(() => { setIsGenerating(false); setMicState('idle'); navigation.navigate('Review') }, 1200)
   }
 
   const makeRingStyle = (anim: Animated.Value) => ({

@@ -78,10 +78,36 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRoute}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          cardStyleInterpolator: ({ current, layouts }) => ({
+            cardStyle: {
+              opacity: current.progress.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }),
+              transform: [{
+                translateX: current.progress.interpolate({ inputRange: [0, 1], outputRange: [layouts.screen.width * 0.04, 0] })
+              }]
+            }
+          }),
+          transitionSpec: {
+            open: { animation: 'spring', config: { stiffness: 280, damping: 32, mass: 0.8 } },
+            close: { animation: 'spring', config: { stiffness: 280, damping: 32, mass: 0.8 } },
+          }
+        }}
+        initialRouteName={initialRoute}
+      >
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Capture" component={CaptureScreen} />
-        <Stack.Screen name="Review" component={ReviewScreen} />
+        <Stack.Screen name="Review" component={ReviewScreen} options={{
+          cardStyleInterpolator: ({ current, layouts }) => ({
+            cardStyle: {
+              opacity: current.progress.interpolate({ inputRange: [0, 1], outputRange: [0, 1] }),
+              transform: [{
+                translateY: current.progress.interpolate({ inputRange: [0, 1], outputRange: [layouts.screen.height * 0.06, 0] })
+              }]
+            }
+          })
+        }} />
         <Stack.Screen name="Confirm" component={ConfirmScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="Apps" component={AppsScreen} />
