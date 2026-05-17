@@ -11,6 +11,7 @@ import { useTheme } from '../theme'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
 import { MicButton } from '../components/MicButton'
+import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
@@ -66,6 +67,7 @@ export default function CaptureScreen({ navigation }: any) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
   const [micState, setMicState] = useState<MicState>('idle')
+  const { isOnline } = useNetworkStatus()
   const [emotionalHintIndex, setEmotionalHintIndex] = useState(0)
   const micColor = useRef(new Animated.Value(0)).current
 
@@ -170,6 +172,11 @@ export default function CaptureScreen({ navigation }: any) {
             </TouchableOpacity>
           </View>
           <Text style={[s.tagline, { color: theme.textMuted }]}>{t.tagline}</Text>
+          {!isOnline && (
+            <View style={[s.offlineBadge, { backgroundColor: '#ff3b3015', borderColor: '#ff3b3040' }]}>
+              <Text style={[s.offlineText, { color: '#ff3b30' }]}>{t.lang === 'es' ? '✈ modo sin conexión' : '✈ offline mode'}</Text>
+            </View>
+          )}
         </View>
 
         <View style={s.micArea}>
@@ -316,6 +323,8 @@ const s = StyleSheet.create({
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5 },
   tonePillText: { fontSize: 12 },
   errorBox: { borderRadius: 10, padding: 12, marginBottom: 16 },
+  offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
+  offlineText: { fontSize: 11, fontWeight: '500' },
   errorText: { fontSize: 12 },
   generateBtn: { borderRadius: 14, height: 52, alignItems: "center", justifyContent: "center", marginBottom: 24 },
   generateBtnDisabled: { opacity: 0.4 },
