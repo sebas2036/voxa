@@ -4,7 +4,7 @@ import {
   StyleSheet, SafeAreaView, ScrollView,
   ActivityIndicator, Animated, Easing, Alert, PanResponder
 } from 'react-native'
-import { useVoxStore } from '../store/glosx.store'
+import { useGlosXStore } from '../store/glosx.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
@@ -44,7 +44,7 @@ const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
 
 export default function CaptureScreen({ navigation }: any) {
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useVoxStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useGlosXStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
@@ -143,7 +143,7 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.header}>
           <View style={s.headerTop}>
-            <Text style={[s.logo, { color: theme.text }]}>vo<Text style={[s.logoAccent, { color: theme.accent }]}>x</Text></Text>
+            <Text style={[s.logo, { color: theme.text }]}>Glos<Text style={[s.logoAccent, { color: theme.accent }]}>X</Text></Text>
             <TouchableOpacity style={s.menuBtn} onPress={() => navigation.navigate('Settings')}>
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />

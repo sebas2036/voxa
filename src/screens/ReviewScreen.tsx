@@ -3,7 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
   ScrollView, Switch, TextInput, ActivityIndicator, Modal, Animated
 } from 'react-native'
-import { useVoxStore } from '../store/glosx.store'
+import { useGlosXStore } from '../store/glosx.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
@@ -192,7 +192,7 @@ function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enable
 }
 
 export default function ReviewScreen({ navigation }: any) {
-  const { result, reset, updatePlatformContent, progressivePlatforms } = useVoxStore()
+  const { result, reset, updatePlatformContent, progressivePlatforms } = useGlosXStore()
   const { t } = useLanguage()
   const theme = useTheme()
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ twitter: true, threads: true, instagram: true, reddit: true })

@@ -255,7 +255,7 @@ export default function SettingsScreen({ navigation }: any) {
         <View style={s.section}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.about}</Text>
           <View style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
-            <Text style={[s.rowText, { color: theme.text }]}>vox</Text>
+            <Text style={[s.rowText, { color: theme.text }]}>GlosX</Text>
             <Text style={[s.rowValue, { color: theme.textMuted }]}>v0.1.0</Text>
           </View>
           <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate('Terms')}>

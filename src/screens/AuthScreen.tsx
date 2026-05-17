@@ -46,7 +46,7 @@ export default function AuthScreen({ navigation }: any) {
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.container}>
         <View style={s.header}>
-          <Text style={[s.logo, { color: theme.text }]}>vo<Text style={[s.logoAccent, { color: theme.accent }]}>x</Text></Text>
+          <Text style={[s.logo, { color: theme.text }]}>Glos<Text style={[s.logoAccent, { color: theme.accent }]}>X</Text></Text>
           <Text style={[s.tagline, { color: theme.textMuted }]}>{t.tagline}</Text>
         </View>
         <View style={s.form}>

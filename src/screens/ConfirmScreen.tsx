@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Share, Alert } from 'react-native'
-import { useVoxStore } from '../store/glosx.store'
+import { useGlosXStore } from '../store/glosx.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 
@@ -12,7 +12,7 @@ const PLATFORMS = [
 ]
 
 export default function ConfirmScreen({ navigation }: any) {
-  const { result, reset } = useVoxStore()
+  const { result, reset } = useGlosXStore()
   const { t } = useLanguage()
   const theme = useTheme()
   const [enabled, setEnabled] = useState({ twitter: true, linkedin: true, threads: true, instagram: true })

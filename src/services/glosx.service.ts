@@ -1,6 +1,6 @@
 import { API_URL } from '../constants/api'
 
-export interface GlosXResult {
+export interface VoxaResult {
   detectedLanguage: 'spanish' | 'english'
   analysis: {
     topic: string
@@ -37,7 +37,7 @@ export function getPlatformGenerationOrder(platforms: string[]): string[] {
 export async function generateContent(
   input: string,
   tone?: string
-): Promise<GlosXResult> {
+): Promise<VoxaResult> {
   const response = await fetch(`${API_URL}/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -57,7 +57,7 @@ export async function generateSinglePlatform(
   input: string,
   tone?: string,
   voiceProfile?: string
-): Promise<{ platform: string; content: GlosXResult['platforms'][keyof GlosXResult['platforms']] }> {
+): Promise<{ platform: string; content: VoxaResult['platforms'][keyof VoxaResult['platforms']] }> {
   const response = await fetch(`${API_URL}/generate-single`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

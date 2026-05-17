@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { GlosXResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/GlosX.service'
+import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/glosx.service'
 import { trackTone, buildVoiceProfilePrompt, getVoiceProfile } from '../services/voiceProfile'
 import { cacheResult, getCachedResult, isOnline } from '../utils/cache'
 
@@ -12,7 +12,7 @@ const PREDEFINED_PLATFORMS = ['twitter', 'threads', 'instagram', 'reddit']
 interface GlosXStore {
   input: string
   tone: string
-  result: GlosXResult | null
+  result: VoxaResult | null
   loading: boolean
   error: string | null
   recentIdeas: string[]
@@ -28,7 +28,7 @@ interface GlosXStore {
   reset: () => void
 }
 
-export const useVoxStore = create<GlosXStore>((set, get) => ({
+export const useGlosXStore = create<GlosXStore>((set, get) => ({
   input: '',
   tone: 'auto',
   result: null,
@@ -94,7 +94,7 @@ export const useVoxStore = create<GlosXStore>((set, get) => ({
     const initialProgress: Record<string, 'pending' | 'loading' | 'done' | 'error'> = {}
     ordered.forEach(p => { initialProgress[p] = 'pending' })
 
-    const emptyResult: GlosXResult = {
+    const emptyResult: VoxaResult = {
       detectedLanguage: 'spanish',
       analysis: { topic: input.trim(), emotion: '', intent: '', audience: '', contentType: '' },
       platforms: {
