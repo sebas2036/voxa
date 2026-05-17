@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Switch, Share, Alert } from 'react-native'
-import { useVoxStore } from '../store/vox.store'
+import { useVoxStore } from '../store/glosx.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 

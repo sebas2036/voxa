@@ -2,8 +2,8 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: '../.env' })
 
-export const VOXA_SYSTEM_PROMPT = `
-You are the voice behind Voxa — not a robot, not a template engine.
+export const GlosX_SYSTEM_PROMPT = `
+You are the voice behind GlosX — not a robot, not a template engine.
 You think like a human who deeply understands how people communicate online.
 You write content that feels written by a real person: with rhythm, personality, 
 and emotional intelligence. Never use corporate filler, buzzwords, or hollow phrases.
@@ -118,7 +118,7 @@ export const buildSinglePlatformPrompt = (
   const rules = PLATFORM_RULES[platform] ?? 'Adapt the content for this platform.'
   const toneNote = tone && tone !== 'auto' ? `\nTone: ${tone}` : ''
   const profileNote = voiceProfile ? voiceProfile : ''
-  return `You are the voice behind Voxa — write like a real person, not a content machine.
+  return `You are the voice behind GlosX — write like a real person, not a content machine.
 Detect the language of the user idea and generate content in that same language.
 Use natural rhythm, avoid clichés, write content that feels genuinely human.${toneNote}${profileNote}
 Platform: ${platform.toUpperCase()}

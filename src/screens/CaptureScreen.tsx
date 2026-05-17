@@ -4,7 +4,7 @@ import {
   StyleSheet, SafeAreaView, ScrollView,
   ActivityIndicator, Animated, Easing, Alert, PanResponder
 } from 'react-native'
-import { useVoxStore } from '../store/vox.store'
+import { useVoxStore } from '../store/glosx.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
@@ -64,7 +64,7 @@ export default function CaptureScreen({ navigation }: any) {
 
   useEffect(() => {
     loadRecentIdeas()
-    AsyncStorage.getItem('vox_last_platforms').then(val => {
+    AsyncStorage.getItem('glosx_last_platforms').then(val => {
       if (val) {
         const keys = JSON.parse(val)
         if (keys.length > 0) setActivePlatformKeys(keys)

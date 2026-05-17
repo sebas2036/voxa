@@ -8,7 +8,7 @@ const client = new Anthropic({
 })
 
 async function testClaude() {
-  console.log('🎙  Voxa — Test conexión Claude API...\n')
+  console.log('🎙  GlosX — Test conexión Claude API...\n')
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-5',
@@ -16,7 +16,7 @@ async function testClaude() {
     messages: [
       {
         role: 'user',
-        content: 'Sos el núcleo de Voxa, una app de creación de contenido. Respondé en una sola línea: ¿estás listo para transformar ideas en contenido?'
+        content: 'Sos el núcleo de GlosX, una app de creación de contenido. Respondé en una sola línea: ¿estás listo para transformar ideas en contenido?'
       }
     ]
   })

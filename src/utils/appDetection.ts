@@ -26,7 +26,7 @@ export async function detectInstalledApps(): Promise<Record<string, boolean>> {
 }
 
 export async function initAppManagement() {
-  const existing = await AsyncStorage.getItem('vox_app_management')
+  const existing = await AsyncStorage.getItem('glosx_app_management')
   if (existing) return
   const installed = await detectInstalledApps()
   const DEFAULT_ON = ['twitter', 'threads', 'instagram', 'reddit']
@@ -34,5 +34,5 @@ export async function initAppManagement() {
   for (const key of Object.keys(APP_SCHEMES)) {
     mgmt[key] = DEFAULT_ON.includes(key) ? true : installed[key] === true
   }
-  await AsyncStorage.setItem('vox_app_management', JSON.stringify(mgmt))
+  await AsyncStorage.setItem('glosx_app_management', JSON.stringify(mgmt))
 }

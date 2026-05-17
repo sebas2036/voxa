@@ -31,18 +31,18 @@ export default function AppsScreen({ navigation }: any) {
   const [enabled, setEnabled] = useState<Record<string, boolean>>(DEFAULT_STATE)
 
   useEffect(() => {
-    AsyncStorage.getItem('vox_app_management').then(val => {
+    AsyncStorage.getItem('glosx_app_management').then(val => {
       if (val) {
         const saved = JSON.parse(val)
         if (saved.__v !== 3) {
           setEnabled(DEFAULT_STATE)
-          AsyncStorage.setItem('vox_app_management', JSON.stringify(DEFAULT_STATE))
+          AsyncStorage.setItem('glosx_app_management', JSON.stringify(DEFAULT_STATE))
         } else {
           setEnabled(saved)
         }
       } else {
         setEnabled(DEFAULT_STATE)
-        AsyncStorage.setItem('vox_app_management', JSON.stringify(DEFAULT_STATE))
+        AsyncStorage.setItem('glosx_app_management', JSON.stringify(DEFAULT_STATE))
       }
     })
   }, [])
@@ -50,7 +50,7 @@ export default function AppsScreen({ navigation }: any) {
   const toggle = async (key: string) => {
     const updated = { ...enabled, [key]: enabled[key] === false ? true : false }
     setEnabled(updated)
-    await AsyncStorage.setItem('vox_app_management', JSON.stringify(updated))
+    await AsyncStorage.setItem('glosx_app_management', JSON.stringify(updated))
   }
 
   return (

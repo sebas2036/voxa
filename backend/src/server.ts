@@ -7,7 +7,7 @@ const server = Fastify({ logger: true })
 server.register(cors, { origin: '*' })
 
 server.get('/health', async () => {
-  return { status: 'ok', service: 'voxa-api' }
+  return { status: 'ok', service: 'GlosX-api' }
 })
 
 server.post('/generate', async (request, reply) => {
@@ -62,11 +62,11 @@ server.post('/generate-extra', async (request, reply) => {
     }
     const rules = platformRules[platform] || (lang === 'es' ? `Adaptalo para ${platform} con su tono típico.` : `Adapt it for ${platform} with its typical tone.`)
     const prompt = lang === 'es'
-      ? `Sos la voz detrás de Voxa. Escribís como una persona real, no una máquina.
+      ? `Sos la voz detrás de GlosX. Escribís como una persona real, no una máquina.
 Tenés este contenido sobre "${topic}": "${baseContent}".
 Adaptalo para ${platform}. Reglas: ${rules}
 Solo devolvé el texto adaptado, sin explicaciones.`
-      : `You are the voice behind Voxa. You write like a real person, not a machine.
+      : `You are the voice behind GlosX. You write like a real person, not a machine.
 You have this content about "${topic}": "${baseContent}".
 Adapt it for ${platform}. Rules: ${rules}
 Return only the adapted text, no explanations.`
@@ -88,7 +88,7 @@ Return only the adapted text, no explanations.`
 // Twitter OAuth 2.0
 server.get('/auth/twitter', async (request, reply) => {
   const clientId = process.env.TWITTER_CLIENT_ID
-  const redirectUri = 'voxa://auth/twitter'
+  const redirectUri = 'GlosX://auth/twitter'
   const scope = 'tweet.read tweet.write users.read offline.access'
   const state = Math.random().toString(36).substring(2)
   const codeVerifier = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
@@ -101,7 +101,7 @@ server.post('/auth/twitter/callback', async (request, reply) => {
   const { code, codeVerifier } = request.body as any
   const clientId = process.env.TWITTER_CLIENT_ID
   const clientSecret = process.env.TWITTER_CLIENT_SECRET
-  const redirectUri = 'voxa://auth/twitter'
+  const redirectUri = 'GlosX://auth/twitter'
   try {
     const params = new URLSearchParams({
       code,
@@ -152,7 +152,7 @@ server.post('/publish/twitter', async (request, reply) => {
 const start = async () => {
   try {
     await server.listen({ port: 3000, host: '0.0.0.0' })
-    console.log('Voxa API corriendo en http://localhost:3000')
+    console.log('GlosX API corriendo en http://localhost:3000')
   } catch (err) {
     console.error(err)
     process.exit(1)

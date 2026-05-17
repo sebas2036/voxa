@@ -5,7 +5,7 @@ import { translations } from '../i18n/translations'
 
 export type LanguagePreference = 'auto' | 'es' | 'en' | 'zh' | 'hi' | 'ar' | 'pt' | 'ru' | 'ja' | 'fr' | 'de'
 
-const LANG_KEY = 'voxa_language_preference'
+const LANG_KEY = 'GlosX_language_preference'
 
 let _preference: LanguagePreference = 'auto'
 let _listeners: Array<() => void> = []

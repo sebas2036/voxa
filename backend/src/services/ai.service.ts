@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { VOXA_SYSTEM_PROMPT, buildUserPrompt, buildSinglePlatformPrompt } from './voxa-prompt'
+import { GlosX_SYSTEM_PROMPT, buildUserPrompt, buildSinglePlatformPrompt } from './GlosX-prompt'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
@@ -9,7 +9,7 @@ export async function generateContent(input: string, styleProfile?: string) {
   const response = await client.messages.create({
     model: 'claude-opus-4-7',
     max_tokens: 1500,
-    system: VOXA_SYSTEM_PROMPT,
+    system: GlosX_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: buildUserPrompt(input, styleProfile) }]
   })
 

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const CACHE_KEY = 'voxa_result_cache'
+const CACHE_KEY = 'GlosX_result_cache'
 const MAX_CACHE = 10
 
 export interface CachedResult {

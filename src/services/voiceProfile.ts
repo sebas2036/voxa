@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const PROFILE_KEY = 'voxa_voice_profile'
+const PROFILE_KEY = 'GlosX_voice_profile'
 
 export interface VoiceProfile {
   preferredTones: Record<string, number>  // tono -> cantidad de veces usado

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Vox",
-    "slug": "vox",
+    "name": "GlosX",
+    "slug": "glosx",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,7 +19,7 @@
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.sebasjasinsky.vox",
+      "bundleIdentifier": "com.sebasjasinsky.glosx",
       "associatedDomains": []
     },
     "android": {
@@ -31,22 +31,5 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-speech-recognition",
-      "expo-localization",
-      "expo-web-browser"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "87c33e3f-9a67-4673-9feb-b274f18c648a"
-      }
-    },
-    "owner": "sebasjasinsky",
-    "scheme": "voxa"
-  }
-}
+      ],
+      "package": 

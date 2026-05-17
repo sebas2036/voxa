@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv'
 import { generateContent } from './services/ai.service'
 
 async function run() {
-  console.log('🎙  Voxa — Test de generación real')
+  console.log('🎙  GlosX — Test de generación real')
   console.log('===================================\n')
 
   console.log('🇦🇷  Test español...')

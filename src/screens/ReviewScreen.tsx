@@ -3,7 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
   ScrollView, Switch, TextInput, ActivityIndicator, Modal, Animated
 } from 'react-native'
-import { useVoxStore } from '../store/vox.store'
+import { useVoxStore } from '../store/glosx.store'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
@@ -245,7 +245,7 @@ export default function ReviewScreen({ navigation }: any) {
   }, [result])
 
   React.useEffect(() => {
-    AsyncStorage.getItem('vox_app_management').then(appVal => {
+    AsyncStorage.getItem('glosx_app_management').then(appVal => {
       const mgmt = appVal ? JSON.parse(appVal) : {}
       setEnabled({
         twitter:   mgmt.twitter   !== false,
@@ -254,7 +254,7 @@ export default function ReviewScreen({ navigation }: any) {
         reddit:    mgmt.reddit    !== false,
       })
       setAppMgmt(mgmt)
-      AsyncStorage.getItem('vox_extra_platforms').then(val => {
+      AsyncStorage.getItem('glosx_extra_platforms').then(val => {
         const saved: any[] = val ? JSON.parse(val) : []
         const REMOVED = ['email']
         const fromMgmt = ALL_EXTRA.filter((app: any) =>
@@ -275,7 +275,7 @@ export default function ReviewScreen({ navigation }: any) {
 
   React.useEffect(() => {
     if (extraPlatforms.length > 0)
-      AsyncStorage.setItem('vox_extra_platforms', JSON.stringify(extraPlatforms))
+      AsyncStorage.setItem('glosx_extra_platforms', JSON.stringify(extraPlatforms))
   }, [extraPlatforms])
 
   if (!result) return null
@@ -309,7 +309,7 @@ export default function ReviewScreen({ navigation }: any) {
         const res = await fetch('http://192.168.0.23:3000/auth/twitter')
         const { url, codeVerifier } = await res.json()
         await AsyncStorage.setItem('twitter_code_verifier', codeVerifier)
-        const authResult = await WebBrowser.openAuthSessionAsync(url, 'voxa://auth/twitter')
+        const authResult = await WebBrowser.openAuthSessionAsync(url, 'GlosX://auth/twitter')
         if (authResult.type === 'success' && authResult.url) {
           const parsed = Linking.parse(authResult.url)
           const code = parsed.queryParams?.code as string
@@ -338,7 +338,7 @@ export default function ReviewScreen({ navigation }: any) {
       contents[platform.key] = extraContents[platform.key] || ''
     })
     const usedKeys = [...new Set([...activePredefined.map(p => p.key), ...activeExtra.map(p => p.key)])]
-    await AsyncStorage.setItem('vox_last_platforms', JSON.stringify(usedKeys))
+    await AsyncStorage.setItem('glosx_last_platforms', JSON.stringify(usedKeys))
     try {
       await Promise.race([
         publishToAll([...activePredefined, ...activeExtra], contents),
@@ -347,7 +347,7 @@ export default function ReviewScreen({ navigation }: any) {
     } catch {}
     setPublishing(false)
     setPublished(true)
-    AsyncStorage.getItem('vox_onboarding_shown').then(val => {
+    AsyncStorage.getItem('glosx_onboarding_shown').then(val => {
       if (!val) setShowOnboarding(true)
     })
     setTimeout(() => { reset(); navigation.navigate('Capture') }, showOnboarding ? 4000 : 2000)
@@ -384,7 +384,7 @@ export default function ReviewScreen({ navigation }: any) {
             <TouchableOpacity
               style={[s.onboardingBanner, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}
               onPress={() => {
-                AsyncStorage.setItem('vox_onboarding_shown', '1')
+                AsyncStorage.setItem('glosx_onboarding_shown', '1')
                 setShowOnboarding(false)
                 reset()
                 navigation.navigate('Settings')

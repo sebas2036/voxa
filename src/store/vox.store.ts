@@ -1,18 +1,18 @@
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/voxa.service'
+import { GlosXResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/GlosX.service'
 import { trackTone, buildVoiceProfilePrompt, getVoiceProfile } from '../services/voiceProfile'
 import { cacheResult, getCachedResult, isOnline } from '../utils/cache'
 
-const HISTORY_KEY = 'voxa_recent_ideas'
+const HISTORY_KEY = 'GlosX_recent_ideas'
 const MAX_RECENT = 10
 
 const PREDEFINED_PLATFORMS = ['twitter', 'threads', 'instagram', 'reddit']
 
-interface VoxaStore {
+interface GlosXStore {
   input: string
   tone: string
-  result: VoxaResult | null
+  result: GlosXResult | null
   loading: boolean
   error: string | null
   recentIdeas: string[]
@@ -28,7 +28,7 @@ interface VoxaStore {
   reset: () => void
 }
 
-export const useVoxStore = create<VoxaStore>((set, get) => ({
+export const useVoxStore = create<GlosXStore>((set, get) => ({
   input: '',
   tone: 'auto',
   result: null,
@@ -43,11 +43,11 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
   removeRecentIdea: async (idea: string) => {
     const current = get().recentIdeas.filter(i => i !== idea)
     set({ recentIdeas: current })
-    await AsyncStorage.setItem('voxa_recent_ideas', JSON.stringify(current))
+    await AsyncStorage.setItem('GlosX_recent_ideas', JSON.stringify(current))
   },
   clearRecentIdeas: async () => {
     set({ recentIdeas: [] })
-    await AsyncStorage.removeItem('voxa_recent_ideas')
+    await AsyncStorage.removeItem('GlosX_recent_ideas')
   },
   loadRecentIdeas: async () => {
     try {
@@ -94,7 +94,7 @@ export const useVoxStore = create<VoxaStore>((set, get) => ({
     const initialProgress: Record<string, 'pending' | 'loading' | 'done' | 'error'> = {}
     ordered.forEach(p => { initialProgress[p] = 'pending' })
 
-    const emptyResult: VoxaResult = {
+    const emptyResult: GlosXResult = {
       detectedLanguage: 'spanish',
       analysis: { topic: input.trim(), emotion: '', intent: '', audience: '', contentType: '' },
       platforms: {

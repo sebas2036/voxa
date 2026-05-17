@@ -34,7 +34,7 @@ export default function SettingsScreen({ navigation }: any) {
       const { url, codeVerifier, state } = await res.json()
       await AsyncStorage.setItem('twitter_code_verifier', codeVerifier)
       await AsyncStorage.setItem('twitter_state', state)
-      const result = await WebBrowser.openAuthSessionAsync(url, 'voxa://auth/twitter')
+      const result = await WebBrowser.openAuthSessionAsync(url, 'GlosX://auth/twitter')
       if (result.type === 'success' && result.url) {
         const parsed = Linking.parse(result.url)
         const code = parsed.queryParams?.code as string

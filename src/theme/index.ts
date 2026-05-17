@@ -41,7 +41,7 @@ export const lightTheme = {
 export type Theme = typeof darkTheme
 export type ThemePreference = 'auto' | 'light' | 'dark'
 
-const THEME_KEY = 'voxa_theme_preference'
+const THEME_KEY = 'GlosX_theme_preference'
 
 let _preference: ThemePreference = 'auto'
 let _listeners: Array<() => void> = []
