@@ -1,4 +1,7 @@
-import 'dotenv/config'
+import { config } from 'dotenv'
+import path from 'path'
+config({ path: path.resolve(__dirname, '../../.env') })
+
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { authRoutes } from './routes/auth'

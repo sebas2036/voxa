@@ -9,6 +9,5 @@
   },
   "ts-node": {
     "transpileOnly": true
-  },
-  "extends": "expo/tsconfig.base"
+  }
 }
