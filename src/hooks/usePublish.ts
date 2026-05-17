@@ -1,39 +1,12 @@
 import { useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import * as WebBrowser from 'expo-web-browser'
-import * as Linking from 'expo-linking'
 import { publishToAll } from '../utils/deeplinks'
-import { API_URL } from '../constants/api'
 
 export function usePublish({ result, extraContents, enabled, extraPlatforms, PLATFORMS, reset, navigation, t, showOnboarding, setShowOnboarding }: any) {
   const [publishing, setPublishing] = useState(false)
   const [published, setPublished] = useState(false)
 
   const handlePublish = async () => {
-    const twitterEnabled = enabled['twitter']
-    const twitterToken = await AsyncStorage.getItem('twitter_access_token')
-    if (twitterEnabled && !twitterToken) {
-      try {
-        const res = await fetch(`${API_URL}/auth/twitter`)
-        const { url, codeVerifier } = await res.json()
-        await AsyncStorage.setItem('twitter_code_verifier', codeVerifier)
-        const authResult = await WebBrowser.openAuthSessionAsync(url, 'glosx://auth/twitter')
-        if (authResult.type === 'success' && authResult.url) {
-          const parsed = Linking.parse(authResult.url)
-          const code = parsed.queryParams?.code as string
-          if (code) {
-            const cbRes = await fetch(`${API_URL}/auth/twitter/callback`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ code, codeVerifier })
-            })
-            const data = await cbRes.json()
-            if (data.accessToken) await AsyncStorage.setItem('twitter_access_token', data.accessToken)
-          }
-        }
-      } catch (e) { console.error('Twitter auto-auth:', e) }
-    }
-
     setPublishing(true)
     const activePredefined = PLATFORMS.filter((p: any) => enabled[p.key])
     const activeExtra = extraPlatforms.filter((p: any) => enabled[p.key] !== false)
@@ -54,7 +27,7 @@ export function usePublish({ result, extraContents, enabled, extraPlatforms, PLA
     try {
       await Promise.race([
         publishToAll([...activePredefined, ...activeExtra], contents),
-        new Promise(resolve => setTimeout(resolve, 5000))
+        new Promise(resolve => setTimeout(resolve, 5000)),
       ])
     } catch {}
 

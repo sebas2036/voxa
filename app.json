@@ -3,6 +3,7 @@
     "name": "GlosX",
     "slug": "glosx",
     "version": "1.0.0",
+    "scheme": "glosx",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

@@ -1,71 +1,72 @@
 import { Linking } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { API_URL } from '../constants/api'
+import { PROVIDERS, ProviderId, getProvider } from '../constants/providers'
+import { getTokens } from '../lib/tokenStorage'
 
 export interface Platform {
-  key: string
+  key: ProviderId
   name: string
   color: string
   getDeepLink: (content: string) => string
   fallbackUrl: string
 }
 
-export const PLATFORMS: Platform[] = [
-  {
-    key: 'twitter',
-    name: 'X',
-    color: '#1a1a1a',
-    getDeepLink: (content) => `twitter://post?message=${encodeURIComponent(content)}`,
-    fallbackUrl: 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(''),
-  },
-  {
-    key: 'reddit',
-    name: 'Reddit',
-    color: '#FF4500',
-    getDeepLink: (content) => `reddit://submit?title=${encodeURIComponent(content)}`,
-    fallbackUrl: 'https://www.reddit.com/submit',
-  },
-  {
-    key: 'threads',
-    name: 'Threads',
-    color: '#444444',
-    getDeepLink: (content) => `barcelona://create?text=${encodeURIComponent(content)}`,
-    fallbackUrl: 'https://www.threads.net/intent/post?text=' + encodeURIComponent(''),
-  },
-  {
-    key: 'instagram',
-    name: 'Instagram',
-    color: '#e1306c',
-    getDeepLink: (content) => `instagram://library`,
-    fallbackUrl: 'https://www.instagram.com',
-  },
-]
+const COLORS: Record<ProviderId, string> = {
+  twitter: '#1a1a1a',
+  reddit: '#FF4500',
+  threads: '#444444',
+  instagram: '#e1306c',
+  linkedin: '#0a66c2',
+  pinterest: '#e60023',
+  tiktok: '#000000',
+  facebook: '#1877f2',
+  whatsapp: '#25d366',
+  telegram: '#0088cc',
+}
 
-export const REDDIT_EXTRA = { key: 'reddit', name: 'Reddit', color: '#FF4500', getDeepLink: (content: string) => `reddit://submit?title=${encodeURIComponent(content)}`, fallbackUrl: 'https://www.reddit.com/submit' }
+function asPlatform(id: ProviderId): Platform {
+  const meta = PROVIDERS[id]
+  return {
+    key: id,
+    name: meta.name,
+    color: COLORS[id] || '#444',
+    getDeepLink: meta.deepLink || (() => meta.fallbackUrl || ''),
+    fallbackUrl: meta.fallbackUrl || '',
+  }
+}
 
-export async function publishToPlatform(platform: Platform, content: string): Promise<boolean> {
-  if (platform.key === 'twitter') {
-    const token = await AsyncStorage.getItem('twitter_access_token')
-    if (token) {
+export const PLATFORMS: Platform[] = (['twitter', 'reddit', 'threads', 'instagram'] as ProviderId[]).map(asPlatform)
+export const REDDIT_EXTRA = asPlatform('reddit')
+
+export async function publishToPlatform(platform: Platform, content: string, extra?: Record<string, any>): Promise<boolean> {
+  const meta = getProvider(platform.key)
+  if (meta?.hasOAuth) {
+    const tokens = await getTokens(platform.key)
+    if (tokens?.accessToken) {
       try {
-        const res = await fetch('http://192.168.0.23:3000/publish/twitter', {
+        const res = await fetch(`${API_URL}/publish/${platform.key}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accessToken: token, content })
+          body: JSON.stringify({
+            accessToken: tokens.accessToken,
+            content,
+            extra: { ...(tokens.extra || {}), ...(extra || {}) },
+          }),
         })
         const data = await res.json()
         if (data.success) return true
       } catch (e) {
-        console.error('Twitter API error:', e)
+        console.error(`${platform.key} API publish error:`, e)
       }
     }
   }
-  const deepLink = platform.getDeepLink(content)
+  // fallback: copia + deep link
   try {
     await Clipboard.setStringAsync(content)
-    await Linking.openURL(deepLink)
+    await Linking.openURL(platform.getDeepLink(content))
     return true
-  } catch (e) {
+  } catch {
     try {
       await Clipboard.setStringAsync(content)
       await Linking.openURL(platform.fallbackUrl)
@@ -74,16 +75,12 @@ export async function publishToPlatform(platform: Platform, content: string): Pr
   }
 }
 
-export async function publishToAll(
-  platforms: Platform[],
-  contents: Record<string, string>
-): Promise<void> {
+export async function publishToAll(platforms: Platform[], contents: Record<string, string>): Promise<void> {
   for (const platform of platforms) {
     const content = contents[platform.key] || ''
-    // Timeout de 1.5s por plataforma para no colgarse
     await Promise.race([
       publishToPlatform(platform, content),
-      new Promise(resolve => setTimeout(resolve, 1500))
+      new Promise(resolve => setTimeout(resolve, 1500)),
     ])
     await new Promise(resolve => setTimeout(resolve, 300))
   }

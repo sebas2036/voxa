@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { GlosX_SYSTEM_PROMPT, buildUserPrompt, buildSinglePlatformPrompt } from './GlosX-prompt'
+import { GlosX_SYSTEM_PROMPT, buildUserPrompt, buildSinglePlatformPrompt } from './glosx-prompt'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
