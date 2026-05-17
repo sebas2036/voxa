@@ -11,6 +11,7 @@ import { trackEdit, trackPlatform } from '../services/voiceProfile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
 import { AnimatedDots } from '../components/AnimatedDots'
+import { PlatformCard } from '../components/PlatformCard'
 import { SkeletonCard } from '../components/SkeletonCard'
 import { applyTextStyle, STYLE_OPTIONS, TextStyleType } from '../utils/textStyles'
 import * as WebBrowser from 'expo-web-browser'
@@ -25,94 +26,6 @@ const ALL_EXTRA = [
   { key: 'pinterest', name: 'Pinterest', color: '#E60023' },
 ]
 
-const PLATFORMS = PLATFORM_CONFIGS
-
-function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, theme, t }: any) {
-  const fadeAnim = useRef(new Animated.Value(0)).current
-  const slideAnim = useRef(new Animated.Value(12)).current
-  const [textStyle, setTextStyle] = React.useState<TextStyleType>('normal')
-
-  // applyStyle moved to utils/textStyles.ts
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
-    ]).start()
-  }, [])
-
-  const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags || [] : []
-
-  return (
-    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-      <View style={[s.card, { backgroundColor: platform.color + '15', borderColor: platform.color, borderWidth: 1.5 }]}>
-        <TouchableOpacity style={s.cardHeader} onPress={onToggleExpand}>
-          <View style={[s.dot, { backgroundColor: platform.color }]} />
-          <Text style={[s.platformName, { color: theme.text, fontWeight: '600' }]}>{platform.name}</Text>
-          {!isExpanded && (
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>
-                {pdata.content.slice(0, 42)}
-              </Text>
-              <AnimatedDots color={platform.color} />
-            </View>
-          )}
-          <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
-          <Switch
-            value={enabled}
-            onValueChange={() => { if (activeCount <= 1) return; onToggleEnabled() }}
-            trackColor={{ false: theme.bgTertiary, true: platform.color + '44' }}
-            thumbColor={platform.color}
-            style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
-          />
-        </TouchableOpacity>
-        {isExpanded && (
-          <View style={s.cardBody}>
-            <View style={[s.divider, { backgroundColor: theme.border }]} />
-            <TouchableOpacity style={[s.editTopBtn, { borderColor: theme.border }]} onPress={onToggleEdit}>
-              <Text style={[s.editTopBtnText, { color: isEditing ? theme.accent : theme.textSecondary }]}>{isEditing ? t.save : t.edit}</Text>
-            </TouchableOpacity>
-            <View style={s.styleBar}>
-              {([
-                { key: 'normal', label: 'Aa', fw: '400', fi: 'normal', ls: 0 },
-                { key: 'bold',   label: 'Aa', fw: '800', fi: 'normal', ls: 0 },
-                { key: 'italic', label: 'Aa', fw: '400', fi: 'italic', ls: 0 },
-                { key: 'caps',   label: 'AA', fw: '600', fi: 'normal', ls: 1 },
-                { key: 'mono',   label: 'Aa', fw: '400', fi: 'normal', ls: 0, mono: true },
-                { key: 'strike', label: 'Aa̶', fw: '400', fi: 'normal', ls: 0 },
-                { key: 'wide',   label: 'A a', fw: '400', fi: 'normal', ls: 2 },
-              ] as any[]).map(style => (
-                <TouchableOpacity
-                  key={style.key}
-                  style={[s.styleBtn, textStyle === style.key && { borderColor: platform.color, backgroundColor: platform.color + '15' }]}
-                  onPress={() => setTextStyle(style.key)}
-                >
-                  <Text style={[s.styleBtnText, { color: textStyle === style.key ? platform.color : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
-                    {style.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {isEditing ? (
-              <TextInput
-                style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
-                value={editText}
-                onChangeText={onEditChange}
-                multiline autoFocus
-                onBlur={onEditBlur}
-              />
-            ) : (
-              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled showsVerticalScrollIndicator={false}>
-                <Text style={[s.content, { color: theme.text }]}>{applyStyle(pdata.content, textStyle)}</Text>
-                {hashtags.length > 0 && <Text style={[s.hashtags, { color: theme.accent + '66' }]}>{hashtags.join(' ')}</Text>}
-              </ScrollView>
-            )}
-          </View>
-        )}
-      </View>
-    </Animated.View>
-  )
-}
 
 export default function ReviewScreen({ navigation }: any) {
   const { result, reset, updatePlatformContent, progressivePlatforms } = useGlosXStore()

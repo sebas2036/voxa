@@ -10,6 +10,7 @@ import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
+import { MicButton } from '../components/MicButton'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
@@ -172,18 +173,7 @@ export default function CaptureScreen({ navigation }: any) {
         </View>
 
         <View style={s.micArea}>
-          <View style={s.micWrapper}>
-            <Animated.View style={[s.ring, { backgroundColor: MIC_STATES[micState].color }, makeRingStyle(ring1)]} />
-            <Animated.View style={[s.ring, { backgroundColor: MIC_STATES[micState].color }, makeRingStyle(ring2)]} />
-            <Animated.View style={[s.ring, { backgroundColor: MIC_STATES[micState].color }, makeRingStyle(ring3)]} />
-            <TouchableOpacity
-              style={[s.micBtn, { backgroundColor: MIC_STATES[micState].color }]}
-              onPress={handleMicPress}
-              activeOpacity={0.85}
-            >
-              <Ionicons name={micState === 'recording' ? 'stop' : 'mic'} size={38} color={theme.bg} />
-            </TouchableOpacity>
-          </View>
+          <MicButton micState={micState} onPress={handleMicPress} bgColor={theme.bg} />
           <Animated.Text style={[s.hintText, { color: MIC_STATES[micState].color, opacity: hintOpacity }]}>{micState === 'idle' ? (HINTS_MAP[t.lang] || HINTS_ES)[hintIndex] : (t.lang === 'es' ? MIC_STATES[micState].hints_es : MIC_STATES[micState].hints_en)[emotionalHintIndex % (t.lang === 'es' ? MIC_STATES[micState].hints_es.length : MIC_STATES[micState].hints_en.length)]}</Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
             <Text style={[s.orWrite, { color: theme.textSecondary }]}>{t.orWrite}</Text>
