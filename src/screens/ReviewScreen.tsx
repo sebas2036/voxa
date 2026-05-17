@@ -16,6 +16,7 @@ import { SkeletonCard } from '../components/SkeletonCard'
 import { applyTextStyle, STYLE_OPTIONS, TextStyleType } from '../utils/textStyles'
 import * as WebBrowser from 'expo-web-browser'
 import * as Linking from 'expo-linking'
+import { usePublish } from '../hooks/usePublish'
 
 const ALL_EXTRA = [
   { key: 'linkedin', name: 'LinkedIn', color: '#4a9eff' },
@@ -35,10 +36,12 @@ export default function ReviewScreen({ navigation }: any) {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
   const [editTexts, setEditTexts] = useState<Record<string, string>>({})
-  const [publishing, setPublishing] = useState(false)
-  const [published, setPublished] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
+
+  const { publishing, published, setPublished, handlePublish } = usePublish({
+    result, extraContents, enabled, extraPlatforms, PLATFORMS, reset, navigation, t, showOnboarding, setShowOnboarding
+  })
   const [extraPlatforms, setExtraPlatforms] = useState<any[]>([])
   const [extraContents, setExtraContents] = useState<Record<string, string>>({})
   const [loadingExtra, setLoadingExtra] = useState<string | null>(null)
@@ -137,57 +140,6 @@ export default function ReviewScreen({ navigation }: any) {
     setLoadingExtra(null)
   }
 
-  const handlePublish = async () => {
-    const twitterEnabled = enabled['twitter']
-    const twitterToken = await AsyncStorage.getItem('twitter_access_token')
-    if (twitterEnabled && !twitterToken) {
-      try {
-        const res = await fetch('http://192.168.0.23:3000/auth/twitter')
-        const { url, codeVerifier } = await res.json()
-        await AsyncStorage.setItem('twitter_code_verifier', codeVerifier)
-        const authResult = await WebBrowser.openAuthSessionAsync(url, 'GlosX://auth/twitter')
-        if (authResult.type === 'success' && authResult.url) {
-          const parsed = Linking.parse(authResult.url)
-          const code = parsed.queryParams?.code as string
-          if (code) {
-            const cbRes = await fetch('http://192.168.0.23:3000/auth/twitter/callback', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ code, codeVerifier })
-            })
-            const data = await cbRes.json()
-            if (data.accessToken) await AsyncStorage.setItem('twitter_access_token', data.accessToken)
-          }
-        }
-      } catch (e) { console.error('Twitter auto-auth:', e) }
-    }
-    setPublishing(true)
-    const activePredefined = PLATFORMS.filter(p => enabled[p.key])
-    const activeExtra = extraPlatforms.filter(p => enabled[p.key] !== false)
-    const contents: Record<string, string> = {}
-    activePredefined.forEach(platform => {
-      const pdata = result.platforms[platform.key as keyof typeof result.platforms]
-      const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags?.join(' ') : ''
-      contents[platform.key] = hashtags ? `${pdata.content}\n\n${hashtags}` : pdata.content
-    })
-    activeExtra.forEach(platform => {
-      contents[platform.key] = extraContents[platform.key] || ''
-    })
-    const usedKeys = [...new Set([...activePredefined.map(p => p.key), ...activeExtra.map(p => p.key)])]
-    await AsyncStorage.setItem('glosx_last_platforms', JSON.stringify(usedKeys))
-    try {
-      await Promise.race([
-        publishToAll([...activePredefined, ...activeExtra], contents),
-        new Promise(resolve => setTimeout(resolve, 5000))
-      ])
-    } catch {}
-    setPublishing(false)
-    setPublished(true)
-    AsyncStorage.getItem('glosx_onboarding_shown').then(val => {
-      if (!val) setShowOnboarding(true)
-    })
-    setTimeout(() => { reset(); navigation.navigate('Capture') }, showOnboarding ? 4000 : 2000)
-  }
 
   const activePlatformsList = [
     ...PLATFORMS.filter(p => enabled[p.key]),
