@@ -43,6 +43,16 @@ const LOADING_ES = ['analizando...', 'generando...', 'casi listo...']
 const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
 const HINTS_EN = ['speak', 'review', 'publish']
 
+type MicState = 'idle' | 'recording' | 'thinking' | 'generating' | 'ready'
+
+const MIC_STATES = {
+  idle:       { color: '#c8b99a', pulseSpeed: 2400, pulseScale: 1.8, hints_es: ['hablá', 'escribí', 'contame'], hints_en: ['speak', 'write', 'tell me'] },
+  recording:  { color: '#ff3b30', pulseSpeed: 800,  pulseScale: 2.2, hints_es: ['escuchando...', 'seguí hablando...', 'te escucho...'], hints_en: ['listening...', 'keep talking...', "I'm listening..."] },
+  thinking:   { color: '#4a9eff', pulseSpeed: 1200, pulseScale: 2.0, hints_es: ['procesando...', 'entendiendo...', 'pensando...'], hints_en: ['processing...', 'understanding...', 'thinking...'] },
+  generating: { color: '#2e7d52', pulseSpeed: 1600, pulseScale: 2.6, hints_es: ['armando tu historia...', 'dándole forma...', 'encontrando las palabras...'], hints_en: ['building your story...', 'shaping it...', 'finding the words...'] },
+  ready:      { color: '#c8b99a', pulseSpeed: 400,  pulseScale: 1.4, hints_es: ['listo ✓', 'mirá esto ✓', 'está listo ✓'], hints_en: ['ready ✓', 'check this out ✓', "it's ready ✓"] },
+}
+
 export default function CaptureScreen({ navigation }: any) {
   const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useGlosXStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
@@ -54,6 +64,9 @@ export default function CaptureScreen({ navigation }: any) {
   const [recentOpen, setRecentOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
+  const [micState, setMicState] = useState<MicState>('idle')
+  const [emotionalHintIndex, setEmotionalHintIndex] = useState(0)
+  const micColor = useRef(new Animated.Value(0)).current
 
   const ring1 = useRef(new Animated.Value(0)).current
   const ring2 = useRef(new Animated.Value(0)).current
@@ -93,38 +106,43 @@ export default function CaptureScreen({ navigation }: any) {
     }).start()
   }, [recentOpen])
 
-  const animateRing = (anim: Animated.Value, delay: number) =>
+  const animateRing = (anim: Animated.Value, delay: number, speed: number = 2000) =>
     Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
-        Animated.timing(anim, { toValue: 1, duration: 2000, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
         Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
       ])
     )
 
   useEffect(() => {
-    if (isRecording || loading || isGenerating) {
-      animateRing(ring1, 0).start()
-      animateRing(ring2, 600).start()
-      animateRing(ring3, 1200).start()
+    const speed = MIC_STATES[micState].pulseSpeed
+    const delay = speed / 3
+    if (micState !== 'idle') {
+      animateRing(ring1, 0, speed).start()
+      animateRing(ring2, delay, speed).start()
+      animateRing(ring3, delay * 2, speed).start()
     } else {
       ring1.stopAnimation(); ring1.setValue(0)
       ring2.stopAnimation(); ring2.setValue(0)
       ring3.stopAnimation(); ring3.setValue(0)
     }
-  }, [isRecording, loading, isGenerating])
+  }, [micState])
 
-  useEffect(() => { if (transcript) setInput(transcript) }, [transcript])
+  useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
 
-  const handleMicPress = () => { if (isRecording) stopRecording(); else startRecording() }
+  const handleMicPress = () => { if (isRecording) { stopRecording(); setMicState('thinking') } else { startRecording(); setMicState('recording') } }
 
   const handleGenerate = async () => {
     if (!input.trim()) return
     setLoadingStep(0)
     setIsGenerating(true)
+    setMicState('thinking')
+    setEmotionalHintIndex(0)
+    setTimeout(() => setMicState('generating'), 800)
     await generateProgressive()
-    setIsGenerating(false)
-    navigation.navigate('Review')
+    setMicState('ready')
+    setTimeout(() => { setIsGenerating(false); setMicState('idle'); navigation.navigate('Review') }, 600)
   }
 
   const makeRingStyle = (anim: Animated.Value) => ({
@@ -155,18 +173,18 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.micArea}>
           <View style={s.micWrapper}>
-            <Animated.View style={[s.ring, { backgroundColor: isGenerating ? "#ff3b30" : theme.accent }, makeRingStyle(ring1)]} />
-            <Animated.View style={[s.ring, { backgroundColor: isGenerating ? "#ff3b30" : theme.accent }, makeRingStyle(ring2)]} />
-            <Animated.View style={[s.ring, { backgroundColor: isGenerating ? "#ff3b30" : theme.accent }, makeRingStyle(ring3)]} />
+            <Animated.View style={[s.ring, { backgroundColor: MIC_STATES[micState].color }, makeRingStyle(ring1)]} />
+            <Animated.View style={[s.ring, { backgroundColor: MIC_STATES[micState].color }, makeRingStyle(ring2)]} />
+            <Animated.View style={[s.ring, { backgroundColor: MIC_STATES[micState].color }, makeRingStyle(ring3)]} />
             <TouchableOpacity
-              style={[s.micBtn, { backgroundColor: theme.accent }, isRecording && { backgroundColor: theme.recordActive }]}
+              style={[s.micBtn, { backgroundColor: MIC_STATES[micState].color }]}
               onPress={handleMicPress}
               activeOpacity={0.85}
             >
-              <Ionicons name="mic" size={38} color={theme.bg} />
+              <Ionicons name={micState === 'recording' ? 'stop' : 'mic'} size={38} color={theme.bg} />
             </TouchableOpacity>
           </View>
-          <Animated.Text style={[s.hintText, { color: theme.text, opacity: hintOpacity }]}>{(HINTS_MAP[t.lang] || HINTS_ES)[hintIndex]}</Animated.Text>
+          <Animated.Text style={[s.hintText, { color: MIC_STATES[micState].color, opacity: hintOpacity }]}>{micState === 'idle' ? (HINTS_MAP[t.lang] || HINTS_ES)[hintIndex] : (t.lang === 'es' ? MIC_STATES[micState].hints_es : MIC_STATES[micState].hints_en)[emotionalHintIndex % (t.lang === 'es' ? MIC_STATES[micState].hints_es.length : MIC_STATES[micState].hints_en.length)]}</Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
             <Text style={[s.orWrite, { color: theme.textSecondary }]}>{t.orWrite}</Text>
           </TouchableOpacity>
