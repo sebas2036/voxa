@@ -10,6 +10,9 @@ import { PLATFORMS as PLATFORM_CONFIGS, publishToAll } from '../utils/deeplinks'
 import { trackEdit, trackPlatform } from '../services/voiceProfile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
+import { AnimatedDots } from '../components/AnimatedDots'
+import { SkeletonCard } from '../components/SkeletonCard'
+import { applyTextStyle, STYLE_OPTIONS, TextStyleType } from '../utils/textStyles'
 import * as WebBrowser from 'expo-web-browser'
 import * as Linking from 'expo-linking'
 
@@ -24,92 +27,12 @@ const ALL_EXTRA = [
 
 const PLATFORMS = PLATFORM_CONFIGS
 
-function SkeletonCard({ platform, theme }: { platform: any; theme: any }) {
-  const anim = useRef(new Animated.Value(0.3)).current
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(anim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.timing(anim, { toValue: 0.3, duration: 800, useNativeDriver: true }),
-      ])
-    ).start()
-    return () => anim.stopAnimation()
-  }, [])
-
-  return (
-    <View style={[s.card, { backgroundColor: platform.color + '0A', borderColor: platform.color + '40', borderWidth: 1.5 }]}>
-      <View style={s.cardHeader}>
-        <View style={[s.dot, { backgroundColor: platform.color + '60' }]} />
-        <Text style={[s.platformName, { color: theme.text, fontWeight: '600', opacity: 0.5 }]}>{platform.name}</Text>
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <ActivityIndicator size="small" color={platform.color} />
-          <Text style={{ color: platform.color, fontSize: 11, opacity: 0.8 }}>generando...</Text>
-        </View>
-      </View>
-      <View style={{ paddingHorizontal: 14, paddingBottom: 16, gap: 8 }}>
-        <Animated.View style={[s.skeletonLine, { backgroundColor: platform.color + '20', opacity: anim }]} />
-        <Animated.View style={[s.skeletonLine, { width: '75%', backgroundColor: platform.color + '20', opacity: anim }]} />
-        <Animated.View style={[s.skeletonLine, { width: '55%', backgroundColor: platform.color + '20', opacity: anim }]} />
-      </View>
-    </View>
-  )
-}
-
-function AnimatedDots({ color }: { color: string }) {
-  const anims = [
-    useRef(new Animated.Value(0)).current,
-    useRef(new Animated.Value(0)).current,
-    useRef(new Animated.Value(0)).current,
-  ]
-  useEffect(() => {
-    const animations = anims.map((anim, i) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(i * 150),
-          Animated.timing(anim, { toValue: -3, duration: 400, useNativeDriver: true }),
-          Animated.timing(anim, { toValue: 0, duration: 400, useNativeDriver: true }),
-          Animated.delay(600),
-        ])
-      )
-    )
-    animations.forEach(a => a.start())
-    return () => animations.forEach(a => a.stop())
-  }, [])
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, flex: 1 }}>
-      {anims.map((anim, i) => (
-        <Animated.View key={i} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: color + '99', transform: [{ translateY: anim }] }} />
-      ))}
-    </View>
-  )
-}
-
 function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, theme, t }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(12)).current
-  const [textStyle, setTextStyle] = React.useState<'normal'|'bold'|'italic'|'caps'|'mono'|'strike'|'wide'>('normal')
+  const [textStyle, setTextStyle] = React.useState<TextStyleType>('normal')
 
-  const applyStyle = (text: string, style: string) => {
-    switch(style) {
-      case 'bold': return text.split('').map((c: string) => {
-        const bold: Record<string,string> = {'A':'𝐀','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋','M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗','Y':'𝐘','Z':'𝐙','a':'𝐚','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣','k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯','w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳'}
-        return bold[c] || c
-      }).join('')
-      case 'italic': return text.split('').map((c: string) => {
-        const italic: Record<string,string> = {'A':'𝘈','B':'𝘉','C':'𝘊','D':'𝘋','E':'𝘌','F':'𝘍','G':'𝘎','H':'𝘏','I':'𝘐','J':'𝘑','K':'𝘒','L':'𝘓','M':'𝘔','N':'𝘕','O':'𝘖','P':'𝘗','Q':'𝘘','R':'𝘙','S':'𝘚','T':'𝘛','U':'𝘜','V':'𝘝','W':'𝘞','X':'𝘟','Y':'𝘠','Z':'𝘡','a':'𝘢','b':'𝘣','c':'𝘤','d':'𝘥','e':'𝘦','f':'𝘧','g':'𝘨','h':'𝘩','i':'𝘪','j':'𝘫','k':'𝘬','l':'𝘭','m':'𝘮','n':'𝘯','o':'𝘰','p':'𝘱','q':'𝘲','r':'𝘳','s':'𝘴','t':'𝘵','u':'𝘶','v':'𝘷','w':'𝘸','x':'𝘹','y':'𝘺','z':'𝘻'}
-        return italic[c] || c
-      }).join('')
-      case 'caps': return text.toUpperCase()
-      case 'mono': return text.split('').map((c: string) => {
-        const mono: Record<string,string> = {'A':'𝙰','B':'𝙱','C':'𝙲','D':'𝙳','E':'𝙴','F':'𝙵','G':'𝙶','H':'𝙷','I':'𝙸','J':'𝙹','K':'𝙺','L':'𝙻','M':'𝙼','N':'𝙽','O':'𝙾','P':'𝙿','Q':'𝚀','R':'𝚁','S':'𝚂','T':'𝚃','U':'𝚄','V':'𝚅','W':'𝚆','X':'𝚇','Y':'𝚈','Z':'𝚉','a':'𝚊','b':'𝚋','c':'𝚌','d':'𝚍','e':'𝚎','f':'𝚏','g':'𝚐','h':'𝚑','i':'𝚒','j':'𝚓','k':'𝚔','l':'𝚕','m':'𝚖','n':'𝚗','o':'𝚘','p':'𝚙','q':'𝚚','r':'𝚛','s':'𝚜','t':'𝚝','u':'𝚞','v':'𝚟','w':'𝚠','x':'𝚡','y':'𝚢','z':'𝚣'}
-        return mono[c] || c
-      }).join('')
-      case 'strike': return text.split('').map((c: string) => c === ' ' ? ' ' : c + '̶').join('')
-      case 'wide': return text.split('').join(' ')
-      default: return text
-    }
-  }
+  // applyStyle moved to utils/textStyles.ts
 
   useEffect(() => {
     Animated.parallel([
