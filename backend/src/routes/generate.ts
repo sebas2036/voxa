@@ -68,7 +68,7 @@ Return only the adapted text, no explanations.`
       const { default: Anthropic } = await import('@anthropic-ai/sdk')
       const client = new Anthropic()
       const message = await client.messages.create({
-        model: 'claude-opus-4-7',
+        model: 'claude-sonnet-4-5',
         max_tokens: 500,
         messages: [{ role: 'user', content: prompt }],
       })

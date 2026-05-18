@@ -1,3 +1,4 @@
+import { codeChallengeFromVerifier } from '../pkce'
 import { OAuthProvider, TokenResult, PublishResult } from '../types'
 
 const SCOPES = 'pins:write,boards:read,user_accounts:read'
@@ -12,7 +13,7 @@ export const pinterestProvider: OAuthProvider = {
 
   buildAuthUrl(redirectUri, state, codeVerifier) {
     if (!codeVerifier) throw new Error('pinterest requires PKCE verifier')
-    const challenge = require('../pkce').codeChallengeFromVerifier(codeVerifier)
+    const challenge = codeChallengeFromVerifier(codeVerifier)
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: process.env.PINTEREST_CLIENT_ID!,

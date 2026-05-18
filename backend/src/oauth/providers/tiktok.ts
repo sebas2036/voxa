@@ -1,3 +1,4 @@
+import { codeChallengeFromVerifier } from '../pkce'
 import { OAuthProvider, TokenResult, PublishResult } from '../types'
 
 const SCOPES = 'user.info.basic,video.publish'
@@ -12,7 +13,7 @@ export const tiktokProvider: OAuthProvider = {
 
   buildAuthUrl(redirectUri, state, codeVerifier) {
     if (!codeVerifier) throw new Error('tiktok requires PKCE verifier')
-    const challenge = require('../pkce').codeChallengeFromVerifier(codeVerifier)
+    const challenge = codeChallengeFromVerifier(codeVerifier)
     const params = new URLSearchParams({
       client_key: process.env.TIKTOK_CLIENT_KEY!,
       response_type: 'code',

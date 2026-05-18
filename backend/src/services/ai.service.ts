@@ -7,7 +7,7 @@ const client = new Anthropic({
 
 export async function generateContent(input: string, styleProfile?: string) {
   const response = await client.messages.create({
-    model: 'claude-opus-4-7',
+    model: 'claude-sonnet-4-5',
     max_tokens: 1500,
     system: GlosX_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: buildUserPrompt(input, styleProfile) }]
@@ -25,7 +25,7 @@ export async function generateContentForPlatform(
   voiceProfile?: string
 ) {
   const response = await client.messages.create({
-    model: 'claude-opus-4-7',
+    model: 'claude-sonnet-4-5',
     max_tokens: 1200,
     messages: [{ role: 'user', content: buildSinglePlatformPrompt(platform, input, tone, voiceProfile) }]
   })
