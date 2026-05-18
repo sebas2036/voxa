@@ -14,9 +14,9 @@
   "description": "",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",
-    "@fastify/cors": "^11.2.0",
+    "@fastify/cors": "^8.5.0",
     "dotenv": "^17.4.2",
-    "fastify": "^5.8.5",
+    "fastify": "^4.29.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
