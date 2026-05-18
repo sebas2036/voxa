@@ -18,6 +18,11 @@ server.register(authRoutes)
 server.register(publishRoutes)
 server.register(generateRoutes)
 
+server.get('/', async (request, reply) => {
+  reply.type('text/html')
+  return `<html><head><title>GlosX - Your voice, on every network</title></head><body style="font-family:sans-serif;max-width:600px;margin:50px auto;padding:20px"><h1>GlosX</h1><p>Transform your ideas into social media content for 10 platforms using AI.</p><p>Available on iOS and Android.</p><a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms</a></body></html>`
+})
+
 server.get('/privacy', async (request, reply) => {
   reply.type('text/html')
   return '<html><body><h1>GlosX Privacy Policy</h1><p>GlosX does not store passwords or financial data. We do not sell or share your information. Tokens are stored only on your device. Contact: GlosX@outlook.com</p></body></html>'
