@@ -1,25 +1,19 @@
-import { FastifyInstance } from 'fastify'
+import { Router, Request, Response } from 'express'
 import { getProvider } from '../oauth/registry'
 
-export async function publishRoutes(server: FastifyInstance) {
-  server.post('/publish/:provider', async (request, reply) => {
-    const { provider: providerId } = request.params as { provider: string }
-    const { accessToken, content, extra } = request.body as {
-      accessToken: string
-      content: string
-      extra?: Record<string, any>
-    }
-    const provider = getProvider(providerId)
-    if (!provider) return reply.status(404).send({ error: 'unknown provider' })
-    if (!accessToken || !content) {
-      return reply.status(400).send({ error: 'accessToken y content son requeridos' })
-    }
-    try {
-      const result = await provider.publish({ accessToken, content, extra })
-      if (!result.success) return reply.status(400).send(result)
-      return result
-    } catch (e: any) {
-      return reply.status(500).send({ success: false, error: e.message })
-    }
-  })
-}
+export const publishRouter = Router()
+
+publishRouter.post('/publish/:provider', async (req: Request, res: Response) => {
+  const { provider: providerId } = req.params
+  const { accessToken, content, extra } = req.body as { accessToken: string; content: string; extra?: Record<string, any> }
+  const provider = getProvider(providerId)
+  if (!provider) return void res.status(404).json({ error: 'unknown provider' })
+  if (!accessToken || !content) return void res.status(400).json({ error: 'accessToken y content son requeridos' })
+  try {
+    const result = await provider.publish({ accessToken, content, extra })
+    if (!result.success) return void res.status(400).json(result)
+    res.json(result)
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message })
+  }
+})
