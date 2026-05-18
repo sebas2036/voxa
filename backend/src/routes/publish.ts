@@ -6,7 +6,7 @@ export const publishRouter = Router()
 publishRouter.post('/publish/:provider', async (req: Request, res: Response) => {
   const { provider: providerId } = req.params
   const { accessToken, content, extra } = req.body as { accessToken: string; content: string; extra?: Record<string, any> }
-  const provider = getProvider(providerId)
+  const provider = getProvider(String(providerId))
   if (!provider) return void res.status(404).json({ error: 'unknown provider' })
   if (!accessToken || !content) return void res.status(400).json({ error: 'accessToken y content son requeridos' })
   try {
