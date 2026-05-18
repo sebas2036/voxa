@@ -25,3 +25,4 @@ app.use(generateRouter)
 
 const port = Number(process.env.PORT) || 3000
 app.listen(port, '0.0.0.0', () => console.log(`glosx API corriendo en http://localhost:${port}`))
+// cache bust lunes, 18 de mayo de 2026, 17:07:02 -03
