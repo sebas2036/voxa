@@ -1,16 +1,16 @@
 import React, { useRef, useEffect, useState } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 import {
-  View, Text, TextInput, TouchableOpacity, Image,
+  View, Text, TextInput, TouchableOpacity, Image, Modal,
   StyleSheet, SafeAreaView, ScrollView,
-  ActivityIndicator, Animated, Easing, Alert, PanResponder
+  ActivityIndicator, Animated, Easing, Alert
 } from 'react-native'
 import { useGlosXStore } from '../store/glosx.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Ionicons, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
+import { Ionicons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons'
 import { MicButton } from '../components/MicButton'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
@@ -29,7 +29,6 @@ const ALL_PLATFORM_ICONS: Record<string, { icon: string, lib: string, color: str
   reddit: { icon: 'reddit', lib: 'fa5', color: '#FF4500', name: 'Reddit' },
 }
 
-const HINTS_ES = ['hablá', 'revisá', 'publicá']
 const HINTS_MAP: Record<string, string[]> = {
   es: ['hablá', 'revisá', 'publicá'],
   en: ['speak', 'review', 'publish'],
@@ -42,9 +41,7 @@ const HINTS_MAP: Record<string, string[]> = {
   fr: ['parlez', 'révisez', 'publiez'],
   de: ['sprechen', 'überprüfen', 'veröffentlichen'],
 }
-const LOADING_ES = ['analizando...', 'generando...', 'casi listo...']
-const LOADING_EN = ['analyzing...', 'generating...', 'almost there...']
-const HINTS_EN = ['speak', 'review', 'publish']
+const HINTS_ES = ['hablá', 'revisá', 'publicá']
 
 type MicState = 'idle' | 'recording' | 'thinking' | 'generating' | 'ready'
 
@@ -57,19 +54,19 @@ const MIC_STATES = {
 }
 
 export default function CaptureScreen({ navigation }: any) {
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
   const [showInput, setShowInput] = useState(false)
   const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter', 'threads', 'instagram', 'reddit'])
-  const [loadingStep, setLoadingStep] = useState(0)
   const [recentOpen, setRecentOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
   const [micState, setMicState] = useState<MicState>('idle')
   const [mediaUri, setMediaUri] = useState<string | null>(null)
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null)
+  const [showImageModal, setShowImageModal] = useState(false)
   const { isOnline } = useNetworkStatus()
   const [emotionalHintIndex, setEmotionalHintIndex] = useState(0)
   const micColor = useRef(new Animated.Value(0)).current
@@ -78,15 +75,11 @@ export default function CaptureScreen({ navigation }: any) {
   const ring3 = useRef(new Animated.Value(0)).current
   const recentAnim = useRef(new Animated.Value(0)).current
   const hintOpacity = useRef(new Animated.Value(1)).current
-  const btnWidth = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
     loadRecentIdeas()
     AsyncStorage.getItem('glosx_last_platforms').then(val => {
-      if (val) {
-        const keys = JSON.parse(val)
-        if (keys.length > 0) setActivePlatformKeys(keys)
-      }
+      if (val) { const keys = JSON.parse(val); if (keys.length > 0) setActivePlatformKeys(keys) }
     })
   }, [])
 
@@ -104,21 +97,16 @@ export default function CaptureScreen({ navigation }: any) {
 
   useEffect(() => {
     Animated.timing(recentAnim, {
-      toValue: recentOpen ? 1 : 0,
-      duration: 250,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false
+      toValue: recentOpen ? 1 : 0, duration: 250, easing: Easing.out(Easing.ease), useNativeDriver: false
     }).start()
   }, [recentOpen])
 
   const animateRing = (anim: Animated.Value, delay: number, speed: number = 2000) =>
-    Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(anim, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
-        Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
-      ])
-    )
+    Animated.loop(Animated.sequence([
+      Animated.delay(delay),
+      Animated.timing(anim, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
+    ]))
 
   useEffect(() => {
     const speed = MIC_STATES[micState].pulseSpeed
@@ -136,7 +124,10 @@ export default function CaptureScreen({ navigation }: any) {
 
   useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
 
-  const handleMicPress = () => { if (isRecording) { stopRecording(); setMicState('thinking') } else { startRecording(); setMicState('recording') } }
+  const handleMicPress = () => {
+    if (isRecording) { stopRecording(); setMicState('thinking') }
+    else { startRecording(); setMicState('recording') }
+  }
 
   const handlePickMedia = async (useCamera: boolean) => {
     const perm = useCamera
@@ -154,8 +145,9 @@ export default function CaptureScreen({ navigation }: any) {
       : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 })
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0]
-      setMediaUri(asset.uri); setMedia(asset.uri, asset.type === 'video' ? 'video' : 'image')
+      setMediaUri(asset.uri)
       setMediaType(asset.type === 'video' ? 'video' : 'image')
+      setMedia(asset.uri, asset.type === 'video' ? 'video' : 'image')
     }
   }
 
@@ -163,18 +155,12 @@ export default function CaptureScreen({ navigation }: any) {
 
   const handleGenerate = async () => {
     if (!input.trim()) return
-    setLoadingStep(0)
     setIsGenerating(true)
     setMicState('generating')
     await generateProgressive()
     setMicState('ready')
     setTimeout(() => { setIsGenerating(false); setMicState('idle'); navigation.navigate('Review') }, 1200)
   }
-
-  const makeRingStyle = (anim: Animated.Value) => ({
-    opacity: anim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 0.25, 0] }),
-    transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [1, 2.8] }) }]
-  })
 
   const recentHeight = recentAnim.interpolate({
     inputRange: [0, 1],
@@ -204,7 +190,11 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.micArea}>
           <MicButton micState={micState} onPress={handleMicPress} bgColor={theme.bg} />
-          <Animated.Text style={[s.hintText, { color: MIC_STATES[micState].color, opacity: hintOpacity }]}>{micState === 'idle' ? (HINTS_MAP[t.lang] || HINTS_ES)[hintIndex] : (t.lang === 'es' ? MIC_STATES[micState].hints_es : MIC_STATES[micState].hints_en)[emotionalHintIndex % (t.lang === 'es' ? MIC_STATES[micState].hints_es.length : MIC_STATES[micState].hints_en.length)]}</Animated.Text>
+          <Animated.Text style={[s.hintText, { color: MIC_STATES[micState].color, opacity: hintOpacity }]}>
+            {micState === 'idle'
+              ? (HINTS_MAP[t.lang] || HINTS_ES)[hintIndex]
+              : (t.lang === 'es' ? MIC_STATES[micState].hints_es : MIC_STATES[micState].hints_en)[emotionalHintIndex % (t.lang === 'es' ? MIC_STATES[micState].hints_es.length : MIC_STATES[micState].hints_en.length)]}
+          </Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
             <Text style={[s.orWrite, { color: theme.textSecondary }]}>{t.orWrite}</Text>
           </TouchableOpacity>
@@ -249,14 +239,19 @@ export default function CaptureScreen({ navigation }: any) {
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'adjuntar media' : 'attach media'}</Text>
           {mediaUri ? (
             <View style={s.mediaPreviewContainer}>
-              {mediaType === 'image' ? (
-                <Image source={{ uri: mediaUri }} style={s.mediaPreview} resizeMode="cover" />
-              ) : (
-                <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
-                  <Ionicons name="play-circle" size={40} color={theme.accent} />
-                  <Text style={[s.videoLabel, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'video adjunto' : 'video attached'}</Text>
+              <TouchableOpacity onPress={() => setShowImageModal(true)} activeOpacity={0.9}>
+                {mediaType === 'image' ? (
+                  <Image source={{ uri: mediaUri }} style={s.mediaPreview} resizeMode="cover" />
+                ) : (
+                  <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
+                    <Ionicons name="play-circle" size={40} color={theme.accent} />
+                    <Text style={[s.videoLabel, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'video adjunto' : 'video attached'}</Text>
+                  </View>
+                )}
+                <View style={s.expandHint}>
+                  <Ionicons name="expand-outline" size={14} color="#fff" />
                 </View>
-              )}
+              </TouchableOpacity>
               <TouchableOpacity style={[s.removeMedia, { backgroundColor: theme.bgSecondary }]} onPress={handleRemoveMedia}>
                 <Ionicons name="close-circle" size={22} color={theme.error} />
               </TouchableOpacity>
@@ -275,17 +270,6 @@ export default function CaptureScreen({ navigation }: any) {
           )}
         </View>
 
-        <TouchableOpacity
-          style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
-          onPress={handleGenerate}
-          disabled={!input.trim() || loading || isGenerating}
-        >
-          {loading
-            ? <ActivityIndicator color="#ffffff" size="small" />
-            : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
-          }
-        </TouchableOpacity>
-
         {recentIdeas.length > 0 && (
           <View style={s.recentSection}>
             <TouchableOpacity style={[s.recentHeader, { borderBottomColor: theme.bgTertiary }]} onPress={() => setRecentOpen(!recentOpen)}>
@@ -295,10 +279,7 @@ export default function CaptureScreen({ navigation }: any) {
             <Animated.View style={{ height: recentHeight, overflow: "hidden" }}>
               {recentIdeas.slice(0, 5).map((idea, i) => (
                 <View key={i} style={[s.recentItem, { borderBottomColor: theme.bgSecondary }]}>
-                  <TouchableOpacity
-                    style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
-                    onPress={() => { setInput(idea); setShowInput(true); setRecentOpen(false) }}
-                  >
+                  <TouchableOpacity style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }} onPress={() => { setInput(idea); setShowInput(true); setRecentOpen(false) }}>
                     <Ionicons name="time-outline" size={13} color={theme.textDisabled} style={{ marginRight: 8 }} />
                     <Text style={[s.recentItemText, { color: theme.textSecondary }]} numberOfLines={1}>{idea}</Text>
                   </TouchableOpacity>
@@ -309,17 +290,11 @@ export default function CaptureScreen({ navigation }: any) {
               ))}
             </Animated.View>
             {recentOpen && (
-              <TouchableOpacity
-                style={{ paddingVertical: 10, alignItems: 'center' }}
-                onPress={() => Alert.alert(
-                  t.lang === 'es' ? 'Borrar historial' : 'Clear history',
-                  t.lang === 'es' ? '¿Eliminar todas las ideas recientes?' : 'Delete all recent ideas?',
-                  [
-                    { text: t.lang === 'es' ? 'Cancelar' : 'Cancel', style: 'cancel' },
-                    { text: t.lang === 'es' ? 'Borrar' : 'Delete', style: 'destructive', onPress: clearRecentIdeas }
-                  ]
-                )}
-              >
+              <TouchableOpacity style={{ paddingVertical: 10, alignItems: 'center' }} onPress={() => Alert.alert(
+                t.lang === 'es' ? 'Borrar historial' : 'Clear history',
+                t.lang === 'es' ? '¿Eliminar todas las ideas recientes?' : 'Delete all recent ideas?',
+                [{ text: t.lang === 'es' ? 'Cancelar' : 'Cancel', style: 'cancel' }, { text: t.lang === 'es' ? 'Borrar' : 'Delete', style: 'destructive', onPress: clearRecentIdeas }]
+              )}>
                 <Text style={{ color: theme.textMuted, fontSize: 11 }}>{t.lang === 'es' ? 'borrar todo' : 'clear all'}</Text>
               </TouchableOpacity>
             )}
@@ -330,7 +305,7 @@ export default function CaptureScreen({ navigation }: any) {
           {[0,1,2,3].map(i => <View key={i} style={[s.flowDot, { backgroundColor: theme.bgTertiary }]} />)}
         </View>
 
-        <View style={s.platformsRow}>
+        <View style={[s.platformsRow, { marginBottom: 100 }]}>
           {activePlatformKeys.slice(0, 4).map((key, i) => {
             const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
             return (
@@ -347,6 +322,31 @@ export default function CaptureScreen({ navigation }: any) {
         </View>
 
       </ScrollView>
+
+      {/* BOTÓN GENERAR STICKY */}
+      <View style={[s.stickyFooter, { backgroundColor: theme.bg, borderTopColor: theme.bgSecondary }]}>
+        <TouchableOpacity
+          style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
+          onPress={handleGenerate}
+          disabled={!input.trim() || loading || isGenerating}
+        >
+          {loading
+            ? <ActivityIndicator color="#ffffff" size="small" />
+            : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
+          }
+        </TouchableOpacity>
+      </View>
+
+      {/* MODAL IMAGEN FULLSCREEN */}
+      <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
+        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
+          <Image source={{ uri: mediaUri || '' }} style={s.modalImage} resizeMode="contain" />
+          <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
+            <Ionicons name="close-circle" size={32} color="#fff" />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+
     </SafeAreaView>
   )
 }
@@ -362,9 +362,6 @@ const s = StyleSheet.create({
   menuBtn: { padding: 8, gap: 5, alignItems: "flex-end" },
   menuLine: { width: 22, height: 1.5, borderRadius: 2 },
   micArea: { alignItems: "center", paddingVertical: 24, marginBottom: 8 },
-  micWrapper: { width: 160, height: 160, alignItems: "center", justifyContent: "center", marginBottom: 12 },
-  ring: { position: "absolute", width: 90, height: 90, borderRadius: 45 },
-  micBtn: { width: 90, height: 90, borderRadius: 45, alignItems: "center", justifyContent: "center", zIndex: 10 },
   hintText: { fontSize: 13, letterSpacing: 3, textTransform: "uppercase", marginBottom: 10 },
   orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
   inputContainer: { marginBottom: 24 },
@@ -372,17 +369,15 @@ const s = StyleSheet.create({
   toneSection: { marginBottom: 28 },
   tonesWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4, justifyContent: 'center' },
   sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
-  toneRow: { flexDirection: "row", gap: 8 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5 },
   tonePillText: { fontSize: 12 },
   errorBox: { borderRadius: 10, padding: 12, marginBottom: 16 },
   offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
   offlineText: { fontSize: 11, fontWeight: '500' },
   errorText: { fontSize: 12 },
-  generateBtn: { borderRadius: 14, height: 52, alignItems: "center", justifyContent: "center", marginBottom: 24 },
+  stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, borderTopWidth: 0.5 },
+  generateBtn: { borderRadius: 14, height: 52, alignItems: "center", justifyContent: "center" },
   generateBtnDisabled: { opacity: 0.4 },
-  loadingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  loadingText: { fontSize: 15, fontWeight: '400', letterSpacing: 0.3 },
   generateBtnText: { fontSize: 17, fontWeight: "500" },
   recentSection: { marginBottom: 24 },
   recentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 10, borderBottomWidth: 0.5, gap: 8 },
@@ -391,7 +386,7 @@ const s = StyleSheet.create({
   recentItemText: { fontSize: 13, flex: 1 },
   flowDots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: 4 },
   flowDot: { width: 4, height: 4, borderRadius: 2 },
-  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 16, paddingBottom: 24 },
+  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 16 },
   platformBadge: { alignItems: "center", gap: 6 },
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
   platformLetter: { fontSize: 17, fontWeight: "900", letterSpacing: -0.5 },
@@ -405,4 +400,8 @@ const s = StyleSheet.create({
   videoPreview: { alignItems: 'center', justifyContent: 'center', gap: 8 },
   videoLabel: { fontSize: 13 },
   removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
+  expandHint: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },
+  modalImage: { width: '100%', height: '80%' },
+  modalClose: { position: 'absolute', top: 60, right: 20 },
 })
