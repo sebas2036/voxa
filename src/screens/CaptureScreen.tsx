@@ -397,22 +397,9 @@ export default function CaptureScreen({ navigation }: any) {
           </View>
         )}
 
-        <View style={s.flowDots}>
-          {[0,1,2,3].map(i => <View key={i} style={[s.flowDot, { backgroundColor: theme.bgTertiary }]} />)}
+        <View style={s.tickerContainer}>
+          <LanguageTicker theme={theme} />
         </View>
-
-        <View style={[s.platformsRow, { marginBottom: 100 }]}>
-          {activePlatformKeys.slice(0, 4).map((key, i) => {
-            const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
-            return (
-              <View key={i} style={s.platformBadge}>
-                <View style={[s.platformDot, { backgroundColor: p.color + '22', borderColor: p.color + '44' }]}>
-                  {p.lib === 'fa6' && <FontAwesome6 name={p.icon as any} size={18} color={p.color} />}
-                  {p.lib === 'fa5' && <FontAwesome5 name={p.icon as any} size={18} color={p.color} />}
-                  {p.lib === 'text' && <Text style={[s.platformLetter, { color: p.color }]}>{p.icon}</Text>}
-                </View>
-                <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
-              </View>
             )
           })}
         </View>
