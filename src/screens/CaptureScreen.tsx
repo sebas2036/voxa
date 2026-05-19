@@ -138,6 +138,56 @@ function LanguageTicker({ theme }: { theme: any }) {
   )
 }
 
+
+const TICKER_PHRASES = [
+  'tu voz, en todas tus redes',
+  'your voice, on every network',
+  'ta voix, sur tous tes réseaux',
+  'deine stimme, überall',
+  'sua voz, em todas as redes',
+  'la tua voce, ovunque',
+  '你的声音，遍及每个网络',
+  'あなたの声を、世界へ',
+  'tu voz, en todas tus redes',
+]
+
+function LanguageTicker({ theme }: { theme: any }) {
+  const scrollX = useRef(new Animated.Value(0)).current
+  const fullText = TICKER_PHRASES.join('   ·   ') + '   ·   '
+
+  useEffect(() => {
+    const animate = () => {
+      scrollX.setValue(0)
+      Animated.timing(scrollX, {
+        toValue: -1,
+        duration: 30000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }).start(() => animate())
+    }
+    animate()
+  }, [])
+
+  return (
+    <View style={s.tickerWrap}>
+      <Animated.Text
+        numberOfLines={1}
+        style={[s.tickerText, {
+          color: theme.textMuted,
+          transform: [{
+            translateX: scrollX.interpolate({
+              inputRange: [-1, 0],
+              outputRange: [-800, 0],
+            })
+          }]
+        }]}
+      >
+        {fullText}
+      </Animated.Text>
+    </View>
+  )
+}
+
 export default function CaptureScreen({ navigation }: any) {
   const { width, height } = useWindowDimensions()
   const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
@@ -496,6 +546,9 @@ const s = StyleSheet.create({
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
   mediaIconWrap: { alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingVertical: 12 },
   mediaIconText: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '300' },
+  tickerContainer: { overflow: 'hidden', marginBottom: 16 },
+  tickerWrap: { overflow: 'hidden' },
+  tickerText: { fontSize: 10, letterSpacing: 2, opacity: 0.4, whiteSpace: 'nowrap' },
   tickerContainer: { overflow: 'hidden', marginBottom: 16 },
   tickerWrap: { overflow: 'hidden' },
   tickerText: { fontSize: 10, letterSpacing: 2, opacity: 0.4, whiteSpace: 'nowrap' },
