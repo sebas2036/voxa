@@ -417,20 +417,21 @@ export default function CaptureScreen({ navigation }: any) {
           })}
         </View>
 
-        <View style={s.generateWrap}>
-          <TouchableOpacity
-            style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
-            onPress={handleGenerate}
-            disabled={!input.trim() || loading || isGenerating}
-          >
-            {loading
-              ? <ActivityIndicator color="#ffffff" size="small" />
-              : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
-            }
-          </TouchableOpacity>
-        </View>
 
       </ScrollView>
+
+      <View style={[s.stickyFooter, { backgroundColor: theme.bg }]}>
+        <TouchableOpacity
+          style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
+          onPress={handleGenerate}
+          disabled={!input.trim() || loading || isGenerating}
+        >
+          {loading
+            ? <ActivityIndicator color="#ffffff" size="small" />
+            : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>{t.generate}</Text>
+          }
+        </TouchableOpacity>
+      </View>
 
 
 
@@ -450,7 +451,7 @@ export default function CaptureScreen({ navigation }: any) {
 
 const s = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { padding: 24, paddingTop: 48, paddingBottom: 20 },
+  scroll: { padding: 24, paddingTop: 48, paddingBottom: 90 },
   header: { marginBottom: 4 },
   headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   logo: { fontSize: 32 },
@@ -477,7 +478,7 @@ const s = StyleSheet.create({
   offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
   offlineText: { fontSize: 11, fontWeight: '500' },
   errorText: { fontSize: 12 },
-  generateWrap: { alignItems: 'center', paddingVertical: 24, paddingBottom: 36 },
+  stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: 32, paddingTop: 12, alignItems: 'center' },
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 16 },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 17, fontWeight: "500" },
