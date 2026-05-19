@@ -405,7 +405,7 @@ const s = StyleSheet.create({
   tagline: { fontSize: 12, marginTop: 4, letterSpacing: 0.3 },
   menuBtn: { padding: 8, gap: 5, alignItems: "flex-end" },
   menuLine: { width: 22, height: 1.5, borderRadius: 2 },
-  micArea: { alignItems: "center", paddingVertical: 24, marginBottom: 8 },
+  micArea: { alignItems: "center", paddingVertical: 12, marginBottom: 4 },
   hintText: { fontSize: 13, letterSpacing: 3, textTransform: "uppercase", marginBottom: 10 },
   orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
   inputContainer: { marginBottom: 24 },
