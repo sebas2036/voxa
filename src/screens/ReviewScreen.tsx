@@ -4,6 +4,7 @@ import {
   ScrollView, Switch, TextInput, ActivityIndicator, Modal, Animated
 } from 'react-native'
 import { useGlosXStore } from '../store/glosx.store'
+import { Image } from 'react-native'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS, publishToAll } from '../utils/deeplinks'
@@ -30,7 +31,7 @@ const ALL_EXTRA = [
 
 
 export default function ReviewScreen({ navigation }: any) {
-  const { result, reset, updatePlatformContent, progressivePlatforms } = useGlosXStore()
+  const { result, reset, updatePlatformContent, progressivePlatforms, mediaUri, mediaType } = useGlosXStore()
   const { t } = useLanguage()
   const theme = useTheme()
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ twitter: true, threads: true, instagram: true, reddit: true })
@@ -164,6 +165,18 @@ export default function ReviewScreen({ navigation }: any) {
       </View>
 
       <ScrollView contentContainerStyle={s.scroll}>
+        {mediaUri && (
+          <View style={s.mediaPreviewWrap}>
+            {mediaType === 'image' ? (
+              <Image source={{ uri: mediaUri }} style={s.mediaPreviewImg} resizeMode="cover" />
+            ) : (
+              <View style={[s.mediaPreviewImg, s.videoThumb, { backgroundColor: theme.bgSecondary }]}>
+                <Ionicons name="play-circle" size={40} color={theme.accent} />
+                <Text style={{ color: theme.textSecondary, fontSize: 13, marginTop: 6 }}>{t.lang === 'es' ? 'video adjunto' : 'video attached'}</Text>
+              </View>
+            )}
+          </View>
+        )}
         {PLATFORMS.filter(p => enabled[p.key]).map(platform => {
           const pdata = result.platforms[platform.key as keyof typeof result.platforms]
           const progressStatus = progressivePlatforms[platform.key]
@@ -387,4 +400,7 @@ const s = StyleSheet.create({
   onboardingBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, paddingHorizontal: 20, paddingVertical: 14, borderRadius: 14, borderWidth: 0.5, marginHorizontal: 24 },
   onboardingText: { fontSize: 13, flex: 1 },
   onboardingArrow: { fontSize: 18, marginLeft: 8 },
+  mediaPreviewWrap: { marginBottom: 16, borderRadius: 16, overflow: 'hidden' },
+  mediaPreviewImg: { width: '100%', height: 200, borderRadius: 16 },
+  videoThumb: { alignItems: 'center', justifyContent: 'center' },
 })
