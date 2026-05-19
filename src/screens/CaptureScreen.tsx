@@ -253,27 +253,32 @@ export default function CaptureScreen({ navigation }: any) {
         )}
 
         <View style={s.toneSection}>
-          <View style={s.tonesContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tonesWrap}>
-              {TONES.map(key => (
-                <TouchableOpacity
-                  key={key}
-                  style={[s.tonePill, { borderColor: theme.border }, tone === key && { borderColor: theme.accent, backgroundColor: theme.accentLight }]}
-                  onPress={() => setTone(key)}
-                >
-                  <Text style={[s.tonePillText, { color: theme.textSecondary }, tone === key && { color: theme.accent }]}>
-                    {t.tones[key as keyof typeof t.tones]}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <View style={[s.toneFadeRight, { 
-              background: undefined,
-              shadowColor: theme.bg,
-              shadowOffset: { width: -20, height: 0 },
-              shadowOpacity: 1,
-              shadowRadius: 20,
-            }]} pointerEvents="none" />
+          <View style={s.toneCarousel}>
+            <TouchableOpacity onPress={() => { const i = TONES.indexOf(tone); setTone(TONES[(i - 1 + TONES.length) % TONES.length]) }} style={s.toneArrow}>
+              <Text style={[s.toneArrowText, { color: theme.textMuted }]}>‹</Text>
+            </TouchableOpacity>
+            <View style={s.toneCenter}>
+              {[-1, 0, 1].map(offset => {
+                const i = (TONES.indexOf(tone) + offset + TONES.length) % TONES.length
+                const key = TONES[i]
+                const isActive = offset === 0
+                return (
+                  <TouchableOpacity key={key} onPress={() => setTone(key)} style={s.toneItem}>
+                    <Text style={[s.toneCenterText, {
+                      color: isActive ? theme.accent : theme.textMuted,
+                      fontSize: isActive ? 13 : 11,
+                      opacity: isActive ? 1 : 0.45,
+                      fontWeight: isActive ? '500' : '300',
+                    }]}>
+                      {t.tones[key as keyof typeof t.tones]}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              })}
+            </View>
+            <TouchableOpacity onPress={() => { const i = TONES.indexOf(tone); setTone(TONES[(i + 1) % TONES.length]) }} style={s.toneArrow}>
+              <Text style={[s.toneArrowText, { color: theme.textMuted }]}>›</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
