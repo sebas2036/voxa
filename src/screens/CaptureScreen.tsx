@@ -6,7 +6,6 @@ import {
   ActivityIndicator, Animated, Easing, Alert
 } from 'react-native'
 import { useWindowDimensions } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
 import { useGlosXStore } from '../store/glosx.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
@@ -268,13 +267,13 @@ export default function CaptureScreen({ navigation }: any) {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            <LinearGradient
-              colors={['transparent', theme.bg]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={s.toneFadeRight}
-              pointerEvents="none"
-            />
+            <View style={[s.toneFadeRight, { 
+              background: undefined,
+              shadowColor: theme.bg,
+              shadowOffset: { width: -20, height: 0 },
+              shadowOpacity: 1,
+              shadowRadius: 20,
+            }]} pointerEvents="none" />
           </View>
         </View>
 
