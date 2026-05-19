@@ -253,8 +253,7 @@ export default function CaptureScreen({ navigation }: any) {
         )}
 
         <View style={s.toneSection}>
-          <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.toneLabel}</Text>
-          <View style={s.tonesWrap}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tonesWrap}>
             {TONES.map(key => (
               <TouchableOpacity
                 key={key}
@@ -266,7 +265,7 @@ export default function CaptureScreen({ navigation }: any) {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
@@ -397,8 +396,8 @@ const s = StyleSheet.create({
   orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
   inputContainer: { marginBottom: 24 },
   input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: "300", minHeight: 90, lineHeight: 24 },
-  toneSection: { marginBottom: 28 },
-  tonesWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4, justifyContent: 'center' },
+  toneSection: { marginBottom: 20 },
+  tonesWrap: { flexDirection: 'row', gap: 8, paddingHorizontal: 24, paddingVertical: 4 },
   sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5 },
   tonePillText: { fontSize: 12 },
