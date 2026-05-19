@@ -80,14 +80,14 @@ export function MicButton({ micState, onPress, bgColor }: MicButtonProps) {
         </>
       )}
       <TouchableOpacity style={[s.micBtn, { backgroundColor: color }]} onPress={onPress} activeOpacity={0.85}>
-        <Ionicons name={micState === 'recording' ? 'stop' : 'mic'} size={38} color={bgColor} />
+        <Ionicons name={micState === 'recording' ? 'stop' : 'mic'} size={44} color={bgColor} />
       </TouchableOpacity>
     </View>
   )
 }
 
 const s = StyleSheet.create({
-  micWrapper: { width: 120, height: 120, alignItems: 'center', justifyContent: 'center' },
-  ring: { position: 'absolute', width: 120, height: 120, borderRadius: 60 },
-  micBtn: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center' },
+  micWrapper: { width: 140, height: 140, alignItems: 'center', justifyContent: 'center' },
+  ring: { position: 'absolute', width: 140, height: 140, borderRadius: 70 },
+  micBtn: { width: 100, height: 100, borderRadius: 50, alignItems: 'center', justifyContent: 'center' },
 })
