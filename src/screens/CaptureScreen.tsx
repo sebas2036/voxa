@@ -263,11 +263,11 @@ export default function CaptureScreen({ navigation }: any) {
             </View>
           ) : (
             <View style={s.mediaButtons}>
-              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => handlePickMedia(false)}>
+              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgTertiary }]} onPress={() => handlePickMedia(false)}>
                 <Ionicons name="images-outline" size={20} color={theme.textSecondary} />
                 <Text style={[s.mediaBtnText, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'Galería' : 'Gallery'}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => handlePickMedia(true)}>
+              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgTertiary }]} onPress={() => handlePickMedia(true)}>
                 <Ionicons name="camera-outline" size={20} color={theme.textSecondary} />
                 <Text style={[s.mediaBtnText, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'Cámara' : 'Camera'}</Text>
               </TouchableOpacity>
