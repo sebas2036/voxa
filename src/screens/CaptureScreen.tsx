@@ -449,7 +449,7 @@ export default function CaptureScreen({ navigation }: any) {
 
 const s = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { padding: 24, paddingTop: 48, paddingBottom: 80 },
+  scroll: { padding: 24, paddingTop: 48, paddingBottom: 20 },
   header: { marginBottom: 4 },
   headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   logo: { fontSize: 32 },
