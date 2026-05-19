@@ -402,7 +402,7 @@ const s = StyleSheet.create({
   videoLabel: { fontSize: 13 },
   removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
   expandHint: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' },
   modalImage: { width: '100%', height: '80%' },
   modalClose: { position: 'absolute', top: 60, right: 20 },
 })
