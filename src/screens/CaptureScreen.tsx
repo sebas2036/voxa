@@ -6,6 +6,7 @@ import {
   ActivityIndicator, Animated, Easing, Alert
 } from 'react-native'
 import { useWindowDimensions } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useGlosXStore } from '../store/glosx.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
@@ -253,19 +254,28 @@ export default function CaptureScreen({ navigation }: any) {
         )}
 
         <View style={s.toneSection}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tonesWrap}>
-            {TONES.map(key => (
-              <TouchableOpacity
-                key={key}
-                style={[s.tonePill, { borderColor: theme.border }, tone === key && { borderColor: theme.accent, backgroundColor: theme.accentLight }]}
-                onPress={() => setTone(key)}
-              >
-                <Text style={[s.tonePillText, { color: theme.textSecondary }, tone === key && { color: theme.accent }]}>
-                  {t.tones[key as keyof typeof t.tones]}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <View style={s.tonesContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.tonesWrap}>
+              {TONES.map(key => (
+                <TouchableOpacity
+                  key={key}
+                  style={[s.tonePill, { borderColor: theme.border }, tone === key && { borderColor: theme.accent, backgroundColor: theme.accentLight }]}
+                  onPress={() => setTone(key)}
+                >
+                  <Text style={[s.tonePillText, { color: theme.textSecondary }, tone === key && { color: theme.accent }]}>
+                    {t.tones[key as keyof typeof t.tones]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <LinearGradient
+              colors={['transparent', theme.bg]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={s.toneFadeRight}
+              pointerEvents="none"
+            />
+          </View>
         </View>
 
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
@@ -397,6 +407,8 @@ const s = StyleSheet.create({
   inputContainer: { marginBottom: 24 },
   input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: "300", minHeight: 90, lineHeight: 24 },
   toneSection: { marginBottom: 20 },
+  tonesContainer: { position: 'relative' },
+  toneFadeRight: { position: 'absolute', right: 0, top: 0, bottom: 0, width: 48, pointerEvents: 'none' },
   tonesWrap: { flexDirection: 'row', gap: 8, paddingHorizontal: 24, paddingVertical: 4 },
   sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5 },
