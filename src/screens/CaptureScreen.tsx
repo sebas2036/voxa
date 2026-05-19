@@ -272,7 +272,7 @@ export default function CaptureScreen({ navigation }: any) {
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
 
         <View style={s.mediaSection}>
-          <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'adjuntar media' : 'attach media'}</Text>
+          <Text style={[s.mediaLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'entrada visual' : 'visual input'}</Text>
           {mediaUri ? (
             <View style={s.mediaPreviewContainer}>
               <TouchableOpacity onPress={() => setShowImageModal(true)} activeOpacity={0.9}>
@@ -293,15 +293,10 @@ export default function CaptureScreen({ navigation }: any) {
               </TouchableOpacity>
             </View>
           ) : (
-            <View style={s.mediaButtons}>
-              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgTertiary }]} onPress={() => handlePickMedia(false)}>
-                <Ionicons name="images-outline" size={20} color={theme.textSecondary} />
-                <Text style={[s.mediaBtnText, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'Galería' : 'Gallery'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgTertiary }]} onPress={() => handlePickMedia(true)}>
-                <Ionicons name="camera-outline" size={20} color={theme.textSecondary} />
-                <Text style={[s.mediaBtnText, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'Cámara' : 'Camera'}</Text>
-              </TouchableOpacity>
+            <View style={s.mediaFloating}>
+              <MediaIcon icon="images-outline" label={t.lang === 'es' ? 'galería' : 'gallery'} onPress={() => handlePickMedia(false)} theme={theme} />
+              <View style={s.mediaDivider} />
+              <MediaIcon icon="camera-outline" label={t.lang === 'es' ? 'cámara' : 'camera'} onPress={() => handlePickMedia(true)} theme={theme} />
             </View>
           )}
         </View>
@@ -427,10 +422,12 @@ const s = StyleSheet.create({
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
   platformLetter: { fontSize: 17, fontWeight: "900", letterSpacing: -0.5 },
   platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: "uppercase", opacity: 0.8 },
-  mediaSection: { marginBottom: 24 },
-  mediaButtons: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  mediaBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 12, borderRadius: 12, borderWidth: 0.5 },
-  mediaBtnText: { fontSize: 13 },
+  mediaSection: { marginBottom: 32 },
+  mediaLabel: { fontSize: 9, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 20, textAlign: 'center' },
+  mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 8 },
+  mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
+  mediaIconWrap: { alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingVertical: 12 },
+  mediaIconText: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '300' },
   mediaPreviewContainer: { marginTop: 8, position: 'relative' },
   mediaPreview: { width: '100%', height: 180, borderRadius: 12 },
   videoPreview: { alignItems: 'center', justifyContent: 'center', gap: 8 },
