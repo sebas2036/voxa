@@ -400,9 +400,6 @@ export default function CaptureScreen({ navigation }: any) {
         <View style={s.tickerContainer}>
           <LanguageTicker theme={theme} />
         </View>
-            )
-          })}
-        </View>
 
       </ScrollView>
 
