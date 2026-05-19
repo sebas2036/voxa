@@ -55,6 +55,7 @@ const MIC_STATES = {
 }
 
 export default function CaptureScreen({ navigation }: any) {
+  const { width, height } = useWindowDimensions()
   const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
@@ -341,7 +342,7 @@ export default function CaptureScreen({ navigation }: any) {
       {/* MODAL IMAGEN FULLSCREEN */}
       <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
         <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
-          <Image source={{ uri: mediaUri || '' }} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+          <Image source={{ uri: mediaUri || '' }} style={{ width: width, height: height }} resizeMode="contain" />
           <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
