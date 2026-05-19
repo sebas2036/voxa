@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
+import * as ImagePicker from 'expo-image-picker'
 import {
-  View, Text, TextInput, TouchableOpacity,
+  View, Text, TextInput, TouchableOpacity, Image,
   StyleSheet, SafeAreaView, ScrollView,
   ActivityIndicator, Animated, Easing, Alert, PanResponder
 } from 'react-native'
@@ -67,10 +68,11 @@ export default function CaptureScreen({ navigation }: any) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [hintIndex, setHintIndex] = useState(0)
   const [micState, setMicState] = useState<MicState>('idle')
+  const [mediaUri, setMediaUri] = useState<string | null>(null)
+  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null)
   const { isOnline } = useNetworkStatus()
   const [emotionalHintIndex, setEmotionalHintIndex] = useState(0)
   const micColor = useRef(new Animated.Value(0)).current
-
   const ring1 = useRef(new Animated.Value(0)).current
   const ring2 = useRef(new Animated.Value(0)).current
   const ring3 = useRef(new Animated.Value(0)).current
@@ -135,6 +137,29 @@ export default function CaptureScreen({ navigation }: any) {
   useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
 
   const handleMicPress = () => { if (isRecording) { stopRecording(); setMicState('thinking') } else { startRecording(); setMicState('recording') } }
+
+  const handlePickMedia = async (useCamera: boolean) => {
+    const perm = useCamera
+      ? await ImagePicker.requestCameraPermissionsAsync()
+      : await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (!perm.granted) {
+      Alert.alert(
+        t.lang === 'es' ? 'Permiso requerido' : 'Permission required',
+        t.lang === 'es' ? 'Necesitamos acceso a tu galería/cámara.' : 'We need access to your gallery/camera.'
+      )
+      return
+    }
+    const result = useCamera
+      ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 })
+      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 })
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0]
+      setMediaUri(asset.uri)
+      setMediaType(asset.type === 'video' ? 'video' : 'image')
+    }
+  }
+
+  const handleRemoveMedia = () => { setMediaUri(null); setMediaType(null) }
 
   const handleGenerate = async () => {
     if (!input.trim()) return
@@ -204,23 +229,53 @@ export default function CaptureScreen({ navigation }: any) {
         <View style={s.toneSection}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.toneLabel}</Text>
           <View style={s.tonesWrap}>
-              {TONES.map(key => (
-                <TouchableOpacity
-                  key={key}
-                  style={[s.tonePill, { borderColor: theme.border }, tone === key && { borderColor: theme.accent, backgroundColor: theme.accentLight }]}
-                  onPress={() => setTone(key)}
-                >
-                  <Text style={[s.tonePillText, { color: theme.textSecondary }, tone === key && { color: theme.accent }]}>
-                    {t.tones[key as keyof typeof t.tones]}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            {TONES.map(key => (
+              <TouchableOpacity
+                key={key}
+                style={[s.tonePill, { borderColor: theme.border }, tone === key && { borderColor: theme.accent, backgroundColor: theme.accentLight }]}
+                onPress={() => setTone(key)}
+              >
+                <Text style={[s.tonePillText, { color: theme.textSecondary }, tone === key && { color: theme.accent }]}>
+                  {t.tones[key as keyof typeof t.tones]}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
         {error && <View style={[s.errorBox, { backgroundColor: theme.bgSecondary }]}><Text style={[s.errorText, { color: theme.error }]}>{error}</Text></View>}
 
-                <TouchableOpacity
+        <View style={s.mediaSection}>
+          <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'adjuntar media' : 'attach media'}</Text>
+          {mediaUri ? (
+            <View style={s.mediaPreviewContainer}>
+              {mediaType === 'image' ? (
+                <Image source={{ uri: mediaUri }} style={s.mediaPreview} resizeMode="cover" />
+              ) : (
+                <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
+                  <Ionicons name="play-circle" size={40} color={theme.accent} />
+                  <Text style={[s.videoLabel, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'video adjunto' : 'video attached'}</Text>
+                </View>
+              )}
+              <TouchableOpacity style={[s.removeMedia, { backgroundColor: theme.bgSecondary }]} onPress={handleRemoveMedia}>
+                <Ionicons name="close-circle" size={22} color={theme.error} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={s.mediaButtons}>
+              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => handlePickMedia(false)}>
+                <Ionicons name="images-outline" size={20} color={theme.textSecondary} />
+                <Text style={[s.mediaBtnText, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'Galería' : 'Gallery'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[s.mediaBtn, { borderColor: theme.border, backgroundColor: theme.bgSecondary }]} onPress={() => handlePickMedia(true)}>
+                <Ionicons name="camera-outline" size={20} color={theme.textSecondary} />
+                <Text style={[s.mediaBtnText, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'Cámara' : 'Camera'}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        <TouchableOpacity
           style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
           onPress={handleGenerate}
           disabled={!input.trim() || loading || isGenerating}
@@ -341,4 +396,13 @@ const s = StyleSheet.create({
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
   platformLetter: { fontSize: 17, fontWeight: "900", letterSpacing: -0.5 },
   platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: "uppercase", opacity: 0.8 },
+  mediaSection: { marginBottom: 24 },
+  mediaButtons: { flexDirection: 'row', gap: 12, marginTop: 8 },
+  mediaBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 12, borderRadius: 12, borderWidth: 0.5 },
+  mediaBtnText: { fontSize: 13 },
+  mediaPreviewContainer: { marginTop: 8, position: 'relative' },
+  mediaPreview: { width: '100%', height: 180, borderRadius: 12 },
+  videoPreview: { alignItems: 'center', justifyContent: 'center', gap: 8 },
+  videoLabel: { fontSize: 13 },
+  removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
 })
