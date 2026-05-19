@@ -425,7 +425,7 @@ const s = StyleSheet.create({
   offlineText: { fontSize: 11, fontWeight: '500' },
   errorText: { fontSize: 12 },
   stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: 40, alignItems: 'center' },
-  generateBtn: { borderRadius: 30, height: 48, paddingHorizontal: 48, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 16 },
+  generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 16 },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 17, fontWeight: "500" },
   recentSection: { marginBottom: 24 },
