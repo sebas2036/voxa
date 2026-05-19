@@ -54,6 +54,40 @@ const MIC_STATES = {
   ready:      { color: '#c8b99a', pulseSpeed: 400,  pulseScale: 1.4, hints_es: ['listo ✓', 'mirá esto ✓', 'está listo ✓'], hints_en: ['ready ✓', 'check this out ✓', "it's ready ✓"] },
 }
 
+
+function MediaIcon({ icon, label, onPress, theme }: { icon: any, label: string, onPress: () => void, theme: any }) {
+  const scale = useRef(new Animated.Value(1)).current
+  const glow = useRef(new Animated.Value(0)).current
+
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 0.88, useNativeDriver: true, speed: 50 }),
+        Animated.timing(glow, { toValue: 1, duration: 120, useNativeDriver: true }),
+      ]),
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
+        Animated.timing(glow, { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]),
+    ]).start()
+    onPress()
+  }
+
+  return (
+    <TouchableOpacity onPress={handlePress} activeOpacity={1} style={s.mediaIconWrap}>
+      <Animated.View style={{
+        transform: [{ scale }],
+        opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }),
+      }}>
+        <Ionicons name={icon} size={26} color={theme.accent} />
+      </Animated.View>
+      <Animated.Text style={[s.mediaIconText, { color: theme.textMuted, opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0.9] }) }]}>
+        {label}
+      </Animated.Text>
+    </TouchableOpacity>
+  )
+}
+
 export default function CaptureScreen({ navigation }: any) {
   const { width, height } = useWindowDimensions()
   const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
