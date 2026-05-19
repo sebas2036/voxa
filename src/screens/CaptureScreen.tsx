@@ -408,7 +408,7 @@ const s = StyleSheet.create({
   toneSection: { marginBottom: 20 },
   tonesContainer: { position: 'relative' },
   toneFadeRight: { position: 'absolute', right: 0, top: 0, bottom: 0, width: 48, pointerEvents: 'none' },
-  tonesWrap: { flexDirection: 'row', gap: 8, paddingHorizontal: 24, paddingVertical: 4 },
+  tonesWrap: { flexDirection: 'row', gap: 8, paddingLeft: 24, paddingRight: 8, paddingVertical: 4 },
   sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
   tonePill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 0.5 },
   tonePillText: { fontSize: 12 },
