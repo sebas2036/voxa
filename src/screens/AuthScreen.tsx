@@ -104,7 +104,7 @@ const s = StyleSheet.create({
   input: { borderWidth: 0.5, borderRadius: 14, padding: 16, fontSize: 15 },
   errorText: { fontSize: 12, textAlign: 'center' },
   successText: { fontSize: 12, textAlign: 'center' },
-  btn: { borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  btn: { borderRadius: 30, height: 48, alignItems: 'center', justifyContent: 'center', marginTop: 8, alignSelf: 'center', paddingHorizontal: 48, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 16 },
   btnDisabled: { opacity: 0.5 },
   btnText: { fontSize: 16, fontWeight: '500' },
   switchText: { fontSize: 13, textAlign: 'center', marginTop: 8 },
