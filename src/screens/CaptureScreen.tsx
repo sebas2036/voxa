@@ -433,7 +433,7 @@ export default function CaptureScreen({ navigation }: any) {
 
 const s = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { padding: 24, paddingTop: 48, paddingBottom: 100 },
+  scroll: { padding: 24, paddingTop: 48, paddingBottom: 80 },
   header: { marginBottom: 4 },
   headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   logo: { fontSize: 32 },
@@ -482,10 +482,10 @@ const s = StyleSheet.create({
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
   mediaIconWrap: { alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingVertical: 12 },
   mediaIconText: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '300' },
-  tickerContainer: { overflow: 'hidden', marginBottom: 16 },
+  tickerContainer: { overflow: 'hidden', marginBottom: 0 },
   tickerWrap: { overflow: 'hidden' },
   tickerText: { fontSize: 10, letterSpacing: 2, opacity: 0.4, whiteSpace: 'nowrap' },
-  tickerContainer: { overflow: 'hidden', marginBottom: 16 },
+  tickerContainer: { overflow: 'hidden', marginBottom: 0 },
   tickerWrap: { overflow: 'hidden' },
   tickerText: { fontSize: 10, letterSpacing: 2, opacity: 0.4, whiteSpace: 'nowrap' },
   mediaPreviewContainer: { marginTop: 8, position: 'relative' },
