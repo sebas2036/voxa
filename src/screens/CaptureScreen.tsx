@@ -57,7 +57,7 @@ const MIC_STATES = {
 }
 
 export default function CaptureScreen({ navigation }: any) {
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas } = useGlosXStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generate, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
@@ -154,12 +154,12 @@ export default function CaptureScreen({ navigation }: any) {
       : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 })
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0]
-      setMediaUri(asset.uri)
+      setMediaUri(asset.uri); setMedia(asset.uri, asset.type === 'video' ? 'video' : 'image')
       setMediaType(asset.type === 'video' ? 'video' : 'image')
     }
   }
 
-  const handleRemoveMedia = () => { setMediaUri(null); setMediaType(null) }
+  const handleRemoveMedia = () => { setMediaUri(null); setMediaType(null); setMedia(null, null) }
 
   const handleGenerate = async () => {
     if (!input.trim()) return
