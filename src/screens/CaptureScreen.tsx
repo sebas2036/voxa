@@ -476,7 +476,7 @@ const s = StyleSheet.create({
   offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
   offlineText: { fontSize: 11, fontWeight: '500' },
   errorText: { fontSize: 12 },
-  stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: 40, alignItems: 'center' },
+  stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: 28, alignItems: 'center' },
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 16 },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 17, fontWeight: "500" },
