@@ -401,6 +401,22 @@ export default function CaptureScreen({ navigation }: any) {
           <LanguageTicker theme={theme} />
         </View>
 
+        <View style={s.platformsRow}>
+          {activePlatformKeys.slice(0, 4).map((key, i) => {
+            const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
+            return (
+              <View key={i} style={s.platformBadge}>
+                <View style={[s.platformDot, { backgroundColor: p.color + '22', borderColor: p.color + '44' }]}>
+                  {p.lib === 'fa6' && <FontAwesome6 name={p.icon as any} size={16} color={p.color} />}
+                  {p.lib === 'fa5' && <FontAwesome5 name={p.icon as any} size={16} color={p.color} />}
+                  {p.lib === 'text' && <Text style={[s.platformLetter, { color: p.color }]}>{p.icon}</Text>}
+                </View>
+                <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
+              </View>
+            )
+          })}
+        </View>
+
       </ScrollView>
 
       {/* BOTÓN GENERAR STICKY */}
@@ -471,7 +487,7 @@ const s = StyleSheet.create({
   recentItemText: { fontSize: 13, flex: 1 },
   flowDots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: 4 },
   flowDot: { width: 4, height: 4, borderRadius: 2 },
-  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 16, paddingVertical: 8 },
+  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 12, paddingVertical: 8, opacity: 0.7 },
   platformBadge: { alignItems: "center", gap: 6 },
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
   platformLetter: { fontSize: 17, fontWeight: "900", letterSpacing: -0.5 },
