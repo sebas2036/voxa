@@ -399,7 +399,7 @@ const s = StyleSheet.create({
   hintText: { fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 },
   orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
   inputContainer: { marginBottom: 16 },
-  input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: '300', minHeight: 80, lineHeight: 22 },
+  input: { borderWidth: 0.5, borderRadius: 16, padding: 14, fontSize: 15, fontWeight: '300', minHeight: 44, lineHeight: 22 },
   toneSection: { marginBottom: 16 },
   toneCarousel: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   toneArrow: { paddingHorizontal: 12, paddingVertical: 8 },
