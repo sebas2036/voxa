@@ -400,7 +400,7 @@ const s = StyleSheet.create({
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
   platformLetter: { fontSize: 15, fontWeight: '900', letterSpacing: -0.5 },
   platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', opacity: 0.8 },
-  generateWrap: { paddingVertical: 24, paddingBottom: 16 },
+  generateWrap: { alignItems: 'center', paddingVertical: 24, paddingBottom: 16 },
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12 },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 18, fontWeight: '300', fontStyle: 'italic', letterSpacing: 3 },
