@@ -31,6 +31,19 @@ const ALL_EXTRA = [
 ]
 
 
+const PLATFORM_EMOJIS: Record<string, string[]> = {
+  twitter:   ['🔥', '💡', '✨', '🎯', '😤', '👀', '🧵', '💬'],
+  instagram: ['🌿', '🌅', '💫', '🙌', '❤️', '📸', '✨', '🌸'],
+  reddit:    ['🤔', '💬', '👀', '🧠', '📌', '⬆️', '🎭', '💎'],
+  linkedin:  ['💼', '🚀', '📈', '🤝', '✅', '💡', '🎯', '🌟'],
+  threads:   ['✨', '💭', '🌀', '🔮', '💫', '🎨', '🌊', '🦋'],
+  tiktok:    ['🎵', '🔥', '💃', '🎬', '✨', '😂', '❤️', '🚀'],
+  facebook:  ['❤️', '😊', '🙌', '💪', '🎉', '👏', '🌟', '💬'],
+  whatsapp:  ['👋', '😊', '🙏', '❤️', '✅', '🎉', '💪', '🌟'],
+  telegram:  ['📢', '💬', '🔔', '✨', '🚀', '💡', '🎯', '📌'],
+  pinterest: ['📌', '🌸', '✨', '💫', '🎨', '🌿', '💕', '🏡'],
+}
+
 export default function ReviewScreen({ navigation }: any) {
   const { result, reset, updatePlatformContent, progressivePlatforms, mediaUri, mediaType, mediaFilter } = useGlosXStore()
   const { t } = useLanguage()
@@ -246,6 +259,18 @@ export default function ReviewScreen({ navigation }: any) {
                       </TouchableOpacity>
                     ))}
                   </View>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.emojiBar}>
+                    {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map(emoji => (
+                      <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => {
+                        const current = editTexts[platform.key] || cnt
+                        const updated = current + ' ' + emoji
+                        setEditTexts(prev => ({ ...prev, [platform.key]: updated }))
+                        setExtraContents(prev => ({ ...prev, [platform.key]: updated }))
+                      }}>
+                        <Text style={s.emojiText}>{emoji}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
                   {isEdit ? (
                     <TextInput
                       style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
@@ -349,6 +374,9 @@ const s = StyleSheet.create({
   editTopBtnText: { fontSize: 12, fontWeight: '600' },
   recBox: { borderRadius: 12, borderWidth: 0.5, padding: 14, marginBottom: 10 },
   recText: { fontSize: 12, lineHeight: 18 },
+  emojiBar: { marginBottom: 8, marginTop: 4 },
+  emojiBtn: { paddingHorizontal: 8, paddingVertical: 4 },
+  emojiText: { fontSize: 20 },
   addPlatformBtn: { borderRadius: 16, borderWidth: 0.5, borderStyle: 'dashed', padding: 16, marginTop: 4, alignItems: 'center' },
   addPlatformText: { fontSize: 13, letterSpacing: 0.5 },
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, flexDirection: 'row', alignItems: 'center', gap: 12, borderTopWidth: 0.5 },
