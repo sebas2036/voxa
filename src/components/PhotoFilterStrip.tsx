@@ -59,7 +59,7 @@ export function FilteredImage({ uri, filter, style }: { uri: string, filter: Fil
 }
 
 const s = StyleSheet.create({
-  container: { position: 'absolute', bottom: 0, left: 0, right: 0 },
+  container: { position: 'absolute', bottom: 6, left: 0, right: 0 },
   strip: { paddingHorizontal: 12, gap: 6, paddingVertical: 6 },
   chip: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   chipText: { fontSize: 11, letterSpacing: 1, textTransform: 'lowercase', fontWeight: '400' },
