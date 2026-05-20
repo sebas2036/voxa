@@ -17,7 +17,6 @@ import { LanguageTicker } from '../components/LanguageTicker'
 import { ALL_PLATFORM_ICONS, HINTS_MAP, MIC_STATES } from '../constants/captureConstants'
 import { PhotoFilterStrip, FilteredImage, FilterKey, FILTERS } from '../components/PhotoFilterStrip'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
-import * as ScreenOrientation from 'expo-screen-orientation'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
@@ -43,16 +42,10 @@ export default function CaptureScreen({ navigation }: any) {
   const [mediaUri,           setMediaUri]           = useState<string | null>(null)
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
 
-  const openImageModal = async () => {
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
-    setShowImageModal(true)
-  }
-
-  const closeImageModal = async () => {
-    setShowImageModal(false)
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
-  }
+  const openImageModal = () => setShowImageModal(true)
+  const closeImageModal = () => setShowImageModal(false)
   const [activeFilter,       setActiveFilter]       = useState<FilterKey>('original')
+  const [showImageModal,     setShowImageModal]     = useState(false)
   const handleFilterChange = (f: FilterKey) => { setActiveFilter(f); setMediaFilter(f) }
 
   const scrollRef   = useRef<any>(null)
