@@ -161,7 +161,7 @@ export default function CaptureScreen({ navigation }: any) {
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <View style={{ flex: 1 }}>
-      <ScrollView ref={scrollRef} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView ref={scrollRef} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets>
 
         {!mediaUri && <View style={s.header}>
           <View style={s.headerTop}>
