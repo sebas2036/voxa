@@ -77,10 +77,12 @@ export default function CaptureScreen({ navigation }: any) {
   const handleFilterChange = (f: FilterKey) => { setActiveFilter(f); setMediaFilter(f) }
 
   const scrollRef   = useRef<any>(null)
+  const taglineAnim  = useRef(new Animated.Value(0)).current
   const recentAnim  = useRef(new Animated.Value(0)).current
   const hintOpacity = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
+    Animated.timing(taglineAnim, { toValue: 1, duration: 1200, delay: 300, useNativeDriver: true }).start()
     loadRecentIdeas()
     AsyncStorage.getItem('glosx_last_platforms').then(val => {
       if (val) { const keys = JSON.parse(val); if (keys.length > 0) setActivePlatformKeys(keys) }
@@ -189,7 +191,7 @@ export default function CaptureScreen({ navigation }: any) {
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
             </TouchableOpacity>
           </View>
-          <Text style={[s.tagline, { color: theme.text }]}>{t.tagline}</Text>
+          <Animated.Text style={[s.tagline, { color: theme.text, opacity: taglineAnim, transform: [{ translateY: taglineAnim.interpolate({ inputRange: [0,1], outputRange: [6,0] }) }] }]}>{t.tagline}</Animated.Text>
           {!isOnline && (
             <View style={[s.offlineBadge, { backgroundColor: '#ff3b3015', borderColor: '#ff3b3040' }]}>
               <Text style={[s.offlineText, { color: '#ff3b30' }]}>{t.lang === 'es' ? '✈ modo sin conexión' : '✈ offline mode'}</Text>
