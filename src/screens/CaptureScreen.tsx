@@ -381,7 +381,7 @@ export default function CaptureScreen({ navigation }: any) {
 
 const s = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { padding: 24, paddingTop: 48, paddingBottom: 100 },
+  scroll: { padding: 24, paddingTop: 48, paddingBottom: 20 },
   header: { marginBottom: 4 },
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   logo: { fontSize: 32 },
@@ -422,7 +422,7 @@ const s = StyleSheet.create({
   recentItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5 },
   recentItemText: { fontSize: 13, flex: 1 },
   bottomSection: { alignItems: 'center', paddingTop: 12, gap: 12 },
-  tickerText: { fontSize: 11, letterSpacing: 2, opacity: 0.35, textAlign: 'center' },
+  tickerText: { fontSize: 11, letterSpacing: 2, opacity: 0.5, textAlign: 'center' },
   platformsRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, opacity: 0.65 },
   platformBadge: { alignItems: 'center', gap: 5 },
   platformDot: { width: 38, height: 38, borderRadius: 19, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
