@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, ScrollView, TouchableOpacity, Text, StyleSheet, Image } from 'react-native'
 
-export type FilterKey = 'original' | 'noir' | 'golden' | 'fade' | 'vivid' | 'matte' | 'sepia' | 'cold'
+export type FilterKey = 'original' | 'noir' | 'golden' | 'fade' | 'vivid' | 'matte' | 'sepia' | 'cold' | 'bw'
 
 export interface Filter {
   key: FilterKey
@@ -21,6 +21,7 @@ export const FILTERS: Filter[] = [
   { key: 'matte',    label: 'matte',    color: 'rgba(139,120,100,0.3)',  textColor: '#c8b99a', overlay: '#8b7264', overlayOpacity: 0.25 },
   { key: 'sepia',    label: 'sépia',    color: 'rgba(160,120,60,0.3)',   textColor: '#c8a060', overlay: '#a07840', overlayOpacity: 0.35 },
   { key: 'cold',     label: 'polar',    color: 'rgba(80,140,220,0.25)',  textColor: '#80b4ff', overlay: '#1040c0', overlayOpacity: 0.20 },
+  { key: 'bw',       label: 'b&w',      color: 'rgba(255,255,255,0.08)',  textColor: '#ffffff', overlay: '#1a1a1a', overlayOpacity: 0.55 },
 ]
 
 export function PhotoFilterStrip({ activeFilter, onSelect }: { activeFilter: FilterKey, onSelect: (f: FilterKey) => void }) {
