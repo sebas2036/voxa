@@ -24,6 +24,7 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(12)).current
   const [textStyle, setTextStyle] = React.useState<TextStyleType>('normal')
+  const [cursorPos, setCursorPos] = React.useState<number>(0)
 
   useEffect(() => {
     Animated.parallel([
@@ -68,12 +69,24 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
             <View style={s.emojiRow}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
                 {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map((emoji: string) => (
-                  <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => onEditChange((editText || pdata.content) + ' ' + emoji)}>
+                  <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => {
+                    const text = editText || pdata.content
+                    const pos = cursorPos || text.length
+                    const updated = text.slice(0, pos) + emoji + text.slice(pos)
+                    onEditChange(updated)
+                    setCursorPos(pos + emoji.length)
+                  }}>
                     <Text style={s.emojiText}>{emoji}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              <EmojiPicker theme={theme} color={visibleColor} onSelect={(emoji) => onEditChange((editText || pdata.content) + ' ' + emoji)} />
+              <EmojiPicker theme={theme} color={visibleColor} onSelect={(emoji) => {
+                    const text = editText || pdata.content
+                    const pos = cursorPos || text.length
+                    const updated = text.slice(0, pos) + emoji + text.slice(pos)
+                    onEditChange(updated)
+                    setCursorPos(pos + emoji.length)
+                  }} />
             </View>
 
             {isEditing ? (
@@ -97,6 +110,7 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
                   onChangeText={onEditChange}
                   multiline autoFocus
                   onBlur={onEditBlur}
+                  onSelectionChange={e => setCursorPos(e.nativeEvent.selection.end)}
                 />
                 <TouchableOpacity style={[s.saveBtn, { backgroundColor: visibleColor + '20', borderColor: visibleColor }]} onPress={onToggleEdit}>
                   <Text style={[s.saveBtnText, { color: visibleColor }]}>✓ {t.save}</Text>
