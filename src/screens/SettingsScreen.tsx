@@ -164,19 +164,7 @@ export default function SettingsScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
-        <View style={s.section}>
-          <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{lang !== 'en' ? 'conexiones' : 'connections'}</Text>
-          <Text style={[s.sectionHint, { color: theme.textMuted }]}>{lang !== 'en' ? 'Conectá tus cuentas para publicar directo sin copiar y pegar.' : 'Connect your accounts to publish directly without copy-paste.'}</Text>
-          <TouchableOpacity
-            style={[s.row, { backgroundColor: twitterConnected ? '#1a1a1a' : theme.bgSecondary, borderColor: twitterConnected ? '#1a1a1a' : theme.border }]}
-            onPress={twitterConnected ? disconnectTwitter : connectTwitter}
-          >
-            <Text style={[s.rowText, { color: twitterConnected ? '#ffffff' : theme.text }]}>𝕏 Twitter</Text>
-            <View style={[s.badge, { backgroundColor: twitterConnected ? '#2e7d52' : theme.bgTertiary, borderColor: twitterConnected ? '#2e7d52' : theme.border }]}>
-              <Text style={[s.badgeText, { color: twitterConnected ? '#ffffff' : theme.textMuted }]}>{twitterConnected ? (lang !== 'en' ? 'conectado' : 'connected') : (lang !== 'en' ? 'conectar' : 'connect')}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+
 
         <View style={s.section}>
           <Text style={[s.sectionLabel, { color: theme.textMuted }]}>{t.appearance}</Text>
