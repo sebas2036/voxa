@@ -132,6 +132,8 @@ export default function CaptureScreen({ navigation }: any) {
       setMediaUri(asset.uri)
       setMediaType(asset.type === 'video' ? 'video' : 'image')
       setMedia(asset.uri, asset.type === 'video' ? 'video' : 'image')
+      setActiveFilter('original')
+      setMediaFilter('original')
     }
   }
 
