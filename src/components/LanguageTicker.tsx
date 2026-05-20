@@ -19,8 +19,8 @@ export function LanguageTicker({ theme }: { theme: any }) {
   useEffect(() => {
     const interval = setInterval(() => {
       Animated.sequence([
-        Animated.timing(opacity: Animated.multiply(opacity: Animated.multiply(opacity, 0.7), 0.7), { toValue: 0, duration: 500, useNativeDriver: true }),
-        Animated.timing(opacity: Animated.multiply(opacity: Animated.multiply(opacity, 0.7), 0.7), { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0, duration: 500, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }),
       ]).start()
       setTimeout(() => setIndex(i => (i + 1) % TICKER_PHRASES.length), 500)
     }, 3000)
@@ -28,7 +28,10 @@ export function LanguageTicker({ theme }: { theme: any }) {
   }, [])
 
   return (
-    <Animated.Text numberOfLines={1} style={{ fontSize: 11, letterSpacing: 2, textAlign: 'center', color: theme.textMuted, opacity }}>
+    <Animated.Text numberOfLines={1} style={{
+      fontSize: 11, letterSpacing: 2, textAlign: 'center',
+      color: theme.textMuted, opacity,
+    }}>
       {TICKER_PHRASES[index]}
     </Animated.Text>
   )
