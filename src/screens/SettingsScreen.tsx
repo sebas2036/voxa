@@ -211,7 +211,7 @@ export default function SettingsScreen({ navigation }: any) {
             <Text style={[s.moreLangsBtnText, { color: theme.textMuted }]}>
               {extraLangOptions.find(o => o.key === langPref)
                 ? `${extraLangOptions.find(o => o.key === langPref)!.flag} ${lang !== 'en' ? extraLangOptions.find(o => o.key === langPref)!.labelEs : extraLangOptions.find(o => o.key === langPref)!.labelEn}`
-                : (lang !== 'en' ? '+ más idiomas' : '+ more languages')}
+                : (lang !== 'en' ? '＋ idiomas' : '＋ languages')}
             </Text>
           </TouchableOpacity>
 
@@ -219,7 +219,7 @@ export default function SettingsScreen({ navigation }: any) {
             <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowLangModal(false)}>
               <TouchableOpacity activeOpacity={1} style={[s.modal, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]}>
                 <View style={s.modalHeader}>
-                  <Text style={[s.modalTitle, { color: theme.text }]}>{lang !== 'en' ? 'más idiomas' : 'more languages'}</Text>
+                  <Text style={[s.modalTitle, { color: theme.text }]}>{lang !== 'en' ? '＋ idiomas' : '＋ languages'}</Text>
                   <TouchableOpacity onPress={() => setShowLangModal(false)}>
                     <Text style={[{ color: theme.textMuted, fontSize: 16 }]}>✕</Text>
                   </TouchableOpacity>
