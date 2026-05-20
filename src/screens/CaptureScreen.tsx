@@ -42,7 +42,6 @@ export default function CaptureScreen({ navigation }: any) {
   const [micState,           setMicState]           = useState<MicState>('idle')
   const [mediaUri,           setMediaUri]           = useState<string | null>(null)
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
-  const [showImageModal,     setShowImageModal]     = useState(false)
 
   const openImageModal = async () => {
     await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
@@ -241,14 +240,13 @@ export default function CaptureScreen({ navigation }: any) {
           <Text style={[s.mediaLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'entrada visual' : 'visual input'}</Text>
           {mediaUri ? (
             <View style={s.mediaPreviewContainer}>
-              <TouchableOpacity onPress={openImageModal} activeOpacity={0.9}>
+              <TouchableOpacity activeOpacity={1} onPress={() => {}} activeOpacity={0.9}>
                 {mediaType === 'image'
                   ? <FilteredImage uri={mediaUri!} filter={activeFilter} style={s.mediaPreview} />
                   : <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
                       <Ionicons name="play-circle" size={40} color={theme.accent} />
                     </View>
                 }
-                <View style={s.expandHint}><Ionicons name="expand-outline" size={14} color="#fff" /></View>
               </TouchableOpacity>
               {mediaType === 'image' && (
                 <PhotoFilterStrip activeFilter={activeFilter} onSelect={handleFilterChange} />
@@ -322,14 +320,6 @@ export default function CaptureScreen({ navigation }: any) {
       </View>
       </View>
 
-      <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={closeImageModal}>
-        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={closeImageModal}>
-          <Image source={{ uri: mediaUri || '' }} style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} resizeMode="contain" />
-          <TouchableOpacity style={s.modalClose} onPress={closeImageModal}>
-            <Ionicons name="close-circle" size={32} color="#fff" />
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
 
     </SafeAreaView>
   )
