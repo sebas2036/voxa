@@ -211,7 +211,7 @@ export default function SettingsScreen({ navigation }: any) {
             <Text style={[s.moreLangsBtnText, { color: theme.textMuted }]}>
               {extraLangOptions.find(o => o.key === langPref)
                 ? `${extraLangOptions.find(o => o.key === langPref)!.flag} ${lang !== 'en' ? extraLangOptions.find(o => o.key === langPref)!.labelEs : extraLangOptions.find(o => o.key === langPref)!.labelEn}`
-                : (lang !== 'en' ? '＋ idiomas' : '＋ languages')}
+                : (lang !== 'en' ? '⊕ idiomas' : '⊕ languages')}
             </Text>
           </TouchableOpacity>
 
