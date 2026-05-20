@@ -76,6 +76,7 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
         tone !== 'auto' ? tone : undefined
       )
       const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
+      import('../services/devMonitor').then(({ trackGeneration }) => { trackGeneration(Object.keys(result.platforms)) })
       await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
       set({ result, loading: false, recentIdeas: updated })
     } catch (err: any) {
