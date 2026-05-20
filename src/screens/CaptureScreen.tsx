@@ -62,6 +62,8 @@ export default function CaptureScreen({ navigation }: any) {
   const { isOnline } = useNetworkStatus()
 
   const [showInput,          setShowInput]          = useState(false)
+  const [devTaps,            setDevTaps]            = useState(0)
+  const [devTapTimer,        setDevTapTimer]        = React.useRef<any>(null)
   const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter','threads','instagram','reddit'])
   const [recentOpen,         setRecentOpen]         = useState(false)
   const [isGenerating,       setIsGenerating]       = useState(false)
@@ -109,6 +111,19 @@ export default function CaptureScreen({ navigation }: any) {
   }, [recentOpen])
 
   useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
+
+  const handleLogoTap = () => {
+    const newCount = devTaps + 1
+    setDevTaps(newCount)
+    if (devTapTimer.current) clearTimeout(devTapTimer.current)
+    devTapTimer.current = setTimeout(() => setDevTaps(0), 2000)
+    if (newCount >= 5) {
+      setDevTaps(0)
+      import('../services/devMonitor').then(({ enableDevMode }) => {
+        enableDevMode().then(() => navigation.navigate('Dev'))
+      })
+    }
+  }
 
   const handleMicPress = () => {
     if (isRecording) { stopRecording(); setMicState('thinking') }
@@ -165,7 +180,9 @@ export default function CaptureScreen({ navigation }: any) {
 
         {!mediaUri && <View style={s.header}>
           <View style={s.headerTop}>
-            <Text style={[s.logo, { color: theme.text }]}>Glos<Text style={[s.logoAccent, { color: theme.accent }]}>X</Text></Text>
+            <TouchableOpacity onPress={handleLogoTap} activeOpacity={0.8}>
+              <Text style={[s.logo, { color: theme.text }]}>Glos<Text style={[s.logoAccent, { color: theme.accent }]}>X</Text></Text>
+            </TouchableOpacity>
             <TouchableOpacity style={s.menuBtn} onPress={() => navigation.navigate('Settings')}>
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />

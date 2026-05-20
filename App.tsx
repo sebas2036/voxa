@@ -7,6 +7,7 @@ import * as Linking from 'expo-linking'
 import { initAppManagement } from './src/utils/appDetection'
 import CaptureScreen from './src/screens/CaptureScreen'
 import ReviewScreen from './src/screens/ReviewScreen'
+import DevScreen from './src/screens/DevScreen'
 import ConfirmScreen from './src/screens/ConfirmScreen'
 import SettingsScreen from './src/screens/SettingsScreen'
 import AppsScreen from './src/screens/AppsScreen'
@@ -113,6 +114,7 @@ export default function App() {
         <Stack.Screen name="Apps" component={AppsScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="FAQ" component={FAQScreen} />
+        <Stack.Screen name="Dev" component={DevScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   )
