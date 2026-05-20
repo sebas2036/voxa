@@ -17,6 +17,7 @@ import { LanguageTicker } from '../components/LanguageTicker'
 import { ALL_PLATFORM_ICONS, HINTS_MAP, MIC_STATES } from '../constants/captureConstants'
 import { PhotoFilterStrip, FilteredImage, FilterKey, FILTERS } from '../components/PhotoFilterStrip'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
+import * as ScreenOrientation from 'expo-screen-orientation'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
@@ -42,6 +43,16 @@ export default function CaptureScreen({ navigation }: any) {
   const [mediaUri,           setMediaUri]           = useState<string | null>(null)
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
   const [showImageModal,     setShowImageModal]     = useState(false)
+
+  const openImageModal = async () => {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+    setShowImageModal(true)
+  }
+
+  const closeImageModal = async () => {
+    setShowImageModal(false)
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+  }
   const [activeFilter,       setActiveFilter]       = useState<FilterKey>('original')
   const handleFilterChange = (f: FilterKey) => { setActiveFilter(f); setMediaFilter(f) }
 
@@ -230,7 +241,7 @@ export default function CaptureScreen({ navigation }: any) {
           <Text style={[s.mediaLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'entrada visual' : 'visual input'}</Text>
           {mediaUri ? (
             <View style={s.mediaPreviewContainer}>
-              <TouchableOpacity onPress={() => setShowImageModal(true)} activeOpacity={0.9}>
+              <TouchableOpacity onPress={openImageModal} activeOpacity={0.9}>
                 {mediaType === 'image'
                   ? <FilteredImage uri={mediaUri!} filter={activeFilter} style={s.mediaPreview} />
                   : <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
@@ -311,10 +322,10 @@ export default function CaptureScreen({ navigation }: any) {
       </View>
       </View>
 
-      <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
-        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
+      <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={closeImageModal}>
+        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={closeImageModal}>
           <Image source={{ uri: mediaUri || '' }} style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} resizeMode="contain" />
-          <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
+          <TouchableOpacity style={s.modalClose} onPress={closeImageModal}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
         </TouchableOpacity>
