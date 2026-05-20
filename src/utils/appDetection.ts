@@ -29,10 +29,30 @@ export async function initAppManagement() {
   const existing = await AsyncStorage.getItem('glosx_app_management')
   if (existing) return
   const installed = await detectInstalledApps()
-  const DEFAULT_ON = ['twitter', 'threads', 'instagram', 'reddit']
-  const mgmt: Record<string, boolean> = { __v: 3 } as any
+  const mgmt: Record<string, boolean> = { __v: 4 } as any
   for (const key of Object.keys(APP_SCHEMES)) {
-    mgmt[key] = DEFAULT_ON.includes(key) ? true : installed[key] === true
+    // Solo activa las que están instaladas en el dispositivo
+    // Fallback: si no se puede detectar (simulador), activa las 4 por defecto
+    const detected = installed[key]
+    const isSimulatorFallback = Object.values(installed).every(v => v === false)
+    if (isSimulatorFallback) {
+      mgmt[key] = ['twitter', 'threads', 'instagram', 'reddit'].includes(key)
+    } else {
+      mgmt[key] = detected === true
+    }
   }
   await AsyncStorage.setItem('glosx_app_management', JSON.stringify(mgmt))
+}
+
+export async function recheckInstalledApps(): Promise<{ newApps: string[] }> {
+  const installed = await detectInstalledApps()
+  const existing = await AsyncStorage.getItem('glosx_app_management')
+  const mgmt = existing ? JSON.parse(existing) : {}
+  const newApps: string[] = []
+  for (const [key, isInstalled] of Object.entries(installed)) {
+    if (isInstalled && mgmt[key] === false) {
+      newApps.push(key)
+    }
+  }
+  return { newApps }
 }
