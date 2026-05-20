@@ -16,6 +16,7 @@ import { MediaIcon } from '../components/MediaIcon'
 import { LanguageTicker } from '../components/LanguageTicker'
 import { ALL_PLATFORM_ICONS, HINTS_MAP, MIC_STATES } from '../constants/captureConstants'
 import { PhotoFilterStrip, FilteredImage, FilterKey, FILTERS } from '../components/PhotoFilterStrip'
+import Svg, { Circle, Line, Rect, Ellipse } from 'react-native-svg'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
