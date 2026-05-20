@@ -155,6 +155,8 @@ export default function CaptureScreen({ navigation }: any) {
   useEffect(() => {
     if (recentOpen) {
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100)
+    } else {
+      setTimeout(() => scrollRef.current?.scrollTo({ y: 0, animated: true }), 300)
     }
     Animated.timing(recentAnim, {
       toValue: recentOpen ? 1 : 0, duration: 250, easing: Easing.out(Easing.ease), useNativeDriver: false
