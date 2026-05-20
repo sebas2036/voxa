@@ -14,6 +14,7 @@ import { Ionicons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons'
 import { MicButton } from '../components/MicButton'
 import { MediaIcon } from '../components/MediaIcon'
 import { LanguageTicker } from '../components/LanguageTicker'
+import { PhotoFilterStrip, FilteredImage, FilterKey } from '../components/PhotoFilterStrip'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
@@ -70,6 +71,7 @@ export default function CaptureScreen({ navigation }: any) {
   const [mediaUri,           setMediaUri]           = useState<string | null>(null)
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
   const [showImageModal,     setShowImageModal]     = useState(false)
+  const [activeFilter,       setActiveFilter]       = useState<FilterKey>('original')
 
   const scrollRef   = useRef<any>(null)
   const recentAnim  = useRef(new Animated.Value(0)).current
@@ -238,13 +240,16 @@ export default function CaptureScreen({ navigation }: any) {
             <View style={s.mediaPreviewContainer}>
               <TouchableOpacity onPress={() => setShowImageModal(true)} activeOpacity={0.9}>
                 {mediaType === 'image'
-                  ? <Image source={{ uri: mediaUri }} style={s.mediaPreview} resizeMode="cover" />
+                  ? <FilteredImage uri={mediaUri!} filter={activeFilter} style={s.mediaPreview} />
                   : <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
                       <Ionicons name="play-circle" size={40} color={theme.accent} />
                     </View>
                 }
                 <View style={s.expandHint}><Ionicons name="expand-outline" size={14} color="#fff" /></View>
               </TouchableOpacity>
+              {mediaType === 'image' && (
+                <PhotoFilterStrip activeFilter={activeFilter} onSelect={setActiveFilter} />
+              )}
               <TouchableOpacity style={[s.removeMedia, { backgroundColor: theme.bgSecondary }]} onPress={handleRemoveMedia}>
                 <Ionicons name="close-circle" size={22} color={theme.error} />
               </TouchableOpacity>
@@ -358,7 +363,7 @@ const s = StyleSheet.create({
   mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 4 },
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
   mediaPreviewContainer: { position: 'relative' },
-  mediaPreview: { width: '100%', height: 180, borderRadius: 12 },
+  mediaPreview: { width: '100%', height: 210, borderRadius: 12 },
   videoPreview: { alignItems: 'center', justifyContent: 'center' },
   removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
   expandHint: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
