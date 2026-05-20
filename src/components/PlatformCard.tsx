@@ -7,6 +7,18 @@ import { applyTextStyle, STYLE_OPTIONS, TextStyleType } from '../utils/textStyle
 const DARK_COLORS = ['#1a1a1a', '#333333', '#000000', '#1a1a2e', '#444444', '#555555']
 const getVisibleColor = (color: string, fallback: string) => DARK_COLORS.includes(color) ? fallback : color
 
+const PLATFORM_EMOJIS: Record<string, string[]> = {
+  twitter:   ['🔥', '💡', '✨', '🎯', '😤', '👀', '🧵', '💬'],
+  instagram: ['🌿', '🌅', '💫', '🙌', '❤️', '📸', '✨', '🌸'],
+  reddit:    ['🤔', '💬', '👀', '🧠', '📌', '⬆️', '🎭', '💎'],
+  linkedin:  ['💼', '🚀', '📈', '🤝', '✅', '💡', '🎯', '🌟'],
+  threads:   ['✨', '💭', '🌀', '🔮', '💫', '🎨', '🌊', '🦋'],
+  tiktok:    ['🎵', '🔥', '💃', '🎬', '✨', '😂', '❤️', '🚀'],
+  facebook:  ['❤️', '😊', '🙌', '💪', '🎉', '👏', '🌟', '💬'],
+  whatsapp:  ['👋', '😊', '🙏', '❤️', '✅', '🎉', '💪', '🌟'],
+  pinterest: ['📌', '🌸', '✨', '💫', '🎨', '🌿', '💕', '🏡'],
+}
+
 export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, theme, t }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(12)).current
@@ -63,6 +75,13 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
                 </TouchableOpacity>
               ))}
             </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.emojiBar}>
+              {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map((emoji: string) => (
+                <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => onEditChange((editText || pdata.content) + ' ' + emoji)}>
+                  <Text style={s.emojiText}>{emoji}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
             {isEditing ? (
               <TextInput
                 style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
@@ -94,6 +113,9 @@ const s = StyleSheet.create({
   divider: { height: 0.5, marginBottom: 12 },
   content: { fontSize: 14, lineHeight: 22, fontWeight: '300' },
   hashtags: { marginTop: 8, fontSize: 12 },
+  emojiBar: { marginBottom: 8, marginTop: 4 },
+  emojiBtn: { paddingHorizontal: 8, paddingVertical: 4 },
+  emojiText: { fontSize: 20 },
   editInput: { fontSize: 14, lineHeight: 22, minHeight: 100, textAlignVertical: 'top', borderWidth: 0.5, borderRadius: 10, padding: 10, marginBottom: 8 },
   editTopBtn: { alignSelf: 'flex-start', marginBottom: 12, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, borderWidth: 0.5 },
   editTopBtnText: { fontSize: 12, fontWeight: '600' },
