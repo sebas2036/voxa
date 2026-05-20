@@ -333,7 +333,6 @@ export default function CaptureScreen({ navigation }: any) {
         )}
 
         <View style={s.bottomSection}>
-          <LanguageTicker theme={theme} />
           <View style={s.platformsRow}>
             {activePlatformKeys.slice(0, 4).map((key, i) => {
               const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
@@ -349,6 +348,7 @@ export default function CaptureScreen({ navigation }: any) {
               )
             })}
           </View>
+          <LanguageTicker theme={theme} />
         </View>
 
       </ScrollView>
