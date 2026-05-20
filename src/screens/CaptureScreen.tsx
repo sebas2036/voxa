@@ -403,7 +403,7 @@ const s = StyleSheet.create({
   generateWrap: { paddingVertical: 24, paddingBottom: 16 },
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12 },
   generateBtnDisabled: { opacity: 0.4 },
-  generateBtnText: { fontSize: 17, fontWeight: '500' },
+  generateBtnText: { fontSize: 18, fontWeight: '300', fontStyle: 'italic', letterSpacing: 3 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' },
   modalClose: { position: 'absolute', top: 60, right: 20 },
 })
