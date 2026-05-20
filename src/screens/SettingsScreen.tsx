@@ -250,6 +250,10 @@ export default function SettingsScreen({ navigation }: any) {
             <Text style={[s.rowText, { color: theme.text }]}>{t.terms}</Text>
             <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate('Privacy')}>
+            <Text style={[s.rowText, { color: theme.text }]}>{lang !== 'en' ? 'Política de privacidad' : 'Privacy policy'}</Text>
+            <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate('FAQ')}>
             <Text style={[s.rowText, { color: theme.text }]}>FAQ</Text>
             <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
