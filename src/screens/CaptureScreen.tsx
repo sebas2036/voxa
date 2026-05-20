@@ -361,7 +361,7 @@ const s = StyleSheet.create({
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   logo: { fontSize: 32 },
   logoAccent: { fontStyle: 'italic' },
-  tagline: { fontSize: 12, marginTop: 4, letterSpacing: 0.3 },
+  tagline: { fontSize: 12, marginTop: 4, letterSpacing: 0.3, opacity: 0.8 },
   menuBtn: { padding: 8, gap: 5, alignItems: 'flex-end' },
   menuLine: { width: 22, height: 1.5, borderRadius: 2 },
   offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },

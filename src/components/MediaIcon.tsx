@@ -29,10 +29,10 @@ export function MediaIcon({ icon, label, onPress, theme }: Props) {
 
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={1} style={s.wrap}>
-      <Animated.View style={{ transform: [{ scale }], opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.75,1] }) }}>
+      <Animated.View style={{ transform: [{ scale }], opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.85,1] }) }}>
         <Ionicons name={icon} size={26} color={theme.accent} />
       </Animated.View>
-      <Animated.Text style={[s.label, { color: theme.textMuted, opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.7,0.95] }) }]}>
+      <Animated.Text style={[s.label, { color: theme.textMuted, opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.8,1] }) }]}>
         {label}
       </Animated.Text>
     </TouchableOpacity>
@@ -41,5 +41,5 @@ export function MediaIcon({ icon, label, onPress, theme }: Props) {
 
 const s = StyleSheet.create({
   wrap:  { alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 8 },
-  label: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '300' },
+  label: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '500' },
 })
