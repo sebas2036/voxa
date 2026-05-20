@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react'
 import { View, Text, TouchableOpacity, Switch, TextInput, ScrollView, Animated, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AnimatedDots } from './AnimatedDots'
+import { EmojiPicker } from './EmojiPicker'
 import { applyTextStyle, STYLE_OPTIONS, TextStyleType } from '../utils/textStyles'
 
 const DARK_COLORS = ['#1a1a1a', '#333333', '#000000', '#1a1a2e', '#444444', '#555555']
@@ -64,13 +65,16 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
           <View style={s.cardBody}>
             <View style={[s.divider, { backgroundColor: theme.border }]} />
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.emojiBar}>
-              {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map((emoji: string) => (
-                <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => onEditChange((editText || pdata.content) + ' ' + emoji)}>
-                  <Text style={s.emojiText}>{emoji}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            <View style={s.emojiRow}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
+                {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map((emoji: string) => (
+                  <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => onEditChange((editText || pdata.content) + ' ' + emoji)}>
+                    <Text style={s.emojiText}>{emoji}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <EmojiPicker theme={theme} color={visibleColor} onSelect={(emoji) => onEditChange((editText || pdata.content) + ' ' + emoji)} />
+            </View>
 
             {isEditing ? (
               <View>
@@ -136,6 +140,7 @@ const s = StyleSheet.create({
   cardBody: { paddingHorizontal: 14, paddingBottom: 14 },
   divider: { height: 0.5, marginBottom: 10 },
   emojiBar: { marginBottom: 10 },
+  emojiRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   emojiBtn: { paddingHorizontal: 8, paddingVertical: 4 },
   emojiText: { fontSize: 20 },
   textTouchable: { borderRadius: 10, borderWidth: 0.5, padding: 12, marginBottom: 8 },
