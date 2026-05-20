@@ -313,7 +313,7 @@ export default function CaptureScreen({ navigation }: any) {
 
       <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
         <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
-          <Image source={{ uri: mediaUri || '' }} style={{ width, height }} resizeMode="contain" />
+          <FilteredImage uri={mediaUri || ''} filter={activeFilter} style={{ width, height }} />
           <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
