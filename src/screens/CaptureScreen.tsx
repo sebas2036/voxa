@@ -380,7 +380,7 @@ const s = StyleSheet.create({
   toneCenterText: { letterSpacing: 0.3 },
   errorBox: { borderRadius: 10, padding: 12, marginBottom: 16 },
   errorText: { fontSize: 12 },
-  mediaSection: { marginBottom: 16 },
+  mediaSection: { marginBottom: 24 },
   mediaLabel: { fontSize: 9, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 12, textAlign: 'center' },
   mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 4 },
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
