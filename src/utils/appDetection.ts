@@ -36,7 +36,7 @@ export async function initAppManagement() {
     const detected = installed[key]
     const isSimulatorFallback = Object.values(installed).every(v => v === false)
     if (isSimulatorFallback) {
-      mgmt[key] = ['twitter', 'threads', 'instagram', 'reddit'].includes(key)
+      mgmt[key] = false
     } else {
       mgmt[key] = detected === true
     }
