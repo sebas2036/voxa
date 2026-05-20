@@ -381,6 +381,6 @@ const s = StyleSheet.create({
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 48, alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 18, fontWeight: '300', fontStyle: 'italic', letterSpacing: 3 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },
+  modalOverlay: { flex: 1, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center' },
   modalClose: { position: 'absolute', top: 60, right: 20 },
 })
