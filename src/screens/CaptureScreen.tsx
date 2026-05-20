@@ -366,7 +366,7 @@ const s = StyleSheet.create({
   mediaPreview: { width: '100%', height: 210, borderRadius: 12 },
   videoPreview: { alignItems: 'center', justifyContent: 'center' },
   removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
-  expandHint: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
+  expandHint: { position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
   recentSection: { marginBottom: 8 },
   recentHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderBottomWidth: 0.5, gap: 8 },
   recentLabel: { fontSize: 11, letterSpacing: 2, textTransform: 'uppercase' },
