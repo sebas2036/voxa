@@ -159,7 +159,7 @@ export default function CaptureScreen({ navigation }: any) {
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <ScrollView ref={scrollRef} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
 
-        <View style={s.header}>
+        {!mediaUri && <View style={s.header}>
           <View style={s.headerTop}>
             <Text style={[s.logo, { color: theme.text }]}>Glos<Text style={[s.logoAccent, { color: theme.accent }]}>X</Text></Text>
             <TouchableOpacity style={s.menuBtn} onPress={() => navigation.navigate('Settings')}>
@@ -174,7 +174,7 @@ export default function CaptureScreen({ navigation }: any) {
               <Text style={[s.offlineText, { color: '#ff3b30' }]}>{t.lang === 'es' ? '✈ modo sin conexión' : '✈ offline mode'}</Text>
             </View>
           )}
-        </View>
+        </View>}
 
         <View style={s.micArea}>
           <MicButton micState={micState} onPress={handleMicPress} bgColor={theme.bg} />
@@ -363,7 +363,7 @@ const s = StyleSheet.create({
   mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 4 },
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
   mediaPreviewContainer: { position: 'relative' },
-  mediaPreview: { width: '100%', height: 210, borderRadius: 12 },
+  mediaPreview: { width: '100%', height: 320, borderRadius: 12 },
   videoPreview: { alignItems: 'center', justifyContent: 'center' },
   removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
   expandHint: { position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
