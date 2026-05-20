@@ -12,6 +12,8 @@ import { useTheme } from '../theme'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons'
 import { MicButton } from '../components/MicButton'
+import { MediaIcon } from '../components/MediaIcon'
+import { LanguageTicker } from '../components/LanguageTicker'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
@@ -40,17 +42,6 @@ const HINTS_MAP: Record<string, string[]> = {
   it: ['parla', 'rivedi', 'pubblica'],
 }
 
-const TICKER_PHRASES = [
-  'tu voz, en todas tus redes',
-  'your voice, on every network',
-  'ta voix, sur tous tes réseaux',
-  'deine stimme, überall',
-  'sua voz, em todas as redes',
-  'la tua voce, ovunque',
-  '你的声音，遍及每个网络',
-  'あなたの声を、世界へ',
-]
-
 type MicState = 'idle' | 'recording' | 'thinking' | 'generating' | 'ready'
 
 const MIC_STATES = {
@@ -61,54 +52,6 @@ const MIC_STATES = {
   ready:      { color: '#c8b99a', hints_es: ['listo ✓'],                                 hints_en: ['ready ✓'] },
 }
 
-function MediaIcon({ icon, label, onPress, theme }: { icon: any, label: string, onPress: () => void, theme: any }) {
-  const scale = useRef(new Animated.Value(1)).current
-  const glow  = useRef(new Animated.Value(0)).current
-  const handlePress = () => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.spring(scale, { toValue: 0.88, useNativeDriver: true, speed: 50 }),
-        Animated.timing(glow,  { toValue: 1, duration: 120, useNativeDriver: true }),
-      ]),
-      Animated.parallel([
-        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
-        Animated.timing(glow,  { toValue: 0, duration: 300, useNativeDriver: true }),
-      ]),
-    ]).start()
-    onPress()
-  }
-  return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={1} style={s.mediaIconWrap}>
-      <Animated.View style={{ transform: [{ scale }], opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.55,1] }) }}>
-        <Ionicons name={icon} size={26} color={theme.accent} />
-      </Animated.View>
-      <Animated.Text style={[s.mediaIconText, { color: theme.textMuted, opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.5,0.9] }) }]}>
-        {label}
-      </Animated.Text>
-    </TouchableOpacity>
-  )
-}
-
-function LanguageTicker({ theme }: { theme: any }) {
-  const [index, setIndex] = useState(0)
-  const opacity = useRef(new Animated.Value(1)).current
-  useEffect(() => {
-    const interval = setInterval(() => {
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0, duration: 500, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }),
-      ]).start()
-      setTimeout(() => setIndex(i => (i + 1) % TICKER_PHRASES.length), 500)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
-  return (
-    <Animated.Text numberOfLines={1} style={[s.tickerText, { color: theme.textMuted, opacity }]}>
-      {TICKER_PHRASES[index]}
-    </Animated.Text>
-  )
-}
-
 export default function CaptureScreen({ navigation }: any) {
   const { width, height } = useWindowDimensions()
   const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
@@ -116,6 +59,7 @@ export default function CaptureScreen({ navigation }: any) {
   const { t } = useLanguage()
   const theme = useTheme()
   const { isOnline } = useNetworkStatus()
+
   const [showInput,          setShowInput]          = useState(false)
   const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter','threads','instagram','reddit'])
   const [recentOpen,         setRecentOpen]         = useState(false)
@@ -126,10 +70,8 @@ export default function CaptureScreen({ navigation }: any) {
   const [mediaUri,           setMediaUri]           = useState<string | null>(null)
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
   const [showImageModal,     setShowImageModal]     = useState(false)
+
   const scrollRef   = useRef<any>(null)
-  const ring1       = useRef(new Animated.Value(0)).current
-  const ring2       = useRef(new Animated.Value(0)).current
-  const ring3       = useRef(new Animated.Value(0)).current
   const recentAnim  = useRef(new Animated.Value(0)).current
   const hintOpacity = useRef(new Animated.Value(1)).current
 
@@ -415,8 +357,6 @@ const s = StyleSheet.create({
   mediaLabel: { fontSize: 9, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16, textAlign: 'center' },
   mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 4 },
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
-  mediaIconWrap: { alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 8 },
-  mediaIconText: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '300' },
   mediaPreviewContainer: { position: 'relative' },
   mediaPreview: { width: '100%', height: 180, borderRadius: 12 },
   videoPreview: { alignItems: 'center', justifyContent: 'center' },
@@ -427,8 +367,7 @@ const s = StyleSheet.create({
   recentLabel: { fontSize: 11, letterSpacing: 2, textTransform: 'uppercase' },
   recentItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5 },
   recentItemText: { fontSize: 13, flex: 1 },
-  bottomSection: { alignItems: 'center', paddingTop: 12, gap: 8 },
-  tickerText: { fontSize: 11, letterSpacing: 2, opacity: 0.5, textAlign: 'center' },
+  bottomSection: { alignItems: 'center', paddingTop: 12, gap: 12 },
   platformsRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, opacity: 0.65 },
   platformBadge: { alignItems: 'center', gap: 5 },
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
