@@ -160,7 +160,8 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
     const updated = [input.trim(), ...recentIdeas.filter(i => i !== input.trim())].slice(0, MAX_RECENT)
     await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
     set({ recentIdeas: updated })
-    trackGeneration(ordered).catch(() => {})
+    const donePlatforms = ordered.filter(p => get().progressivePlatforms[p] === 'done')
+    trackGeneration(donePlatforms).catch(() => {})
     const finalResult = get().result
     if (finalResult) await cacheResult(input.trim(), tone, finalResult)
   },
