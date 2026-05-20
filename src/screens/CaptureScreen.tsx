@@ -63,7 +63,7 @@ export default function CaptureScreen({ navigation }: any) {
 
   const [showInput,          setShowInput]          = useState(false)
   const [devTaps,            setDevTaps]            = useState(0)
-  const [devTapTimer,        setDevTapTimer]        = React.useRef<any>(null)
+  const devTapTimer = useRef<any>(null)
   const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter','threads','instagram','reddit'])
   const [recentOpen,         setRecentOpen]         = useState(false)
   const [isGenerating,       setIsGenerating]       = useState(false)
