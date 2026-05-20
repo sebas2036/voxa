@@ -15,7 +15,7 @@ import { MicButton } from '../components/MicButton'
 import { MediaIcon } from '../components/MediaIcon'
 import { LanguageTicker } from '../components/LanguageTicker'
 import { ALL_PLATFORM_ICONS, HINTS_MAP, MIC_STATES } from '../constants/captureConstants'
-import { PhotoFilterStrip, FilteredImage, FilterKey } from '../components/PhotoFilterStrip'
+import { PhotoFilterStrip, FilteredImage, FilterKey, FILTERS } from '../components/PhotoFilterStrip'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
@@ -313,7 +313,7 @@ export default function CaptureScreen({ navigation }: any) {
 
       <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
         <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
-          <FilteredImage uri={mediaUri || ''} filter={activeFilter} style={{ width, height }} />
+          <FilteredImage uri={mediaUri || ''} filter={activeFilter} style={{ width, height, borderRadius: 0 }} />
           <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
