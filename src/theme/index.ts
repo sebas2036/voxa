@@ -43,7 +43,7 @@ export type ThemePreference = 'auto' | 'light' | 'dark'
 
 const THEME_KEY = 'GlosX_theme_preference'
 
-let _preference: ThemePreference = 'auto'
+let _preference: ThemePreference = 'dark'
 let _listeners: Array<() => void> = []
 
 export async function loadThemePreference(): Promise<ThemePreference> {
