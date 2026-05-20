@@ -16,7 +16,6 @@ import { MediaIcon } from '../components/MediaIcon'
 import { LanguageTicker } from '../components/LanguageTicker'
 import { ALL_PLATFORM_ICONS, HINTS_MAP, MIC_STATES } from '../constants/captureConstants'
 import { PhotoFilterStrip, FilteredImage, FilterKey, FILTERS } from '../components/PhotoFilterStrip'
-import Svg, { Circle, Line, Rect, Ellipse } from 'react-native-svg'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
@@ -314,7 +313,7 @@ export default function CaptureScreen({ navigation }: any) {
 
       <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
         <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
-          <Image source={{ uri: mediaUri || '' }} style={{ width, height }} resizeMode="cover" />
+          <Image source={{ uri: mediaUri || '' }} style={StyleSheet.absoluteFill} resizeMode="cover" />
           <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
