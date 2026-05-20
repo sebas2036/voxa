@@ -233,7 +233,7 @@ export default function CaptureScreen({ navigation }: any) {
           <Text style={[s.mediaLabel, { color: theme.textMuted }]}>{t.lang === 'es' ? 'entrada visual' : 'visual input'}</Text>
           {mediaUri ? (
             <View style={s.mediaPreviewContainer}>
-              <TouchableOpacity activeOpacity={1} onPress={() => {}} activeOpacity={0.9}>
+              <TouchableOpacity onPress={openImageModal} activeOpacity={0.9}>
                 {mediaType === 'image'
                   ? <FilteredImage uri={mediaUri!} filter={activeFilter} style={s.mediaPreview} />
                   : <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
