@@ -32,13 +32,16 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
   }, [])
 
   const hashtags = 'hashtags' in pdata ? (pdata as any).hashtags || [] : []
+  const visibleColor = getVisibleColor(platform.color, theme.accent)
+  const recommendation = pdata.bestTime || pdata.recommendation
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <View style={[s.card, { backgroundColor: platform.color + '15', borderColor: platform.color, borderWidth: 1.5 }]}>
+
         <TouchableOpacity style={s.cardHeader} onPress={onToggleExpand}>
           <View style={[s.dot, { backgroundColor: platform.color }]} />
-          <Text style={[s.platformName, { color: theme.text, fontWeight: '600' }]}>{platform.name}</Text>
+          <Text style={[s.platformName, { color: theme.text }]}>{platform.name}</Text>
           {!isExpanded && (
             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>
@@ -56,25 +59,11 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
             style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
           />
         </TouchableOpacity>
+
         {isExpanded && (
           <View style={s.cardBody}>
             <View style={[s.divider, { backgroundColor: theme.border }]} />
-            <TouchableOpacity style={[s.editTopBtn, { borderColor: theme.border }]} onPress={onToggleEdit}>
-              <Text style={[s.editTopBtnText, { color: isEditing ? theme.accent : theme.textSecondary }]}>{isEditing ? t.save : t.edit}</Text>
-            </TouchableOpacity>
-            <View style={s.styleBar}>
-              {(STYLE_OPTIONS as any[]).map(style => (
-                <TouchableOpacity
-                  key={style.key}
-                  style={[s.styleBtn, textStyle === style.key && { borderColor: getVisibleColor(platform.color, theme.accent), backgroundColor: getVisibleColor(platform.color, theme.accent) + '30' }]}
-                  onPress={() => setTextStyle(style.key)}
-                >
-                  <Text style={[s.styleBtnText, { color: textStyle === style.key ? getVisibleColor(platform.color, theme.accent) : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
-                    {style.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.emojiBar}>
               {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map((emoji: string) => (
                 <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => onEditChange((editText || pdata.content) + ' ' + emoji)}>
@@ -82,20 +71,55 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
                 </TouchableOpacity>
               ))}
             </ScrollView>
+
             {isEditing ? (
-              <TextInput
-                style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
-                value={editText}
-                onChangeText={onEditChange}
-                multiline autoFocus
-                onBlur={onEditBlur}
-              />
+              <View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.styleBarScroll}>
+                  {(STYLE_OPTIONS as any[]).map(style => (
+                    <TouchableOpacity
+                      key={style.key}
+                      style={[s.styleBtn, textStyle === style.key && { borderColor: visibleColor, backgroundColor: visibleColor + '20' }]}
+                      onPress={() => setTextStyle(style.key)}
+                    >
+                      <Text style={[s.styleBtnText, { color: textStyle === style.key ? visibleColor : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
+                        {style.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+                <TextInput
+                  style={[s.editInput, { color: theme.text, borderColor: visibleColor + '60' }]}
+                  value={editText}
+                  onChangeText={onEditChange}
+                  multiline autoFocus
+                  onBlur={onEditBlur}
+                />
+                <TouchableOpacity style={[s.saveBtn, { backgroundColor: visibleColor + '20', borderColor: visibleColor }]} onPress={onToggleEdit}>
+                  <Text style={[s.saveBtnText, { color: visibleColor }]}>✓ {t.save}</Text>
+                </TouchableOpacity>
+              </View>
             ) : (
-              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled showsVerticalScrollIndicator={false}>
-                <Text style={[s.content, { color: theme.text }]}>{applyTextStyle(pdata.content, textStyle)}</Text>
-                {hashtags.length > 0 && <Text style={[s.hashtags, { color: theme.accent + '66' }]}>{hashtags.join(' ')}</Text>}
-              </ScrollView>
+              <TouchableOpacity
+                onPress={onToggleEdit}
+                style={[s.textTouchable, { borderColor: theme.border }]}
+                activeOpacity={0.7}
+              >
+                <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} style={{ maxHeight: 180 }}>
+                  <Text style={[s.content, { color: theme.text }]}>{applyTextStyle(pdata.content, textStyle)}</Text>
+                  {hashtags.length > 0 && <Text style={[s.hashtags, { color: theme.accent + '88' }]}>{hashtags.join(' ')}</Text>}
+                </ScrollView>
+                <Text style={[s.tapToEdit, { color: theme.textDisabled }]}>
+                  {t.lang === 'es' ? 'tocá para editar' : 'tap to edit'}
+                </Text>
+              </TouchableOpacity>
             )}
+
+            {recommendation && (
+              <View style={[s.recChip, { borderColor: visibleColor + '40', backgroundColor: visibleColor + '10' }]}>
+                <Text style={[s.recText, { color: visibleColor }]}>📅 {recommendation}</Text>
+              </View>
+            )}
+
           </View>
         )}
       </View>
@@ -107,19 +131,23 @@ const s = StyleSheet.create({
   card: { borderRadius: 16, marginBottom: 10 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 10 },
   dot: { width: 10, height: 10, borderRadius: 5 },
-  platformName: { fontSize: 14, width: 80 },
+  platformName: { fontSize: 14, fontWeight: '600', width: 80 },
   preview: { flex: 1, fontSize: 12 },
   cardBody: { paddingHorizontal: 14, paddingBottom: 14 },
-  divider: { height: 0.5, marginBottom: 12 },
-  content: { fontSize: 14, lineHeight: 22, fontWeight: '300' },
-  hashtags: { marginTop: 8, fontSize: 12 },
-  emojiBar: { marginBottom: 8, marginTop: 4 },
+  divider: { height: 0.5, marginBottom: 10 },
+  emojiBar: { marginBottom: 10 },
   emojiBtn: { paddingHorizontal: 8, paddingVertical: 4 },
   emojiText: { fontSize: 20 },
-  editInput: { fontSize: 14, lineHeight: 22, minHeight: 100, textAlignVertical: 'top', borderWidth: 0.5, borderRadius: 10, padding: 10, marginBottom: 8 },
-  editTopBtn: { alignSelf: 'flex-start', marginBottom: 12, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, borderWidth: 0.5 },
-  editTopBtnText: { fontSize: 12, fontWeight: '600' },
-  styleBar: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  styleBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'transparent' },
+  textTouchable: { borderRadius: 10, borderWidth: 0.5, padding: 12, marginBottom: 8 },
+  content: { fontSize: 14, lineHeight: 22, fontWeight: '300' },
+  hashtags: { marginTop: 8, fontSize: 12 },
+  tapToEdit: { fontSize: 10, letterSpacing: 1, textAlign: 'right', marginTop: 6, opacity: 0.6 },
+  styleBarScroll: { marginBottom: 10 },
+  styleBtn: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: 'transparent', marginRight: 6 },
   styleBtnText: { fontSize: 13 },
+  editInput: { fontSize: 14, lineHeight: 22, minHeight: 100, textAlignVertical: 'top', borderWidth: 1, borderRadius: 10, padding: 10, marginBottom: 8 },
+  saveBtn: { alignSelf: 'flex-end', paddingHorizontal: 16, paddingVertical: 7, borderRadius: 10, borderWidth: 1, marginBottom: 8 },
+  saveBtnText: { fontSize: 13, fontWeight: '600' },
+  recChip: { alignSelf: 'flex-start', borderRadius: 20, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, marginTop: 6 },
+  recText: { fontSize: 11, letterSpacing: 0.3 },
 })
