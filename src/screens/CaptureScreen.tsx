@@ -401,7 +401,7 @@ const s = StyleSheet.create({
   platformLetter: { fontSize: 15, fontWeight: '900', letterSpacing: -0.5 },
   platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', opacity: 0.8 },
   generateWrap: { alignItems: 'center', paddingVertical: 24, paddingBottom: 16 },
-  generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12 },
+  generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 48, alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 18, fontWeight: '300', fontStyle: 'italic', letterSpacing: 3 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' },
