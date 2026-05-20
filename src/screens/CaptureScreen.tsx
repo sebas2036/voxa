@@ -55,7 +55,7 @@ const MIC_STATES = {
 
 export default function CaptureScreen({ navigation }: any) {
   const { width, height } = useWindowDimensions()
-  const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia } = useGlosXStore()
+  const { input, tone, loading, error, recentIdeas, setInput, setTone, generateProgressive, loadRecentIdeas, removeRecentIdea, clearRecentIdeas, setMedia, setMediaFilter } = useGlosXStore()
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
@@ -72,6 +72,7 @@ export default function CaptureScreen({ navigation }: any) {
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
   const [showImageModal,     setShowImageModal]     = useState(false)
   const [activeFilter,       setActiveFilter]       = useState<FilterKey>('original')
+  const handleFilterChange = (f: FilterKey) => { setActiveFilter(f); setMediaFilter(f) }
 
   const scrollRef   = useRef<any>(null)
   const recentAnim  = useRef(new Animated.Value(0)).current
@@ -248,7 +249,7 @@ export default function CaptureScreen({ navigation }: any) {
                 <View style={s.expandHint}><Ionicons name="expand-outline" size={14} color="#fff" /></View>
               </TouchableOpacity>
               {mediaType === 'image' && (
-                <PhotoFilterStrip activeFilter={activeFilter} onSelect={setActiveFilter} />
+                <PhotoFilterStrip activeFilter={activeFilter} onSelect={handleFilterChange} />
               )}
               <TouchableOpacity style={[s.removeMedia, { backgroundColor: theme.bgSecondary }]} onPress={handleRemoveMedia}>
                 <Ionicons name="close-circle" size={22} color={theme.error} />
