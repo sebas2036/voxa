@@ -428,7 +428,7 @@ const s = StyleSheet.create({
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
   platformLetter: { fontSize: 15, fontWeight: '900', letterSpacing: -0.5 },
   platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', opacity: 0.8 },
-  stickyFooter: { paddingBottom: 32, paddingTop: 10, alignItems: 'center' },
+  stickyFooter: { paddingBottom: 20, paddingTop: 10, alignItems: 'center' },
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12 },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 17, fontWeight: '500' },
