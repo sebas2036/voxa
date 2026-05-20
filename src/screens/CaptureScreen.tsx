@@ -313,7 +313,7 @@ export default function CaptureScreen({ navigation }: any) {
 
       <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
         <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
-          <FilteredImage uri={mediaUri || ''} filter={activeFilter} style={{ width, height, borderRadius: 0 }} />
+          <Image source={{ uri: mediaUri || '' }} style={{ width: width - 32, height: height * 0.6, borderRadius: 12 }} resizeMode="contain" />
           <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
@@ -375,6 +375,6 @@ const s = StyleSheet.create({
   generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 48, alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
   generateBtnDisabled: { opacity: 0.4 },
   generateBtnText: { fontSize: 18, fontWeight: '300', fontStyle: 'italic', letterSpacing: 3 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', alignItems: 'center' },
   modalClose: { position: 'absolute', top: 60, right: 20 },
 })
