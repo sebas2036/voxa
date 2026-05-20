@@ -19,6 +19,8 @@ interface GlosXStore {
   mediaUri: string | null
   mediaType: 'image' | 'video' | null
   setMedia: (uri: string | null, type: 'image' | 'video' | null) => void
+  mediaFilter: string
+  setMediaFilter: (filter: string) => void
   progressivePlatforms: Record<string, 'pending' | 'loading' | 'done' | 'error'>
   setInput: (input: string) => void
   setTone: (tone: string) => void
@@ -37,6 +39,8 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
   mediaUri: null,
   mediaType: null,
   setMedia: (uri, type) => set({ mediaUri: uri, mediaType: type }),
+  mediaFilter: 'original',
+  setMediaFilter: (filter) => set({ mediaFilter: filter }),
   result: null,
   loading: false,
   error: null,
@@ -174,6 +178,8 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
     mediaUri: null,
   mediaType: null,
   setMedia: (uri, type) => set({ mediaUri: uri, mediaType: type }),
+  mediaFilter: 'original',
+  setMediaFilter: (filter) => set({ mediaFilter: filter }),
   result: null,
     loading: false,
     error: null,
