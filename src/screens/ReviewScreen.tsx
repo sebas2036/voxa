@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 import { useGlosXStore } from '../store/glosx.store'
 import { Image } from 'react-native'
+import { FilteredImage, FilterKey } from '../components/PhotoFilterStrip'
 import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS, publishToAll } from '../utils/deeplinks'
@@ -31,7 +32,7 @@ const ALL_EXTRA = [
 
 
 export default function ReviewScreen({ navigation }: any) {
-  const { result, reset, updatePlatformContent, progressivePlatforms, mediaUri, mediaType } = useGlosXStore()
+  const { result, reset, updatePlatformContent, progressivePlatforms, mediaUri, mediaType, mediaFilter } = useGlosXStore()
   const { t } = useLanguage()
   const theme = useTheme()
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ twitter: true, threads: true, instagram: true, reddit: true })
@@ -168,7 +169,7 @@ export default function ReviewScreen({ navigation }: any) {
         {mediaUri && (
           <View style={s.mediaPreviewWrap}>
             {mediaType === 'image' ? (
-              <Image source={{ uri: mediaUri }} style={s.mediaPreviewImg} resizeMode="cover" />
+              <FilteredImage uri={mediaUri!} filter={(mediaFilter || 'original') as FilterKey} style={s.mediaPreviewImg} />
             ) : (
               <View style={[s.mediaPreviewImg, s.videoThumb, { backgroundColor: theme.bgSecondary }]}>
                 <Ionicons name="play-circle" size={40} color={theme.accent} />
