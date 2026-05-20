@@ -275,7 +275,7 @@ const s = StyleSheet.create({
   backBtn: { fontSize: 14 },
   title: { fontSize: 16 },
   scroll: { padding: 20, paddingBottom: 60 },
-  section: { marginBottom: 32 },
+  section: { marginBottom: 16 },
   sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 },
   sectionHint: { fontSize: 12, lineHeight: 18, marginBottom: 12 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 12, borderWidth: 0.5, padding: 16, marginBottom: 8 },
