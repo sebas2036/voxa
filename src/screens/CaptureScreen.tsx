@@ -314,6 +314,15 @@ export default function CaptureScreen({ navigation }: any) {
       </View>
 
 
+      <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={closeImageModal}>
+        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={closeImageModal}>
+          <Image source={{ uri: mediaUri || '' }} style={{ width, height }} resizeMode="contain" />
+          <TouchableOpacity style={s.modalClose} onPress={closeImageModal}>
+            <Ionicons name="close-circle" size={32} color="#fff" />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+
     </SafeAreaView>
   )
 }
