@@ -3,9 +3,8 @@ import * as ImagePicker from 'expo-image-picker'
 import {
   View, Text, TextInput, TouchableOpacity, Image, Modal,
   StyleSheet, SafeAreaView, ScrollView,
-  ActivityIndicator, Animated, Easing, Alert
+  ActivityIndicator, Animated, Easing, Alert, useWindowDimensions
 } from 'react-native'
-import { useWindowDimensions } from 'react-native'
 import { useGlosXStore } from '../store/glosx.store'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useLanguage } from '../hooks/useLanguage'
@@ -18,76 +17,28 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus'
 const TONES = ['auto', 'inspiracional', 'urgente', 'cercano', 'profesional', 'reflexivo', 'provocador']
 
 const ALL_PLATFORM_ICONS: Record<string, { icon: string, lib: string, color: string, name: string }> = {
-  twitter: { icon: 'x-twitter', lib: 'fa6', color: '#888888', name: 'X' },
-  linkedin: { icon: 'linkedin', lib: 'fa5', color: '#4a9eff', name: 'LinkedIn' },
-  threads: { icon: 'T', lib: 'text', color: '#444444', name: 'Threads' },
+  twitter:   { icon: 'x-twitter', lib: 'fa6', color: '#888888', name: 'X' },
+  linkedin:  { icon: 'linkedin',  lib: 'fa5', color: '#4a9eff', name: 'LinkedIn' },
+  threads:   { icon: 'T',         lib: 'text', color: '#444444', name: 'Threads' },
   instagram: { icon: 'instagram', lib: 'fa5', color: '#e1306c', name: 'Instagram' },
-  whatsapp: { icon: 'whatsapp', lib: 'fa5', color: '#25D366', name: 'WhatsApp' },
-  telegram: { icon: 'telegram', lib: 'fa5', color: '#2AABEE', name: 'Telegram' },
-  tiktok: { icon: 'tiktok', lib: 'fa6', color: '#333333', name: 'TikTok' },
-  facebook: { icon: 'facebook', lib: 'fa5', color: '#1877F2', name: 'Facebook' },
+  whatsapp:  { icon: 'whatsapp',  lib: 'fa5', color: '#25D366', name: 'WhatsApp' },
+  telegram:  { icon: 'telegram',  lib: 'fa5', color: '#2AABEE', name: 'Telegram' },
+  tiktok:    { icon: 'tiktok',    lib: 'fa6', color: '#333333', name: 'TikTok' },
+  facebook:  { icon: 'facebook',  lib: 'fa5', color: '#1877F2', name: 'Facebook' },
   pinterest: { icon: 'pinterest', lib: 'fa5', color: '#E60023', name: 'Pinterest' },
-  reddit: { icon: 'reddit', lib: 'fa5', color: '#FF4500', name: 'Reddit' },
+  reddit:    { icon: 'reddit',    lib: 'fa5', color: '#FF4500', name: 'Reddit' },
 }
 
 const HINTS_MAP: Record<string, string[]> = {
   es: ['hablá', 'revisá', 'publicá'],
   en: ['speak', 'review', 'publish'],
   zh: ['说', '审阅', '发布'],
-  hi: ['बोलें', 'समीक्षा', 'प्रकाशित'],
-  ar: ['تحدث', 'راجع', 'انشر'],
   pt: ['fale', 'revise', 'publique'],
-  ru: ['говорите', 'просмотр', 'публикуй'],
-  ja: ['話す', 'レビュー', '投稿'],
   fr: ['parlez', 'révisez', 'publiez'],
   de: ['sprechen', 'überprüfen', 'veröffentlichen'],
+  ja: ['話す', 'レビュー', '投稿'],
+  it: ['parla', 'rivedi', 'pubblica'],
 }
-const HINTS_ES = ['hablá', 'revisá', 'publicá']
-
-type MicState = 'idle' | 'recording' | 'thinking' | 'generating' | 'ready'
-
-const MIC_STATES = {
-  idle:       { color: '#c8b99a', pulseSpeed: 2400, pulseScale: 1.8, hints_es: ['hablá', 'escribí', 'contame'], hints_en: ['speak', 'write', 'tell me'] },
-  recording:  { color: '#ff3b30', pulseSpeed: 800,  pulseScale: 2.2, hints_es: ['escuchando...', 'seguí hablando...', 'te escucho...'], hints_en: ['listening...', 'keep talking...', "I'm listening..."] },
-  thinking:   { color: '#4a9eff', pulseSpeed: 1200, pulseScale: 2.0, hints_es: ['procesando...', 'entendiendo...', 'pensando...'], hints_en: ['processing...', 'understanding...', 'thinking...'] },
-  generating: { color: '#2e7d52', pulseSpeed: 1600, pulseScale: 2.6, hints_es: ['armando tu historia...', 'dándole forma...', 'encontrando las palabras...'], hints_en: ['building your story...', 'shaping it...', 'finding the words...'] },
-  ready:      { color: '#c8b99a', pulseSpeed: 400,  pulseScale: 1.4, hints_es: ['listo ✓', 'mirá esto ✓', 'está listo ✓'], hints_en: ['ready ✓', 'check this out ✓', "it's ready ✓"] },
-}
-
-
-function MediaIcon({ icon, label, onPress, theme }: { icon: any, label: string, onPress: () => void, theme: any }) {
-  const scale = useRef(new Animated.Value(1)).current
-  const glow = useRef(new Animated.Value(0)).current
-
-  const handlePress = () => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.spring(scale, { toValue: 0.88, useNativeDriver: true, speed: 50 }),
-        Animated.timing(glow, { toValue: 1, duration: 120, useNativeDriver: true }),
-      ]),
-      Animated.parallel([
-        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
-        Animated.timing(glow, { toValue: 0, duration: 300, useNativeDriver: true }),
-      ]),
-    ]).start()
-    onPress()
-  }
-
-  return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={1} style={s.mediaIconWrap}>
-      <Animated.View style={{
-        transform: [{ scale }],
-        opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }),
-      }}>
-        <Ionicons name={icon} size={26} color={theme.accent} />
-      </Animated.View>
-      <Animated.Text style={[s.mediaIconText, { color: theme.textMuted, opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0.9] }) }]}>
-        {label}
-      </Animated.Text>
-    </TouchableOpacity>
-  )
-}
-
 
 const TICKER_PHRASES = [
   'tu voz, en todas tus redes',
@@ -98,47 +49,65 @@ const TICKER_PHRASES = [
   'la tua voce, ovunque',
   '你的声音，遍及每个网络',
   'あなたの声を、世界へ',
-  'tu voz, en todas tus redes',
 ]
 
-function LanguageTicker({ theme }: { theme: any }) {
-  const scrollX = useRef(new Animated.Value(0)).current
-  const fullText = TICKER_PHRASES.join('   ·   ') + '   ·   '
+type MicState = 'idle' | 'recording' | 'thinking' | 'generating' | 'ready'
 
-  useEffect(() => {
-    const animate = () => {
-      scrollX.setValue(0)
-      Animated.timing(scrollX, {
-        toValue: -1,
-        duration: 30000,
-        useNativeDriver: true,
-        easing: Easing.linear,
-      }).start(() => animate())
-    }
-    animate()
-  }, [])
+const MIC_STATES = {
+  idle:       { color: '#c8b99a', hints_es: ['hablá', 'escribí', 'contame'],            hints_en: ['speak', 'write', 'tell me'] },
+  recording:  { color: '#ff3b30', hints_es: ['escuchando...', 'seguí hablando...'],      hints_en: ['listening...', 'keep talking...'] },
+  thinking:   { color: '#4a9eff', hints_es: ['procesando...', 'pensando...'],            hints_en: ['processing...', 'thinking...'] },
+  generating: { color: '#2e7d52', hints_es: ['armando tu historia...', 'casi listo...'], hints_en: ['building your story...', 'almost there...'] },
+  ready:      { color: '#c8b99a', hints_es: ['listo ✓'],                                 hints_en: ['ready ✓'] },
+}
 
+function MediaIcon({ icon, label, onPress, theme }: { icon: any, label: string, onPress: () => void, theme: any }) {
+  const scale = useRef(new Animated.Value(1)).current
+  const glow  = useRef(new Animated.Value(0)).current
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 0.88, useNativeDriver: true, speed: 50 }),
+        Animated.timing(glow,  { toValue: 1, duration: 120, useNativeDriver: true }),
+      ]),
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
+        Animated.timing(glow,  { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]),
+    ]).start()
+    onPress()
+  }
   return (
-    <View style={s.tickerWrap}>
-      <Animated.Text
-        numberOfLines={1}
-        style={[s.tickerText, {
-          color: theme.textMuted,
-          transform: [{
-            translateX: scrollX.interpolate({
-              inputRange: [-1, 0],
-              outputRange: [-800, 0],
-            })
-          }]
-        }]}
-      >
-        {fullText}
+    <TouchableOpacity onPress={handlePress} activeOpacity={1} style={s.mediaIconWrap}>
+      <Animated.View style={{ transform: [{ scale }], opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.55,1] }) }}>
+        <Ionicons name={icon} size={26} color={theme.accent} />
+      </Animated.View>
+      <Animated.Text style={[s.mediaIconText, { color: theme.textMuted, opacity: glow.interpolate({ inputRange: [0,1], outputRange: [0.5,0.9] }) }]}>
+        {label}
       </Animated.Text>
-    </View>
+    </TouchableOpacity>
   )
 }
 
-
+function LanguageTicker({ theme }: { theme: any }) {
+  const [index, setIndex] = useState(0)
+  const opacity = useRef(new Animated.Value(1)).current
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 0, duration: 500, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+      ]).start()
+      setTimeout(() => setIndex(i => (i + 1) % TICKER_PHRASES.length), 500)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+  return (
+    <Animated.Text numberOfLines={1} style={[s.tickerText, { color: theme.textMuted, opacity }]}>
+      {TICKER_PHRASES[index]}
+    </Animated.Text>
+  )
+}
 
 export default function CaptureScreen({ navigation }: any) {
   const { width, height } = useWindowDimensions()
@@ -146,22 +115,21 @@ export default function CaptureScreen({ navigation }: any) {
   const { isRecording, transcript, startRecording, stopRecording } = useVoiceInput()
   const { t } = useLanguage()
   const theme = useTheme()
-  const [showInput, setShowInput] = useState(false)
-  const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter', 'threads', 'instagram', 'reddit'])
-  const [recentOpen, setRecentOpen] = useState(false)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [hintIndex, setHintIndex] = useState(0)
-  const [micState, setMicState] = useState<MicState>('idle')
-  const [mediaUri, setMediaUri] = useState<string | null>(null)
-  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null)
-  const [showImageModal, setShowImageModal] = useState(false)
   const { isOnline } = useNetworkStatus()
+  const [showInput,          setShowInput]          = useState(false)
+  const [activePlatformKeys, setActivePlatformKeys] = useState<string[]>(['twitter','threads','instagram','reddit'])
+  const [recentOpen,         setRecentOpen]         = useState(false)
+  const [isGenerating,       setIsGenerating]       = useState(false)
+  const [hintIndex,          setHintIndex]          = useState(0)
   const [emotionalHintIndex, setEmotionalHintIndex] = useState(0)
-  const micColor = useRef(new Animated.Value(0)).current
-  const ring1 = useRef(new Animated.Value(0)).current
-  const ring2 = useRef(new Animated.Value(0)).current
-  const ring3 = useRef(new Animated.Value(0)).current
-  const recentAnim = useRef(new Animated.Value(0)).current
+  const [micState,           setMicState]           = useState<MicState>('idle')
+  const [mediaUri,           setMediaUri]           = useState<string | null>(null)
+  const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
+  const [showImageModal,     setShowImageModal]     = useState(false)
+  const ring1       = useRef(new Animated.Value(0)).current
+  const ring2       = useRef(new Animated.Value(0)).current
+  const ring3       = useRef(new Animated.Value(0)).current
+  const recentAnim  = useRef(new Animated.Value(0)).current
   const hintOpacity = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
@@ -176,39 +144,18 @@ export default function CaptureScreen({ navigation }: any) {
       Animated.sequence([
         Animated.timing(hintOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
       ]).start(() => {
-        setHintIndex(i => (i + 1) % (HINTS_MAP[t.lang] || HINTS_ES).length)
+        setHintIndex(i => (i + 1) % (HINTS_MAP[t.lang]?.length ?? 3))
         Animated.timing(hintOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start()
       })
     }, 1800)
     return () => clearInterval(interval)
-  }, [])
+  }, [t.lang])
 
   useEffect(() => {
     Animated.timing(recentAnim, {
       toValue: recentOpen ? 1 : 0, duration: 250, easing: Easing.out(Easing.ease), useNativeDriver: false
     }).start()
   }, [recentOpen])
-
-  const animateRing = (anim: Animated.Value, delay: number, speed: number = 2000) =>
-    Animated.loop(Animated.sequence([
-      Animated.delay(delay),
-      Animated.timing(anim, { toValue: 1, duration: speed, easing: Easing.out(Easing.ease), useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 0, duration: 0, useNativeDriver: true }),
-    ]))
-
-  useEffect(() => {
-    const speed = MIC_STATES[micState].pulseSpeed
-    const delay = speed / 3
-    if (micState !== 'idle') {
-      animateRing(ring1, 0, speed).start()
-      animateRing(ring2, delay, speed).start()
-      animateRing(ring3, delay * 2, speed).start()
-    } else {
-      ring1.stopAnimation(); ring1.setValue(0)
-      ring2.stopAnimation(); ring2.setValue(0)
-      ring3.stopAnimation(); ring3.setValue(0)
-    }
-  }, [micState])
 
   useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
 
@@ -222,15 +169,13 @@ export default function CaptureScreen({ navigation }: any) {
       ? await ImagePicker.requestCameraPermissionsAsync()
       : await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (!perm.granted) {
-      Alert.alert(
-        t.lang === 'es' ? 'Permiso requerido' : 'Permission required',
-        t.lang === 'es' ? 'Necesitamos acceso a tu galería/cámara.' : 'We need access to your gallery/camera.'
-      )
+      Alert.alert(t.lang === 'es' ? 'Permiso requerido' : 'Permission required',
+        t.lang === 'es' ? 'Necesitamos acceso a tu galería/cámara.' : 'We need access to your gallery/camera.')
       return
     }
     const result = useCamera
-      ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 })
-      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8, videoMaxDuration: 60 })
+      ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images','videos'], quality: 0.8, videoMaxDuration: 60 })
+      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images','videos'], quality: 0.8, videoMaxDuration: 60 })
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0]
       setMediaUri(asset.uri)
@@ -254,6 +199,11 @@ export default function CaptureScreen({ navigation }: any) {
     inputRange: [0, 1],
     outputRange: [0, Math.min(recentIdeas.length, 5) * 44 + 16]
   })
+
+  const hints = HINTS_MAP[t.lang] ?? HINTS_MAP['es']
+  const currentHint = micState === 'idle'
+    ? hints[hintIndex % hints.length]
+    : (t.lang === 'es' ? MIC_STATES[micState].hints_es : MIC_STATES[micState].hints_en)[emotionalHintIndex % (t.lang === 'es' ? MIC_STATES[micState].hints_es.length : MIC_STATES[micState].hints_en.length)]
 
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
@@ -279,9 +229,7 @@ export default function CaptureScreen({ navigation }: any) {
         <View style={s.micArea}>
           <MicButton micState={micState} onPress={handleMicPress} bgColor={theme.bg} />
           <Animated.Text style={[s.hintText, { color: MIC_STATES[micState].color, opacity: hintOpacity }]}>
-            {micState === 'idle'
-              ? (HINTS_MAP[t.lang] || HINTS_ES)[hintIndex]
-              : (t.lang === 'es' ? MIC_STATES[micState].hints_es : MIC_STATES[micState].hints_en)[emotionalHintIndex % (t.lang === 'es' ? MIC_STATES[micState].hints_es.length : MIC_STATES[micState].hints_en.length)]}
+            {currentHint}
           </Animated.Text>
           <TouchableOpacity onPress={() => setShowInput(!showInput)}>
             <Text style={[s.orWrite, { color: theme.textSecondary }]}>{t.orWrite}</Text>
@@ -306,7 +254,7 @@ export default function CaptureScreen({ navigation }: any) {
 
         <View style={s.toneSection}>
           <View style={s.toneCarousel}>
-            <TouchableOpacity onPress={() => { const i = TONES.indexOf(tone); setTone(TONES[(i - 1 + TONES.length) % TONES.length]) }} style={s.toneArrow}>
+            <TouchableOpacity onPress={() => { const i = TONES.indexOf(tone); setTone(TONES[(i-1+TONES.length)%TONES.length]) }} style={s.toneArrow}>
               <Text style={[s.toneArrowText, { color: theme.textMuted }]}>‹</Text>
             </TouchableOpacity>
             <View style={s.toneCenter}>
@@ -328,7 +276,7 @@ export default function CaptureScreen({ navigation }: any) {
                 )
               })}
             </View>
-            <TouchableOpacity onPress={() => { const i = TONES.indexOf(tone); setTone(TONES[(i + 1) % TONES.length]) }} style={s.toneArrow}>
+            <TouchableOpacity onPress={() => { const i = TONES.indexOf(tone); setTone(TONES[(i+1)%TONES.length]) }} style={s.toneArrow}>
               <Text style={[s.toneArrowText, { color: theme.textMuted }]}>›</Text>
             </TouchableOpacity>
           </View>
@@ -341,17 +289,13 @@ export default function CaptureScreen({ navigation }: any) {
           {mediaUri ? (
             <View style={s.mediaPreviewContainer}>
               <TouchableOpacity onPress={() => setShowImageModal(true)} activeOpacity={0.9}>
-                {mediaType === 'image' ? (
-                  <Image source={{ uri: mediaUri }} style={s.mediaPreview} resizeMode="cover" />
-                ) : (
-                  <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
-                    <Ionicons name="play-circle" size={40} color={theme.accent} />
-                    <Text style={[s.videoLabel, { color: theme.textSecondary }]}>{t.lang === 'es' ? 'video adjunto' : 'video attached'}</Text>
-                  </View>
-                )}
-                <View style={s.expandHint}>
-                  <Ionicons name="expand-outline" size={14} color="#fff" />
-                </View>
+                {mediaType === 'image'
+                  ? <Image source={{ uri: mediaUri }} style={s.mediaPreview} resizeMode="cover" />
+                  : <View style={[s.mediaPreview, s.videoPreview, { backgroundColor: theme.bgSecondary }]}>
+                      <Ionicons name="play-circle" size={40} color={theme.accent} />
+                    </View>
+                }
+                <View style={s.expandHint}><Ionicons name="expand-outline" size={14} color="#fff" /></View>
               </TouchableOpacity>
               <TouchableOpacity style={[s.removeMedia, { backgroundColor: theme.bgSecondary }]} onPress={handleRemoveMedia}>
                 <Ionicons name="close-circle" size={22} color={theme.error} />
@@ -385,38 +329,27 @@ export default function CaptureScreen({ navigation }: any) {
                 </View>
               ))}
             </Animated.View>
-            {recentOpen && (
-              <TouchableOpacity style={{ paddingVertical: 10, alignItems: 'center' }} onPress={() => Alert.alert(
-                t.lang === 'es' ? 'Borrar historial' : 'Clear history',
-                t.lang === 'es' ? '¿Eliminar todas las ideas recientes?' : 'Delete all recent ideas?',
-                [{ text: t.lang === 'es' ? 'Cancelar' : 'Cancel', style: 'cancel' }, { text: t.lang === 'es' ? 'Borrar' : 'Delete', style: 'destructive', onPress: clearRecentIdeas }]
-              )}>
-                <Text style={{ color: theme.textMuted, fontSize: 11 }}>{t.lang === 'es' ? 'borrar todo' : 'clear all'}</Text>
-              </TouchableOpacity>
-            )}
           </View>
         )}
 
-        <View style={s.tickerContainer}>
+        <View style={s.bottomSection}>
           <LanguageTicker theme={theme} />
-        </View>
-
-        <View style={s.platformsRow}>
-          {activePlatformKeys.slice(0, 4).map((key, i) => {
-            const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
-            return (
-              <View key={i} style={s.platformBadge}>
-                <View style={[s.platformDot, { backgroundColor: p.color + '22', borderColor: p.color + '44' }]}>
-                  {p.lib === 'fa6' && <FontAwesome6 name={p.icon as any} size={16} color={p.color} />}
-                  {p.lib === 'fa5' && <FontAwesome5 name={p.icon as any} size={16} color={p.color} />}
-                  {p.lib === 'text' && <Text style={[s.platformLetter, { color: p.color }]}>{p.icon}</Text>}
+          <View style={s.platformsRow}>
+            {activePlatformKeys.slice(0, 4).map((key, i) => {
+              const p = ALL_PLATFORM_ICONS[key] || ALL_PLATFORM_ICONS['twitter']
+              return (
+                <View key={i} style={s.platformBadge}>
+                  <View style={[s.platformDot, { backgroundColor: p.color + '22', borderColor: p.color + '44' }]}>
+                    {p.lib === 'fa6' && <FontAwesome6 name={p.icon as any} size={15} color={p.color} />}
+                    {p.lib === 'fa5' && <FontAwesome5 name={p.icon as any} size={15} color={p.color} />}
+                    {p.lib === 'text' && <Text style={[s.platformLetter, { color: p.color }]}>{p.icon}</Text>}
+                  </View>
+                  <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
                 </View>
-                <Text style={[s.platformName, { color: p.color }]}>{p.name}</Text>
-              </View>
-            )
-          })}
+              )
+            })}
+          </View>
         </View>
-
 
       </ScrollView>
 
@@ -433,12 +366,9 @@ export default function CaptureScreen({ navigation }: any) {
         </TouchableOpacity>
       </View>
 
-
-
-      {/* MODAL IMAGEN FULLSCREEN */}
       <Modal visible={showImageModal} transparent animationType="fade" onRequestClose={() => setShowImageModal(false)}>
         <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setShowImageModal(false)}>
-          <Image source={{ uri: mediaUri || '' }} style={{ width: width, height: height }} resizeMode="contain" />
+          <Image source={{ uri: mediaUri || '' }} style={{ width, height }} resizeMode="contain" />
           <TouchableOpacity style={s.modalClose} onPress={() => setShowImageModal(false)}>
             <Ionicons name="close-circle" size={32} color="#fff" />
           </TouchableOpacity>
@@ -451,68 +381,57 @@ export default function CaptureScreen({ navigation }: any) {
 
 const s = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { padding: 24, paddingTop: 48, paddingBottom: 72 },
+  scroll: { padding: 24, paddingTop: 48, paddingBottom: 100 },
   header: { marginBottom: 4 },
-  headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   logo: { fontSize: 32 },
-  logoAccent: { fontStyle: "italic" },
+  logoAccent: { fontStyle: 'italic' },
   tagline: { fontSize: 12, marginTop: 4, letterSpacing: 0.3 },
-  menuBtn: { padding: 8, gap: 5, alignItems: "flex-end" },
+  menuBtn: { padding: 8, gap: 5, alignItems: 'flex-end' },
   menuLine: { width: 22, height: 1.5, borderRadius: 2 },
-  micArea: { alignItems: "center", paddingVertical: 8, marginBottom: 0 },
-  hintText: { fontSize: 13, letterSpacing: 3, textTransform: "uppercase", marginBottom: 10 },
+  offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
+  offlineText: { fontSize: 11, fontWeight: '500' },
+  micArea: { alignItems: 'center', paddingVertical: 10, marginBottom: 4 },
+  hintText: { fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 },
   orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
-  inputContainer: { marginBottom: 24 },
-  input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: "300", minHeight: 90, lineHeight: 24 },
-  toneSection: { marginBottom: 12 },
+  inputContainer: { marginBottom: 16 },
+  input: { borderWidth: 0.5, borderRadius: 16, padding: 16, fontSize: 15, fontWeight: '300', minHeight: 80, lineHeight: 22 },
+  toneSection: { marginBottom: 16 },
   toneCarousel: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   toneArrow: { paddingHorizontal: 12, paddingVertical: 8 },
   toneArrowText: { fontSize: 22, fontWeight: '200' },
   toneCenter: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, justifyContent: 'center' },
   toneItem: { alignItems: 'center' },
   toneCenterText: { letterSpacing: 0.3 },
-  sectionLabel: { fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 },
-  tonePill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, borderWidth: 0.5 },
-  tonePillText: { fontSize: 11 },
   errorBox: { borderRadius: 10, padding: 12, marginBottom: 16 },
-  offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
-  offlineText: { fontSize: 11, fontWeight: '500' },
   errorText: { fontSize: 12 },
-  stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: 32, paddingTop: 12, alignItems: 'center' },
-  generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 16 },
-  generateBtnDisabled: { opacity: 0.4 },
-  generateBtnText: { fontSize: 17, fontWeight: "500" },
-  recentSection: { marginBottom: 8 },
-  recentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 10, borderBottomWidth: 0.5, gap: 8 },
-  recentLabel: { fontSize: 11, letterSpacing: 2, textTransform: "uppercase" },
-  recentItem: { flexDirection: "row", alignItems: "center", paddingVertical: 12, borderBottomWidth: 0.5 },
-  recentItemText: { fontSize: 13, flex: 1 },
-  flowDots: { flexDirection: "row", justifyContent: "center", gap: 6, marginBottom: 4 },
-  flowDot: { width: 4, height: 4, borderRadius: 2 },
-  platformsRow: { flexDirection: "row", justifyContent: "center", gap: 12, paddingVertical: 8, opacity: 0.7 },
-  platformBadge: { alignItems: "center", gap: 6 },
-  platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: "center", justifyContent: "center" },
-  platformLetter: { fontSize: 17, fontWeight: "900", letterSpacing: -0.5 },
-  platformName: { fontSize: 9, letterSpacing: 0.5, textTransform: "uppercase", opacity: 0.8 },
-  mediaSection: { marginBottom: 8 },
-  mediaLabel: { fontSize: 9, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 20, textAlign: 'center' },
-  mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 8 },
+  mediaSection: { marginBottom: 12 },
+  mediaLabel: { fontSize: 9, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16, textAlign: 'center' },
+  mediaFloating: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 4 },
   mediaDivider: { width: 1, height: 24, backgroundColor: 'rgba(200,185,154,0.15)', marginHorizontal: 32 },
-  mediaIconWrap: { alignItems: 'center', gap: 10, paddingHorizontal: 20, paddingVertical: 12 },
+  mediaIconWrap: { alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 8 },
   mediaIconText: { fontSize: 10, letterSpacing: 2, textTransform: 'lowercase', fontWeight: '300' },
-  tickerContainer: { overflow: 'hidden', marginBottom: 8, paddingVertical: 6 },
-  tickerWrap: { overflow: 'hidden' },
-  tickerText: { fontSize: 11, letterSpacing: 2.5, opacity: 0.35 },
-  tickerContainer: { overflow: 'hidden', marginBottom: 8, paddingVertical: 6 },
-  tickerWrap: { overflow: 'hidden' },
-  tickerText: { fontSize: 11, letterSpacing: 2.5, opacity: 0.35 },
-  mediaPreviewContainer: { marginTop: 8, position: 'relative' },
+  mediaPreviewContainer: { position: 'relative' },
   mediaPreview: { width: '100%', height: 180, borderRadius: 12 },
-  videoPreview: { alignItems: 'center', justifyContent: 'center', gap: 8 },
-  videoLabel: { fontSize: 13 },
+  videoPreview: { alignItems: 'center', justifyContent: 'center' },
   removeMedia: { position: 'absolute', top: 8, right: 8, borderRadius: 11 },
   expandHint: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6, padding: 4 },
+  recentSection: { marginBottom: 8 },
+  recentHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderBottomWidth: 0.5, gap: 8 },
+  recentLabel: { fontSize: 11, letterSpacing: 2, textTransform: 'uppercase' },
+  recentItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5 },
+  recentItemText: { fontSize: 13, flex: 1 },
+  bottomSection: { alignItems: 'center', paddingTop: 12, gap: 12 },
+  tickerText: { fontSize: 11, letterSpacing: 2, opacity: 0.35, textAlign: 'center' },
+  platformsRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, opacity: 0.65 },
+  platformBadge: { alignItems: 'center', gap: 5 },
+  platformDot: { width: 38, height: 38, borderRadius: 19, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
+  platformLetter: { fontSize: 15, fontWeight: '900', letterSpacing: -0.5 },
+  platformName: { fontSize: 8, letterSpacing: 0.5, textTransform: 'uppercase', opacity: 0.8 },
+  stickyFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: 32, paddingTop: 10, alignItems: 'center' },
+  generateBtn: { borderRadius: 30, height: 44, paddingHorizontal: 36, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12 },
+  generateBtnDisabled: { opacity: 0.4 },
+  generateBtnText: { fontSize: 17, fontWeight: '500' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' },
-  modalImage: { width: '100%', height: '80%' },
   modalClose: { position: 'absolute', top: 60, right: 20 },
 })
