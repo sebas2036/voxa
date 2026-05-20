@@ -35,18 +35,18 @@ export default function PrivacyScreen({ navigation }: any) {
     {
       title: lang === 'es' ? 'Tus derechos' : 'Your rights',
       content: lang === 'es'
-        ? '• Podés eliminar tu cuenta desde Configuración → Cuenta → Eliminar cuenta\n• Al eliminar tu cuenta se borran todos tus datos permanentemente\n• Contacto: soporte@glosx.app'
-        : '• You can delete your account from Settings → Account → Delete account\n• Deleting your account permanently removes all your data\n• Contact: support@glosx.app'
+        ? '• Podés eliminar tu cuenta desde Configuración → Cuenta → Eliminar cuenta\n• Al eliminar tu cuenta se borran todos tus datos permanentemente\n• Contacto: Glosx@outlook.com'
+        : '• You can delete your account from Settings → Account → Delete account\n• Deleting your account permanently removes all your data\n• Contact: Glosx@outlook.com'
     },
     {
       title: lang === 'es' ? 'Menores de edad' : 'Minors',
       content: lang === 'es'
-        ? 'GlosX no está dirigido a menores de 13 años. Si sos padre o tutor, contactanos a soporte@glosx.app.'
-        : 'GlosX is not directed at children under 13. If you are a parent or guardian, contact us at support@glosx.app.'
+        ? 'GlosX no está dirigido a menores de 13 años. Si sos padre o tutor, contactanos a Glosx@outlook.com.'
+        : 'GlosX is not directed at children under 13. If you are a parent or guardian, contact us at Glosx@outlook.com.'
     },
     {
       title: lang === 'es' ? 'Contacto' : 'Contact',
-      content: 'soporte@glosx.app\nglosx.app'
+      content: 'Glosx@outlook.com\nglosx.app'
     },
   ]
 
