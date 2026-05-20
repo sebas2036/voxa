@@ -334,7 +334,7 @@ export default function CaptureScreen({ navigation }: any) {
         >
           {loading
             ? <ActivityIndicator color="#ffffff" size="small" />
-            : <Text style={[s.generateBtnText, { color: '#0a0a0a' }]}>crear</Text>
+            : <Text style={[s.generateBtnText, { color: '#000000' }]}>crear</Text>
           }
         </TouchableOpacity>
       </View>
