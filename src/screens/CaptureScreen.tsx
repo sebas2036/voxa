@@ -396,7 +396,7 @@ const s = StyleSheet.create({
   recentLabel: { fontSize: 11, letterSpacing: 2, textTransform: 'uppercase' },
   recentItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5 },
   recentItemText: { fontSize: 13, flex: 1 },
-  bottomSection: { alignItems: 'center', paddingTop: 16, gap: 12 },
+  bottomSection: { alignItems: 'center', paddingTop: 8, gap: 8 },
   platformsRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, opacity: 0.65 },
   platformBadge: { alignItems: 'center', gap: 5 },
   platformDot: { width: 44, height: 44, borderRadius: 22, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
