@@ -348,7 +348,7 @@ const s = StyleSheet.create({
   menuLine: { width: 22, height: 1.5, borderRadius: 2 },
   offlineBadge: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, alignSelf: 'flex-start', marginTop: 6 },
   offlineText: { fontSize: 11, fontWeight: '500' },
-  micArea: { alignItems: 'center', paddingVertical: 10, marginBottom: 4 },
+  micArea: { alignItems: 'center', paddingVertical: 6, marginBottom: 2 },
   hintText: { fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 10 },
   orWrite: { fontSize: 15, letterSpacing: 0.3, textDecorationLine: 'underline' },
   inputContainer: { marginBottom: 16 },
