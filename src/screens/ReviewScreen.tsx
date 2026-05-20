@@ -204,87 +204,34 @@ export default function ReviewScreen({ navigation }: any) {
           )
         })}
 
+
         {extraPlatforms.filter(p => enabled[p.key] !== false).map(platform => {
           const cnt = extraContents[platform.key] || ''
           const isLoading = loadingExtra === platform.key
           const isExp = expanded === platform.key
           const isEdit = editing === platform.key
-          const extraStyle = extraTextStyles[platform.key] || 'normal'
+          if (isLoading) {
+            return <SkeletonCard key={platform.key} platform={platform} theme={theme} />
+          }
+          if (!cnt) return null
           return (
-            <View key={platform.key} style={[s.card, { backgroundColor: isLoading ? '#2e7d5222' : platform.color + '15', borderColor: isLoading ? '#2e7d52' : platform.color, borderWidth: 1.5 }]}>
-              <TouchableOpacity style={s.cardHeader} onPress={() => setExpanded(isExp ? null : platform.key)}>
-                <View style={[s.dot, { backgroundColor: isLoading ? '#2e7d52' : platform.color }]} />
-                <Text style={[s.platformName, { color: theme.text, fontWeight: '600' }]}>{platform.name}</Text>
-                {isLoading
-                  ? <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
-                      <ActivityIndicator size="small" color="#2e7d52" />
-                      <Text style={{ color: '#2e7d52', fontSize: 12 }}>{t.lang === 'es' ? 'generando...' : 'generating...'}</Text>
-                    </View>
-                  : !isExp && <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}><Text style={[s.preview, { color: theme.textMuted }]} numberOfLines={1}>{cnt.slice(0, 42)}</Text><AnimatedDots color={platform.color} fallbackColor={theme.text} /></View>
-                }
-                <Ionicons name={isExp ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
-                <Switch
-                  value={enabled[platform.key] !== false}
-                  onValueChange={() => { if (activeCount <= 1) return; setEnabled(prev => ({ ...prev, [platform.key]: !prev[platform.key] })) }}
-                  trackColor={{ false: theme.bgTertiary, true: platform.color + '44' }}
-                  thumbColor={platform.color}
-                  style={{ transform: [{ scaleX: 0.75 }, { scaleY: 0.75 }] }}
-                />
-              </TouchableOpacity>
-              {isExp && cnt.length > 0 && !isLoading && (
-                <View style={s.cardBody}>
-                  <View style={[s.divider, { backgroundColor: theme.border }]} />
-                  <TouchableOpacity style={[s.editTopBtn, { borderColor: theme.border }]}
-                    onPress={() => { setEditTexts(prev => ({ ...prev, [platform.key]: cnt })); setEditing(isEdit ? null : platform.key) }}>
-                    <Text style={[s.editTopBtnText, { color: isEdit ? theme.accent : theme.textSecondary }]}>{isEdit ? t.save : t.edit}</Text>
-                  </TouchableOpacity>
-                  <View style={s.styleBar}>
-                    {([
-                      { key: 'normal', label: 'Aa', fw: '400', fi: 'normal', ls: 0 },
-                      { key: 'bold',   label: 'Aa', fw: '800', fi: 'normal', ls: 0 },
-                      { key: 'italic', label: 'Aa', fw: '400', fi: 'italic', ls: 0 },
-                      { key: 'caps',   label: 'AA', fw: '600', fi: 'normal', ls: 1 },
-                      { key: 'mono',   label: 'Aa', fw: '400', fi: 'normal', ls: 0, mono: true },
-                      { key: 'strike', label: 'Aa̶', fw: '400', fi: 'normal', ls: 0 },
-                      { key: 'wide',   label: 'A a', fw: '400', fi: 'normal', ls: 2 },
-                    ] as any[]).map(style => (
-                      <TouchableOpacity
-                        key={style.key}
-                        style={[s.styleBtn, extraStyle === style.key && { borderColor: platform.color, backgroundColor: platform.color + '15' }]}
-                        onPress={() => setExtraTextStyles(prev => ({ ...prev, [platform.key]: style.key }))}
-                      >
-                        <Text style={[s.styleBtnText, { color: extraStyle === style.key ? platform.color : theme.textMuted, fontWeight: style.fw, fontStyle: style.fi, letterSpacing: style.ls }, style.mono && { fontFamily: 'Courier' }]}>
-                          {style.label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.emojiBar}>
-                    {(PLATFORM_EMOJIS[platform.key] || PLATFORM_EMOJIS['twitter']).map(emoji => (
-                      <TouchableOpacity key={emoji} style={s.emojiBtn} onPress={() => {
-                        const current = editTexts[platform.key] || cnt
-                        const updated = current + ' ' + emoji
-                        setEditTexts(prev => ({ ...prev, [platform.key]: updated }))
-                        setExtraContents(prev => ({ ...prev, [platform.key]: updated }))
-                      }}>
-                        <Text style={s.emojiText}>{emoji}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                  {isEdit ? (
-                    <TextInput
-                      style={[s.editInput, { color: theme.text, borderColor: theme.border }]}
-                      value={editTexts[platform.key]}
-                      onChangeText={text => { setEditTexts(prev => ({ ...prev, [platform.key]: text })); setExtraContents(prev => ({ ...prev, [platform.key]: text })) }}
-                      multiline autoFocus
-                      onBlur={() => setEditing(null)}
-                    />
-                  ) : (
-                    <Text style={[s.content, { color: theme.text }]}>{applyTextStyle(cnt, extraStyle)}</Text>
-                  )}
-                </View>
-              )}
-            </View>
+            <PlatformCard
+              key={platform.key}
+              platform={platform}
+              pdata={{ content: cnt }}
+              isExpanded={isExp}
+              isEditing={isEdit}
+              editText={editTexts[platform.key] ?? cnt}
+              enabled={enabled[platform.key] !== false}
+              activeCount={activeCount}
+              theme={theme}
+              t={t}
+              onToggleExpand={() => setExpanded(isExp ? null : platform.key)}
+              onToggleEdit={() => { setEditTexts(prev => ({ ...prev, [platform.key]: cnt })); setEditing(isEdit ? null : platform.key) }}
+              onEditChange={(text: string) => { setEditTexts(prev => ({ ...prev, [platform.key]: text })); setExtraContents(prev => ({ ...prev, [platform.key]: text })) }}
+              onEditBlur={() => setEditing(null)}
+              onToggleEnabled={() => { if (activeCount <= 1) return; setEnabled(prev => ({ ...prev, [platform.key]: !prev[platform.key] })) }}
+            />
           )
         })}
 
