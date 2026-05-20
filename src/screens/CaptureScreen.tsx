@@ -189,7 +189,7 @@ export default function CaptureScreen({ navigation }: any) {
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
             </TouchableOpacity>
           </View>
-          <Text style={[s.tagline, { color: theme.textSecondary }]}>{t.tagline}</Text>
+          <Text style={[s.tagline, { color: theme.text }]}>{t.tagline}</Text>
           {!isOnline && (
             <View style={[s.offlineBadge, { backgroundColor: '#ff3b3015', borderColor: '#ff3b3040' }]}>
               <Text style={[s.offlineText, { color: '#ff3b30' }]}>{t.lang === 'es' ? '✈ modo sin conexión' : '✈ offline mode'}</Text>
