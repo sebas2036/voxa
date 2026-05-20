@@ -126,6 +126,7 @@ export default function CaptureScreen({ navigation }: any) {
   const [mediaUri,           setMediaUri]           = useState<string | null>(null)
   const [mediaType,          setMediaType]          = useState<'image' | 'video' | null>(null)
   const [showImageModal,     setShowImageModal]     = useState(false)
+  const scrollRef   = useRef<any>(null)
   const ring1       = useRef(new Animated.Value(0)).current
   const ring2       = useRef(new Animated.Value(0)).current
   const ring3       = useRef(new Animated.Value(0)).current
@@ -152,6 +153,9 @@ export default function CaptureScreen({ navigation }: any) {
   }, [t.lang])
 
   useEffect(() => {
+    if (recentOpen) {
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100)
+    }
     Animated.timing(recentAnim, {
       toValue: recentOpen ? 1 : 0, duration: 250, easing: Easing.out(Easing.ease), useNativeDriver: false
     }).start()
@@ -207,7 +211,7 @@ export default function CaptureScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
-      <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView ref={scrollRef} contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
 
         <View style={s.header}>
           <View style={s.headerTop}>
