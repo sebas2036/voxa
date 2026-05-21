@@ -313,7 +313,7 @@ export default function ReviewScreen({ navigation }: any) {
       <View style={[s.footer, { backgroundColor: theme.bg, borderTopColor: theme.bgSecondary }]}>
         <Text style={[s.activeCount, { color: theme.textMuted }]}>{activeCount} {t.active}</Text>
         <TouchableOpacity
-          style={[s.publishBtn, (activeCount === 0 || publishing || allDone === false) && { opacity: 0.4 }]}
+          style={[s.publishBtn, (activeCount === 0 || publishing) && { opacity: 0.4 }]}
           onPress={handlePublish}
           disabled={activeCount === 0 || publishing || !allDone}
         >
