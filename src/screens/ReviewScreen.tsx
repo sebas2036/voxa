@@ -163,7 +163,7 @@ export default function ReviewScreen({ navigation }: any) {
         store.tone !== 'auto' ? store.tone : undefined,
         undefined, sc
       )
-      store.setResult({ ...store.result, platforms: { ...store.result.platforms, [platformKey]: nc_result.content } })
+      if (store.result) store.setResult({ ...store.result, platforms: { ...store.result.platforms, [platformKey]: nc_result.content } })
     } catch {}
     setRegenerating(null)
   }

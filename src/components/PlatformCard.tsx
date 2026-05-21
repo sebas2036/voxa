@@ -20,7 +20,7 @@ const PLATFORM_EMOJIS: Record<string, string[]> = {
   pinterest: ['📌', '🌸', '✨', '💫', '🎨', '🌿', '💕', '🏡'],
 }
 
-export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, theme, t }: any) {
+export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText, enabled, activeCount, onToggleExpand, onToggleEdit, onEditChange, onEditBlur, onToggleEnabled, onRegenerate, regenerating, theme, t }: any) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const slideAnim = useRef(new Animated.Value(12)).current
   const [textStyle, setTextStyle] = React.useState<TextStyleType>('normal')
