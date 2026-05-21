@@ -27,6 +27,7 @@ interface GlosXStore {
   setInput: (input: string) => void
   setTone: (tone: string) => void
   generate: () => Promise<void>
+  setResult: (result: VoxaResult) => void
   generateProgressive: () => Promise<void>
   updatePlatformContent: (platform: string, content: string) => void
   loadRecentIdeas: () => Promise<void>
@@ -86,6 +87,7 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
     }
   },
 
+  setResult: (result) => set({ result }),
   generateProgressive: async () => {
     const { input, tone, recentIdeas } = get()
     if (!input.trim()) return

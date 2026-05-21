@@ -52,6 +52,11 @@ export function PlatformCard({ platform, pdata, isExpanded, isEditing, editText,
               <AnimatedDots color={platform.color} fallbackColor={theme.text} />
             </View>
           )}
+          {onRegenerate && (
+            <TouchableOpacity onPress={onRegenerate} disabled={regenerating} style={{ padding: 4, marginRight: 4, opacity: regenerating ? 0.4 : 1 }}>
+              <Ionicons name="refresh-outline" size={15} color={theme.textSecondary} />
+            </TouchableOpacity>
+          )}
           <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} color={theme.textSecondary} style={{ marginRight: 2 }} />
           <Switch
             value={enabled}

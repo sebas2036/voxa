@@ -3,6 +3,8 @@ import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
   ScrollView, Switch, TextInput, ActivityIndicator, Modal, Animated
 } from 'react-native'
+import { generateSinglePlatform } from '../services/glosx.service'
+import { getStyleProfile, buildStyleContext } from '../services/styleMemory'
 import { useGlosXStore } from '../store/glosx.store'
 import { Image } from 'react-native'
 import { FilteredImage, FilterKey } from '../components/PhotoFilterStrip'
@@ -52,6 +54,7 @@ export default function ReviewScreen({ navigation }: any) {
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ twitter: true, threads: true, instagram: true, reddit: true })
   const [expanded, setExpanded] = useState<string | null>(null)
   const [editing, setEditing] = useState<string | null>(null)
+  const [regenerating, setRegenerating] = useState<string | null>(null)
   const [editTexts, setEditTexts] = useState<Record<string, string>>({})
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
@@ -148,6 +151,23 @@ export default function ReviewScreen({ navigation }: any) {
     )
   }
 
+  const handleRegenerate = async (platformKey) => {
+    if (regenerating) return
+    setRegenerating(platformKey)
+    try {
+      const sp = await getStyleProfile()
+      const sc = buildStyleContext(sp) ?? undefined
+      const store = useGlosXStore.getState()
+      const nc_result = await generateSinglePlatform(
+        platformKey, store.input,
+        store.tone !== 'auto' ? store.tone : undefined,
+        undefined, sc
+      )
+      store.setResult({ ...store.result, platforms: { ...store.result.platforms, [platformKey]: nc_result.content } })
+    } catch {}
+    setRegenerating(null)
+  }
+
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <View style={s.topBar}>
@@ -201,6 +221,8 @@ export default function ReviewScreen({ navigation }: any) {
               onEditChange={(text: string) => { setEditTexts(prev => ({ ...prev, [platform.key]: text })); updatePlatformContent(platform.key, text) }}
               onEditBlur={() => { setEditing(null); const edited = editTexts[platform.key]; if (edited) updateStyleProfile(edited); trackEdit(pdata.content, editTexts[platform.key] || pdata.content) }}
               onToggleEnabled={() => setEnabled(prev => ({ ...prev, [platform.key]: false }))}
+              onRegenerate={() => handleRegenerate(platform.key)}
+              regenerating={regenerating === platform.key}
             />
           )
         })}
@@ -232,6 +254,8 @@ export default function ReviewScreen({ navigation }: any) {
               onEditChange={(text: string) => { setEditTexts(prev => ({ ...prev, [platform.key]: text })); setExtraContents(prev => ({ ...prev, [platform.key]: text })) }}
               onEditBlur={() => setEditing(null)}
               onToggleEnabled={() => { if (activeCount <= 1) return; setEnabled(prev => ({ ...prev, [platform.key]: !prev[platform.key] })) }}
+              onRegenerate={() => handleRegenerate(platform.key)}
+              regenerating={regenerating === platform.key}
             />
           )
         })}
