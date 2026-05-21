@@ -250,10 +250,6 @@ export default function SettingsScreen({ navigation }: any) {
             <Text style={[s.rowText, { color: theme.text }]}>{t.terms}</Text>
             <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => Linking.openURL('mailto:Glosx@outlook.com?subject=GlosX%20soporte')}>
-            <Text style={[s.rowText, { color: theme.text }]}>{lang !== 'en' ? 'Contacto y soporte' : 'Contact & support'}</Text>
-            <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={[s.row, { backgroundColor: theme.bgSecondary, borderColor: theme.border }]} onPress={() => navigation.navigate('Privacy')}>
             <Text style={[s.rowText, { color: theme.text }]}>{lang !== 'en' ? 'Política de privacidad' : 'Privacy policy'}</Text>
             <Text style={[s.rowArrow, { color: theme.textMuted }]}>›</Text>
