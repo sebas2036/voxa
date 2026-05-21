@@ -318,7 +318,7 @@ export default function ReviewScreen({ navigation }: any) {
           disabled={activeCount === 0 || publishing || !allDone}
         >
           <Text style={[s.publishBtnText, { color: '#0a0a0a' }]}>
-            {publishing ? (t.lang === 'es' ? 'compartiendo...' : 'sharing...') : !allDone ? (t.lang === 'es' ? 'generando...' : 'generating...') : t.publishNow}
+            {publishing ? (t.lang === 'es' ? 'compartiendo...' : 'sharing...') : !allDone ? (t.lang === 'es' ? 'creando...' : 'creating...') : t.publishNow}
           </Text>
         </TouchableOpacity>
       </View>
@@ -353,8 +353,8 @@ const s = StyleSheet.create({
   addPlatformText: { fontSize: 13, letterSpacing: 0.5 },
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, flexDirection: 'row', alignItems: 'center', gap: 12, borderTopWidth: 0.5 },
   activeCount: { fontSize: 12 },
-  publishBtn: { flex: 1, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  publishBtnText: { fontSize: 16, fontWeight: '500' },
+  publishBtn: { height: 44, borderRadius: 30, paddingHorizontal: 48, alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
+  publishBtnText: { fontSize: 18, fontWeight: '300', fontStyle: 'italic', letterSpacing: 3 },
   styleBar: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   styleBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'transparent' },
   styleBtnText: { fontSize: 13 },
