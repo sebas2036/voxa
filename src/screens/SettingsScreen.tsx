@@ -271,6 +271,9 @@ export default function SettingsScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
+        <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={{ alignItems: 'center', paddingVertical: 24 }}>
+          <Text style={{ fontSize: 11, color: theme.textMuted, letterSpacing: 1 }}>GlosX v1.0.0</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   )

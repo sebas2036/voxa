@@ -86,17 +86,40 @@ export default function CaptureScreen({ navigation }: any) {
 
   useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
 
+  const logoPulse = useRef(new Animated.Value(0)).current
+  const logoHaloOpacity = useRef(new Animated.Value(0)).current
+  const particles = useRef(Array.from({ length: 6 }, () => ({
+    x: new Animated.Value(0),
+    y: new Animated.Value(0),
+    op: new Animated.Value(0),
+  }))).current
+
+  const triggerLogoAnimation = () => {
+    logoPulse.setValue(0)
+    logoHaloOpacity.setValue(1)
+    particles.forEach(p => { p.x.setValue(0); p.y.setValue(0); p.op.setValue(1) })
+    Animated.parallel([
+      Animated.sequence([
+        Animated.timing(logoPulse, { toValue: 1.8, duration: 600, useNativeDriver: true }),
+        Animated.timing(logoHaloOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]),
+      ...particles.map((p, i) => {
+        const angle = (i / 6) * Math.PI * 2
+        const dist = 45
+        return Animated.parallel([
+          Animated.timing(p.x, { toValue: Math.cos(angle) * dist, duration: 700, useNativeDriver: true }),
+          Animated.timing(p.y, { toValue: Math.sin(angle) * dist, duration: 700, useNativeDriver: true }),
+          Animated.sequence([
+            Animated.delay(350),
+            Animated.timing(p.op, { toValue: 0, duration: 350, useNativeDriver: true }),
+          ]),
+        ])
+      }),
+    ]).start()
+  }
+
   const handleLogoTap = () => {
-    const newCount = devTaps + 1
-    setDevTaps(newCount)
-    if (devTapTimer.current) clearTimeout(devTapTimer.current)
-    devTapTimer.current = setTimeout(() => setDevTaps(0), 2000)
-    if (newCount >= 5) {
-      setDevTaps(0)
-      import('../services/devMonitor').then(({ enableDevMode }) => {
-        enableDevMode().then(() => navigation.navigate('Dev'))
-      })
-    }
+    triggerLogoAnimation()
   }
 
   const handleMicPress = () => {
@@ -154,8 +177,12 @@ export default function CaptureScreen({ navigation }: any) {
 
         {!mediaUri && <View style={s.header}>
           <View style={s.headerTop}>
-            <TouchableOpacity onPress={handleLogoTap} activeOpacity={0.8}>
+            <TouchableOpacity onPress={handleLogoTap} activeOpacity={0.9} style={{ position: 'relative' }}>
               <Text style={[s.logo, { color: theme.text }]}>Glos<Text style={[s.logoAccent, { color: theme.accent }]}>X</Text></Text>
+              <Animated.View pointerEvents="none" style={{ position: 'absolute', top: '50%', left: '50%', width: 60, height: 60, marginLeft: -30, marginTop: -30, borderRadius: 30, borderWidth: 1, borderColor: theme.accent, opacity: logoHaloOpacity, transform: [{ scale: logoPulse }] }} />
+              {particles.map((p, i) => (
+                <Animated.View key={i} pointerEvents="none" style={{ position: 'absolute', top: '50%', left: '50%', width: 4, height: 4, borderRadius: 2, backgroundColor: theme.accent, opacity: p.op, transform: [{ translateX: p.x }, { translateY: p.y }] }} />
+              ))}
             </TouchableOpacity>
             <TouchableOpacity style={s.menuBtn} onPress={() => navigation.navigate('Settings')}>
               <View style={[s.menuLine, { backgroundColor: theme.textMuted }]} />
