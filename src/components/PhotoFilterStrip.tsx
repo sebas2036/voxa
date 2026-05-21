@@ -36,7 +36,7 @@ export function PhotoFilterStrip({ activeFilter, onSelect }: { activeFilter: Fil
             style={[s.chip, { backgroundColor: f.color }, isActive && { borderColor: f.textColor, borderWidth: 1.5 }]}
             activeOpacity={0.75}
           >
-            <Text style={[s.chipText, { color: f.textColor }, isActive && { fontWeight: '600' }]}>
+            <Text style={[s.chipText, { color: '#ffffff' }, isActive && { fontWeight: '800' }]}>
               {f.label}
             </Text>
           </TouchableOpacity>
