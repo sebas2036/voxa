@@ -354,7 +354,7 @@ const s = StyleSheet.create({
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20, paddingBottom: 36, flexDirection: 'row', alignItems: 'center', gap: 12, borderTopWidth: 0.5 },
   activeCount: { fontSize: 12 },
   publishBtn: { height: 44, borderRadius: 30, paddingHorizontal: 40, alignSelf: 'center', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1.5, borderColor: '#c8b99a' },
-  publishBtnText: { fontSize: 16, fontWeight: '900', letterSpacing: 2, color: '#ffffff' },
+  publishBtnText: { fontSize: 16, fontWeight: '600', letterSpacing: 2, color: '#c8b99a' },
   styleBar: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   styleBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'transparent' },
   styleBtnText: { fontSize: 13 },
