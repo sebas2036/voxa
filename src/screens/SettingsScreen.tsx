@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, Modal } from 'react-native'
 import { useLanguage, setLanguagePreference, LanguagePreference } from '../hooks/useLanguage'
 import { useTheme, setThemePreference, ThemePreference } from '../theme'
@@ -21,6 +21,8 @@ export default function SettingsScreen({ navigation }: any) {
     { key: 'dark', tKey: 'dark' },
   ]
 
+  const [devTaps, setDevTaps] = useState(0)
+  const devTapTimer = useRef<any>(null)
   const [showLangModal, setShowLangModal] = useState(false)
   const [twitterConnected, setTwitterConnected] = useState(false)
 
