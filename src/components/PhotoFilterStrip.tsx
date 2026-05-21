@@ -62,5 +62,5 @@ const s = StyleSheet.create({
   container: { position: 'absolute', bottom: 2, left: 0, right: 0 },
   strip: { paddingHorizontal: 12, gap: 6, paddingVertical: 6 },
   chip: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
-  chipText: { fontSize: 11, letterSpacing: 1, textTransform: 'lowercase', fontWeight: '400' },
+  chipText: { fontSize: 12, letterSpacing: 0.5, textTransform: 'lowercase', fontWeight: '400' },
 })
