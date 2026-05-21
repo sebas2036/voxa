@@ -10,6 +10,7 @@ import { useLanguage } from '../hooks/useLanguage'
 import { useTheme } from '../theme'
 import { PLATFORMS, publishToAll } from '../utils/deeplinks'
 import { trackEdit, trackPlatform } from '../services/voiceProfile'
+import { updateStyleProfile } from '../services/styleMemory'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Ionicons } from '@expo/vector-icons'
 import { AnimatedDots } from '../components/AnimatedDots'
@@ -198,7 +199,7 @@ export default function ReviewScreen({ navigation }: any) {
               onToggleExpand={() => setExpanded(isExp ? null : platform.key)}
               onToggleEdit={() => { setEditTexts(prev => ({ ...prev, [platform.key]: pdata.content })); setEditing(isEdit ? null : platform.key) }}
               onEditChange={(text: string) => { setEditTexts(prev => ({ ...prev, [platform.key]: text })); updatePlatformContent(platform.key, text) }}
-              onEditBlur={() => { setEditing(null); trackEdit(pdata.content, editTexts[platform.key] || pdata.content) }}
+              onEditBlur={() => { setEditing(null); const edited = editTexts[platform.key]; if (edited) updateStyleProfile(edited); trackEdit(pdata.content, editTexts[platform.key] || pdata.content) }}
               onToggleEnabled={() => setEnabled(prev => ({ ...prev, [platform.key]: false }))}
             />
           )

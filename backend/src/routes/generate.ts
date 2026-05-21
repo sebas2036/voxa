@@ -15,10 +15,10 @@ generateRouter.post('/generate', async (req: Request, res: Response) => {
 })
 
 generateRouter.post('/generate-single', async (req: Request, res: Response) => {
-  const { platform, input, tone, voiceProfile } = req.body as { platform: string; input: string; tone?: string; voiceProfile?: string }
+  const { platform, input, tone, voiceProfile, styleContext } = req.body as { platform: string; input: string; tone?: string; voiceProfile?: string; styleContext?: string }
   if (!platform || !input || input.trim().length === 0) return void res.status(400).json({ error: 'platform e input son requeridos' })
   try {
-    const content = await generateContentForPlatform(platform, input.trim(), tone, voiceProfile)
+    const content = await generateContentForPlatform(platform, input.trim(), tone, voiceProfile, styleContext)
     res.json({ platform, content })
   } catch (e: any) {
     res.status(500).json({ error: `Error generando contenido para ${platform}` })

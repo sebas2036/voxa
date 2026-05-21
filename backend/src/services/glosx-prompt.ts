@@ -112,15 +112,17 @@ export const buildSinglePlatformPrompt = (
   platform: string,
   input: string,
   tone?: string,
-  voiceProfile?: string
+  voiceProfile?: string,
+  styleContext?: string
 ): string => {
   const schema = PLATFORM_SCHEMAS[platform] ?? '{ "content": "string" }'
   const rules = PLATFORM_RULES[platform] ?? 'Adapt the content for this platform.'
   const toneNote = tone && tone !== 'auto' ? `\nTone: ${tone}` : ''
   const profileNote = voiceProfile ? voiceProfile : ''
+  const styleNote = styleContext ? `\n${styleContext}` : ''
   return `You are the voice behind GlosX — write like a real person, not a content machine.
 Detect the language of the user idea and generate content in that same language.
-Use natural rhythm, avoid clichés, write content that feels genuinely human.${toneNote}${profileNote}
+Use natural rhythm, avoid clichés, write content that feels genuinely human.${toneNote}${profileNote}${styleNote}
 Platform: ${platform.toUpperCase()}
 Rules: ${rules}
 USER IDEA:

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getStyleProfile, buildStyleContext } from '../services/styleMemory'
 import { trackGeneration } from '../services/devMonitor'
 import { VoxaResult, generateContent, generateSinglePlatform, getPlatformGenerationOrder } from '../services/glosx.service'
 import { trackTone, buildVoiceProfilePrompt, getVoiceProfile } from '../services/voiceProfile'
@@ -126,6 +127,9 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
       progressivePlatforms: initialProgress,
     })
 
+    const styleProfile = await getStyleProfile()
+    const styleContext = buildStyleContext(styleProfile) ?? undefined
+
     const runPlatform = async (platform: string) => {
       set(state => ({
         progressivePlatforms: { ...state.progressivePlatforms, [platform]: 'loading' }
@@ -134,7 +138,9 @@ export const useGlosXStore = create<GlosXStore>((set, get) => ({
         const { content } = await generateSinglePlatform(
           platform,
           input.trim(),
-          tone !== 'auto' ? tone : undefined
+          tone !== 'auto' ? tone : undefined,
+          undefined,
+          styleContext
         )
         set(state => ({
           progressivePlatforms: { ...state.progressivePlatforms, [platform]: 'done' },

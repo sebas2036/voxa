@@ -56,12 +56,13 @@ export async function generateSinglePlatform(
   platform: string,
   input: string,
   tone?: string,
-  voiceProfile?: string
+  voiceProfile?: string,
+  styleContext?: string
 ): Promise<{ platform: string; content: VoxaResult['platforms'][keyof VoxaResult['platforms']] }> {
   const response = await fetch(`${API_URL}/generate-single`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ platform, input, tone, voiceProfile })
+    body: JSON.stringify({ platform, input, tone, voiceProfile, styleContext })
   })
 
   if (!response.ok) {

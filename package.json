@@ -43,6 +43,8 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@react-native-community/cli": "^20.0.1",
+    "@react-native/metro-config": "^0.80.3",
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2"
   },

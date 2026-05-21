@@ -22,12 +22,13 @@ export async function generateContentForPlatform(
   platform: string,
   input: string,
   tone?: string,
-  voiceProfile?: string
+  voiceProfile?: string,
+  styleContext?: string
 ) {
   const response = await client.messages.create({
     model: 'claude-sonnet-4-5',
     max_tokens: 1200,
-    messages: [{ role: 'user', content: buildSinglePlatformPrompt(platform, input, tone, voiceProfile) }]
+    messages: [{ role: 'user', content: buildSinglePlatformPrompt(platform, input, tone, voiceProfile, styleContext) }]
   })
 
   const rawText = response.content[0].type === 'text' ? response.content[0].text : ''
