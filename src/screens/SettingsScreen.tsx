@@ -114,6 +114,17 @@ export default function SettingsScreen({ navigation }: any) {
     )
   }
 
+  const handleVersionTap = () => {
+    const n = devTaps + 1
+    setDevTaps(n)
+    if (devTapTimer.current) clearTimeout(devTapTimer.current)
+    devTapTimer.current = setTimeout(() => setDevTaps(0), 2000)
+    if (n >= 5) {
+      setDevTaps(0)
+      import('../services/devMonitor').then(({ enableDevMode }) => { enableDevMode().then(() => (navigation as any).navigate('Dev')) })
+    }
+  }
+
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: theme.bg }]}>
       <View style={s.topBar}>
