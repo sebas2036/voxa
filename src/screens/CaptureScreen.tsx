@@ -86,6 +86,8 @@ export default function CaptureScreen({ navigation }: any) {
 
   useEffect(() => { if (transcript) { setInput(transcript); setMicState('idle') } }, [transcript])
 
+  const btnScale = useRef(new Animated.Value(1)).current
+  const btnBreath = useRef(new Animated.Value(1)).current
   const logoPulse = useRef(new Animated.Value(0)).current
   const logoHaloOpacity = useRef(new Animated.Value(0)).current
   const particles = useRef(Array.from({ length: 6 }, () => ({
@@ -117,6 +119,20 @@ export default function CaptureScreen({ navigation }: any) {
       }),
     ]).start()
   }
+
+  useEffect(() => {
+    const hasInput = input.trim().length > 0
+    if (hasInput && loading === false && isGenerating === false) {
+      const anim = Animated.loop(Animated.sequence([
+        Animated.timing(btnBreath, { toValue: 1.05, duration: 1200, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(btnBreath, { toValue: 1, duration: 1200, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ]))
+      anim.start()
+      return () => { anim.stop() }
+    } else {
+      btnBreath.setValue(1)
+    }
+  }, [input, loading, isGenerating])
 
   const handleLogoTap = () => {
     triggerLogoAnimation()
@@ -328,14 +344,20 @@ export default function CaptureScreen({ navigation }: any) {
       </ScrollView>
       <View style={[s.stickyFooter, { backgroundColor: theme.bg }]}>
         <TouchableOpacity
-          style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}
+          activeOpacity={1}
+          onPressIn={() => Animated.timing(btnScale, { toValue: 0.94, duration: 120, easing: Easing.inOut(Easing.sin), useNativeDriver: true }).start()}
+          onPressOut={() => Animated.timing(btnScale, { toValue: 1, duration: 200, easing: Easing.inOut(Easing.sin), useNativeDriver: true }).start()}
           onPress={handleGenerate}
           disabled={!input.trim() || loading || isGenerating}
         >
-          {loading
-            ? <ActivityIndicator color="#ffffff" size="small" />
-            : <Text style={[s.generateBtnText, { color: '#000000' }]}>crear</Text>
-          }
+          <Animated.View style={[{ transform: [{ scale: Animated.multiply(btnScale, btnBreath) }] }]}>
+            <View style={[s.generateBtn, { backgroundColor: (loading || isGenerating) ? "#2e7d52" : theme.accent }, (!input.trim() || loading || isGenerating) && s.generateBtnDisabled]}>
+              {loading
+                ? <ActivityIndicator color="#ffffff" size="small" />
+                : <Text style={[s.generateBtnText, { color: '#000000' }]}>crear</Text>
+              }
+            </View>
+          </Animated.View>
         </TouchableOpacity>
       </View>
       </View>
